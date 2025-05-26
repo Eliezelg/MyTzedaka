@@ -27,7 +27,7 @@ import { SearchBar } from '@/components/hub/search-bar'
 interface NavigationItem {
   label: string
   href: string
-  icon: React.ComponentType<any>
+  icon: React.ComponentType<{ className?: string }>
   badge?: number
   description?: string
 }
@@ -149,7 +149,6 @@ export function HubHeader() {
               <SearchBar
                 onSearch={handleSearchSubmit}
                 placeholder="Rechercher..."
-                size="sm"
               />
             </div>
 
@@ -263,7 +262,6 @@ export function HubHeader() {
             <SearchBar
               onSearch={handleSearchSubmit}
               placeholder="Rechercher..."
-              autoFocus
             />
           </motion.div>
         )}

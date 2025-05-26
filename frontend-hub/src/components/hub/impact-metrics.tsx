@@ -5,14 +5,13 @@ import { motion } from 'framer-motion'
 import { 
   TrendingUp, 
   Users, 
-  Heart, 
   Target, 
-  Calendar,
-  Award,
+  Award, 
+  Heart,
+  MapPin,
   BarChart3,
-  PieChart,
-  Lightbulb,
-  CheckCircle
+  CheckCircle,
+  PieChart
 } from 'lucide-react'
 
 import { Card } from '@/components/ui/card'
@@ -270,7 +269,7 @@ export function ImpactMetrics({
           
           <div className="text-center">
             <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Lightbulb className="w-8 h-8 text-green-500" />
+              <MapPin className="w-8 h-8 text-green-500" />
             </div>
             <div className="font-bold text-xl text-green-600">
               {formatNumber(impactData.socialImpact.projects)}

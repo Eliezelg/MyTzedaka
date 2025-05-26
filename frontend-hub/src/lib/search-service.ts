@@ -3,11 +3,13 @@
  * Gère la recherche fédérée associations + campagnes
  */
 
+import { Association, Campaign } from '@/types/hub'
+
 export interface AutocompleteResponse {
   suggestions: {
     text: string
-    type: 'association' | 'campaign'
-    count?: number
+    type: 'association' | 'campaign' | 'general'
+    resultCount?: number
   }[]
   recent: {
     text: string
@@ -16,15 +18,33 @@ export interface AutocompleteResponse {
   }[]
 }
 
+export interface AutocompleteData {
+  suggestions: {
+    id: string
+    text: string
+    type: 'association' | 'campaign' | 'category' | 'location'
+    metadata?: {
+      category?: string
+      location?: string
+      verified?: boolean
+    }
+  }[]
+  recent: {
+    id: string
+    text: string
+    timestamp: number
+  }[]
+}
+
 export interface SearchResult {
-  associations: any[]
-  campaigns: any[]
+  associations: Association[]
+  campaigns: Campaign[]
   total: number
 }
 
 export class SearchService {
   private static baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
-  private static cache = new Map<string, { data: any, timestamp: number }>()
+  private static cache = new Map<string, { data: unknown, timestamp: number }>()
   private static CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
 
   /**
@@ -32,7 +52,7 @@ export class SearchService {
    */
   static async search(
     query: string,
-    filters: Record<string, any> = {},
+    filters: Record<string, unknown> = {},
     options: {
       page?: number
       limit?: number
@@ -44,30 +64,30 @@ export class SearchService {
     // Vérifier le cache
     const cached = this.cache.get(cacheKey)
     if (cached && Date.now() - cached.timestamp < this.CACHE_DURATION) {
-      return cached.data
+      return cached.data as SearchResult
     }
 
     try {
-      const params = new URLSearchParams({
+      const searchParams = new URLSearchParams({
         q: query,
         page: String(options.page || 1),
-        limit: String(options.limit || 12),
-        sort: options.sort || 'relevance',
-        ...filters
+        limit: String(options.limit || 20),
+        sort: options.sort || 'relevance'
       })
 
-      const response = await fetch(`${this.baseUrl}/api/hub/search?${params}`)
-      
-      if (!response.ok) {
-        throw new Error(`Erreur recherche: ${response.status}`)
-      }
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && value !== '') {
+          searchParams.append(key, String(value))
+        }
+      })
 
+      const response = await fetch(`${this.baseUrl}/api/search?${searchParams}`)
       const data = await response.json()
       
       // Mettre en cache
       this.cache.set(cacheKey, { data, timestamp: Date.now() })
       
-      return data
+      return data as SearchResult
     } catch (error) {
       console.error('Erreur lors de la recherche:', error)
       return { associations: [], campaigns: [], total: 0 }
@@ -79,19 +99,31 @@ export class SearchService {
    */
   static async getAutocompleteSuggestions(
     query: string, 
-    recentSearches: any[] = []
+    recentSearches: { text: string; type: string }[] = []
   ): Promise<AutocompleteResponse> {
     if (!query.trim()) {
       return {
         suggestions: [],
-        recent: recentSearches.slice(0, 5)
+        recent: recentSearches.map(item => ({
+          text: item.text,
+          type: item.type as 'association' | 'campaign' | 'general',
+          resultCount: 0
+        })).slice(0, 5)
       }
     }
 
     const cacheKey = `autocomplete:${query}`
     const cached = this.cache.get(cacheKey)
     if (cached && Date.now() - cached.timestamp < this.CACHE_DURATION) {
-      return { ...cached.data, recent: recentSearches.slice(0, 5) }
+      const cachedData = cached.data as AutocompleteResponse
+      return { 
+        ...cachedData, 
+        recent: recentSearches.map(item => ({
+          text: item.text,
+          type: item.type as 'association' | 'campaign' | 'general',
+          resultCount: 0
+        })).slice(0, 5)
+      }
     }
 
     try {
@@ -104,9 +136,13 @@ export class SearchService {
 
       const suggestions = await response.json()
       
-      const result = {
+      const result: AutocompleteResponse = {
         suggestions: suggestions.slice(0, 6),
-        recent: recentSearches.slice(0, 5)
+        recent: recentSearches.map(item => ({
+          text: item.text,
+          type: item.type as 'association' | 'campaign' | 'general',
+          resultCount: 0
+        })).slice(0, 5)
       }
       
       // Mettre en cache sans les recherches récentes
@@ -120,7 +156,11 @@ export class SearchService {
       console.error('Erreur lors de l\'autocomplétion:', error)
       return {
         suggestions: [],
-        recent: recentSearches.slice(0, 5)
+        recent: recentSearches.map(item => ({
+          text: item.text,
+          type: item.type as 'association' | 'campaign' | 'general',
+          resultCount: 0
+        })).slice(0, 5)
       }
     }
   }
@@ -192,4 +232,40 @@ if (typeof window !== 'undefined') {
   setInterval(() => {
     SearchService.cleanExpiredCache()
   }, 10 * 60 * 1000)
+}
+
+/**
+ * Fonction pour rechercher du contenu similaire
+ * Utilisée par le composant RelatedContent
+ */
+export async function searchRelatedContent(
+  currentId: string,
+  currentType: 'association' | 'campaign',
+  options?: {
+    variant?: 'cards' | 'list' | 'carousel'
+    maxItems?: number
+    showType?: 'all' | 'association' | 'campaign'
+    algorithm?: 'similar' | 'popular' | 'recent' | 'related'
+  }
+) {
+  try {
+    const searchResult = await SearchService.search('', {
+      excludeId: currentId,
+      type: options?.showType || 'all',
+      algorithm: options?.algorithm || 'similar'
+    }, {
+      limit: options?.maxItems || 6
+    })
+
+    // Combiner les résultats et les formater
+    const allResults = [
+      ...searchResult.associations.map(a => ({ ...a, type: 'association' as const })),
+      ...searchResult.campaigns.map(c => ({ ...c, type: 'campaign' as const }))
+    ]
+
+    return allResults.slice(0, options?.maxItems || 6)
+  } catch (error) {
+    console.error('Erreur lors de la recherche de contenu similaire:', error)
+    return []
+  }
 }

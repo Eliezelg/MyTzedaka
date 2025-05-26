@@ -7,12 +7,9 @@ import {
   Heart, 
   Reply, 
   MoreHorizontal,
-  Send,
-  ThumbsUp,
   Flag,
   Edit,
-  Trash2,
-  User
+  Trash2
 } from 'lucide-react'
 import Image from 'next/image'
 
@@ -59,8 +56,6 @@ export function CommentSystem({
   const [newComment, setNewComment] = useState('')
   const [replyingTo, setReplyingTo] = useState<string | null>(null)
   const [replyContent, setReplyContent] = useState('')
-  const [editingComment, setEditingComment] = useState<string | null>(null)
-  const [editContent, setEditContent] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [sortBy, setSortBy] = useState<'recent' | 'popular' | 'oldest'>('recent')
 
@@ -85,7 +80,7 @@ export function CommentSystem({
       author: {
         id: currentUserId || 'anonymous',
         name: 'Utilisateur Connecté',
-        avatar: '/api/placeholder/40/40',
+        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face',
         isVerified: false
       },
       content: newComment,
@@ -110,7 +105,7 @@ export function CommentSystem({
       author: {
         id: currentUserId || 'anonymous',
         name: 'Utilisateur Connecté',
-        avatar: '/api/placeholder/40/40'
+        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face'
       },
       content: replyContent,
       createdAt: new Date().toISOString(),
@@ -143,18 +138,6 @@ export function CommentSystem({
         return comment
       })
     )
-  }
-
-  const handleEdit = (commentId: string, newContent: string) => {
-    setLocalComments(prev =>
-      prev.map(comment =>
-        comment.id === commentId
-          ? { ...comment, content: newContent, isEdited: true, updatedAt: new Date().toISOString() }
-          : comment
-      )
-    )
-    setEditingComment(null)
-    setEditContent('')
   }
 
   const handleDelete = (commentId: string) => {
@@ -217,7 +200,6 @@ export function CommentSystem({
                 disabled={!newComment.trim()}
                 size="sm"
               >
-                <Send className="w-4 h-4 mr-2" />
                 Publier
               </Button>
             </div>
@@ -260,7 +242,6 @@ export function CommentSystem({
               currentUserId={currentUserId}
               onLike={() => handleLike(comment.id)}
               onReply={() => setReplyingTo(comment.id)}
-              onEdit={(content) => handleEdit(comment.id, content)}
               onDelete={() => handleDelete(comment.id)}
               isReplying={replyingTo === comment.id}
               replyContent={replyContent}
@@ -280,7 +261,6 @@ interface CommentItemProps {
   currentUserId?: string
   onLike: () => void
   onReply: () => void
-  onEdit: (content: string) => void
   onDelete: () => void
   isReplying: boolean
   replyContent: string
@@ -294,7 +274,6 @@ function CommentItem({
   currentUserId,
   onLike,
   onReply,
-  onEdit,
   onDelete,
   isReplying,
   replyContent,
@@ -309,7 +288,8 @@ function CommentItem({
   const isOwner = currentUserId === comment.author.id
 
   const handleEdit = () => {
-    onEdit(editContent)
+    // TODO: Envoyer à l'API
+    console.log('Modifier le commentaire:', comment.id, editContent)
     setIsEditing(false)
   }
 
@@ -333,7 +313,7 @@ function CommentItem({
               />
             ) : (
               <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
-                <User className="w-5 h-5 text-gray-600" />
+                <div className="w-5 h-5 text-gray-600" />
               </div>
             )}
           </div>
@@ -498,7 +478,7 @@ function CommentItem({
                         />
                       ) : (
                         <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                          <User className="w-4 h-4 text-gray-600" />
+                          <div className="w-4 h-4 text-gray-600" />
                         </div>
                       )}
                     </div>
@@ -529,7 +509,7 @@ const mockComments: Comment[] = [
     author: {
       id: 'user1',
       name: 'Sarah Cohen',
-      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612d17c?w=40&h=40&fit=crop&crop=face',
+      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face',
       isVerified: true
     },
     content: 'Excellent projet ! J\'ai hâte de voir le résultat final. Cette rénovation était vraiment nécessaire.',

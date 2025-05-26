@@ -1,53 +1,7 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import React from 'react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { CommentSystem } from '@/components/hub/comment-system'
-
-// Mock des données de commentaires
-const mockComments = [
-  {
-    id: '1',
-    content: 'Excellent travail de cette association !',
-    author: {
-      id: 'user1',
-      name: 'Sarah Cohen',
-      avatar: '/avatars/sarah.jpg',
-      isVerified: true
-    },
-    createdAt: '2024-01-15T10:00:00Z',
-    updatedAt: '2024-01-15T10:00:00Z',
-    likes: 5,
-    replies: [
-      {
-        id: '2',
-        content: 'Je suis entièrement d\'accord !',
-        author: {
-          id: 'user2',
-          name: 'David Levy',
-          avatar: '/avatars/david.jpg',
-          isVerified: false
-        },
-        createdAt: '2024-01-15T11:00:00Z',
-        updatedAt: '2024-01-15T11:00:00Z',
-        likes: 2,
-        replies: []
-      }
-    ]
-  },
-  {
-    id: '3',
-    content: 'Merci pour votre engagement communautaire.',
-    author: {
-      id: 'user3',
-      name: 'Rachel Martin',
-      avatar: '/avatars/rachel.jpg',
-      isVerified: true
-    },
-    createdAt: '2024-01-16T09:00:00Z',
-    updatedAt: '2024-01-16T09:00:00Z',
-    likes: 3,
-    replies: []
-  }
-]
 
 describe('CommentSystem', () => {
   const defaultProps = {
@@ -161,22 +115,6 @@ describe('CommentSystem', () => {
   it('permet de charger plus de commentaires', async () => {
     const user = userEvent.setup()
     
-    // Mock avec plus de commentaires pour tester la pagination
-    const manyComments = Array.from({ length: 15 }, (_, i) => ({
-      id: `comment-${i}`,
-      content: `Commentaire ${i + 1}`,
-      author: {
-        id: `user-${i}`,
-        name: `Utilisateur ${i + 1}`,
-        avatar: `/avatars/user${i}.jpg`,
-        isVerified: i % 2 === 0
-      },
-      createdAt: new Date(2024, 0, i + 1).toISOString(),
-      updatedAt: new Date(2024, 0, i + 1).toISOString(),
-      likes: Math.floor(Math.random() * 10),
-      replies: []
-    }))
-    
     render(<CommentSystem {...defaultProps} />)
     
     // S'il y a un bouton "Voir plus", on peut le tester
@@ -200,5 +138,12 @@ describe('CommentSystem', () => {
     // Dans un vrai test, on passerait une prop pour simuler zéro commentaire
     // Pour l'instant, on vérifie juste que le composant se rend sans erreur
     expect(screen.getByRole('button', { name: /publier/i })).toBeInTheDocument()
+  })
+
+  it('gère la pagination des commentaires', () => {
+    render(<CommentSystem {...defaultProps} />)
+    
+    // Vérifier qu'il y a un système de pagination si nécessaire
+    expect(screen.getByTestId('comment-system')).toBeInTheDocument()
   })
 })

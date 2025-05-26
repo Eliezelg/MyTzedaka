@@ -1,7 +1,15 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
-export function useUrlState<T extends Record<string, any>>(
+function parseValue(value: string): unknown {
+  try {
+    return JSON.parse(value)
+  } catch {
+    return value
+  }
+}
+
+export function useUrlState<T extends Record<string, unknown>>(
   defaultState: T,
   stateKey?: string
 ): [T, (newState: Partial<T>) => void, () => void] {
@@ -36,7 +44,7 @@ export function useUrlState<T extends Record<string, any>>(
       try {
         const stored = localStorage.getItem(stateKey)
         if (stored) {
-          const parsedStored = JSON.parse(stored)
+          const parsedStored = parseValue(stored)
           Object.assign(stateFromUrl, parsedStored)
         }
       } catch (error) {
