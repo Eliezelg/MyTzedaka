@@ -32,6 +32,28 @@ export class HubController {
     return this.hubService.getPopularCampaigns(limitNumber);
   }
 
+  @Get('campaigns')
+  @ApiOperation({ summary: 'Récupère les campagnes publiques avec pagination et filtres' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Numéro de page (défaut: 1)' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Nombre d\'éléments par page (défaut: 12, max: 50)' })
+  @ApiQuery({ name: 'search', required: false, type: String, description: 'Recherche textuelle' })
+  @ApiQuery({ name: 'category', required: false, type: String, description: 'Filtrer par catégorie' })
+  @ApiQuery({ name: 'status', required: false, type: String, description: 'Statut de la campagne (défaut: ACTIVE)' })
+  @ApiQuery({ name: 'featured', required: false, type: Boolean, description: 'Campagnes mises en avant' })
+  @ApiQuery({ name: 'urgent', required: false, type: Boolean, description: 'Campagnes urgentes' })
+  @ApiResponse({ status: 200, description: 'Liste paginée des campagnes' })
+  async getCampaigns(@Query() query: any) {
+    return this.hubService.getCampaigns(query);
+  }
+
+  @Get('campaigns/:id')
+  @ApiOperation({ summary: 'Récupère les détails d\'une campagne' })
+  @ApiResponse({ status: 200, description: 'Détails de la campagne' })
+  @ApiResponse({ status: 404, description: 'Campagne non trouvée' })
+  async getCampaignById(@Param('id') id: string) {
+    return this.hubService.getCampaignById(id);
+  }
+
   @Get('associations/search')
   @ApiOperation({ summary: 'Recherche d\'associations avec pagination et filtres' })
   @ApiResponse({ status: 200, description: 'Associations trouvées avec pagination' })

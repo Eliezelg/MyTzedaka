@@ -118,13 +118,25 @@ async function main() {
     create: {
       id: 'campaign-test-1',
       title: 'Rénovation de la synagogue',
-      description: 'Campagne pour rénover notre lieu de prière',
+      description: 'Campagne pour rénover notre lieu de prière et moderniser nos installations. Cette rénovation comprend la restauration des éléments historiques, l\'amélioration de l\'acoustique et l\'installation d\'équipements modernes pour nos services religieux.',
+      shortDescription: 'Rénovation complète de notre synagogue',
       goal: 50000,
+      raised: 12500.75,
       currency: 'EUR',
       startDate: new Date('2024-01-01'),
       endDate: new Date('2024-12-31'),
       tenantId: tenant1.id,
-      status: 'ACTIVE'
+      userId: user1.id,
+      status: 'ACTIVE',
+      coverImage: '/assets/campaigns/synagogue-renovation.jpg',
+      category: 'Infrastructure',
+      tags: ['rénovation', 'synagogue', 'modernisation'],
+      donationsCount: 45,
+      donorsCount: 38,
+      avgDonation: 277.79,
+      isFeatured: true,
+      isPublic: true,
+      isVerified: true
     }
   });
 
@@ -134,13 +146,25 @@ async function main() {
     create: {
       id: 'campaign-test-2',
       title: 'Aide aux familles',
-      description: 'Soutien aux familles dans le besoin',
+      description: 'Soutien aux familles dans le besoin de notre communauté. Ce programme vise à fournir une aide alimentaire, des vêtements et un soutien éducatif aux familles en difficulté.',
+      shortDescription: 'Soutien aux familles en difficulté',
       goal: 25000,
+      raised: 8900.25,
       currency: 'EUR',
       startDate: new Date('2024-06-01'),
       endDate: new Date('2024-12-31'),
       tenantId: tenant2.id,
-      status: 'ACTIVE'
+      userId: user2.id,
+      status: 'ACTIVE',
+      coverImage: '/assets/campaigns/aide-familles.jpg',
+      category: 'Social',
+      tags: ['aide', 'familles', 'solidarité'],
+      donationsCount: 32,
+      donorsCount: 29,
+      avgDonation: 278.13,
+      isUrgent: true,
+      isPublic: true,
+      isVerified: true
     }
   });
 

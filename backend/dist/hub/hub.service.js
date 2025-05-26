@@ -105,6 +105,284 @@ let HubService = class HubService {
             return [];
         }
     }
+    async getCampaigns(query) {
+        try {
+            const page = parseInt(query.page || '1');
+            const limit = Math.min(parseInt(query.limit || '12'), 50);
+            const skip = (page - 1) * limit;
+            const search = query.search;
+            const category = query.category;
+            const status = query.status || 'ACTIVE';
+            const isFeatured = query.featured === 'true';
+            const isUrgent = query.urgent === 'true';
+            const where = {
+                isActive: true,
+                isPublic: true,
+                status: status,
+            };
+            if (isFeatured) {
+                where.isFeatured = true;
+            }
+            if (isUrgent) {
+                where.isUrgent = true;
+            }
+            if (category) {
+                where.category = category;
+            }
+            if (search) {
+                where.OR = [
+                    { title: { contains: search, mode: 'insensitive' } },
+                    { description: { contains: search, mode: 'insensitive' } },
+                    { shortDescription: { contains: search, mode: 'insensitive' } },
+                    { tags: { has: search } },
+                ];
+            }
+            const [campaigns, total] = await Promise.all([
+                this.prisma.campaign.findMany({
+                    where,
+                    skip,
+                    take: limit,
+                    orderBy: [
+                        { isFeatured: 'desc' },
+                        { isUrgent: 'desc' },
+                        { createdAt: 'desc' }
+                    ],
+                    include: {
+                        tenant: {
+                            select: {
+                                name: true,
+                                slug: true,
+                                domain: true,
+                            }
+                        },
+                        associationListing: {
+                            select: {
+                                name: true,
+                                logoUrl: true,
+                                location: true,
+                                isVerified: true,
+                            }
+                        },
+                        user: {
+                            select: {
+                                firstName: true,
+                                lastName: true,
+                            }
+                        },
+                        _count: {
+                            select: {
+                                donations: true,
+                            }
+                        }
+                    }
+                }),
+                this.prisma.campaign.count({ where })
+            ]);
+            const enrichedCampaigns = campaigns.map(campaign => {
+                const progressPercentage = Number(campaign.goal) > 0
+                    ? Math.round((Number(campaign.raised) / Number(campaign.goal)) * 100)
+                    : 0;
+                const daysLeft = campaign.endDate
+                    ? Math.max(0, Math.ceil((campaign.endDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
+                    : null;
+                return {
+                    ...campaign,
+                    progressPercentage,
+                    daysLeft,
+                    raised: Number(campaign.raised),
+                    goal: Number(campaign.goal),
+                    avgDonation: Number(campaign.avgDonation),
+                    associationName: campaign.associationListing?.name || campaign.tenant.name,
+                    associationLogo: campaign.associationListing?.logoUrl,
+                    associationLocation: campaign.associationListing?.location,
+                    isVerifiedAssociation: campaign.associationListing?.isVerified || false,
+                };
+            });
+            const totalPages = Math.ceil(total / limit);
+            return {
+                campaigns: enrichedCampaigns,
+                pagination: {
+                    page,
+                    limit,
+                    total,
+                    totalPages,
+                    hasNext: page < totalPages,
+                    hasPrev: page > 1,
+                }
+            };
+        }
+        catch (error) {
+            console.error('❌ Erreur getCampaigns:', error);
+            return {
+                campaigns: [],
+                pagination: {
+                    page: 1,
+                    limit: 12,
+                    total: 0,
+                    totalPages: 0,
+                    hasNext: false,
+                    hasPrev: false,
+                }
+            };
+        }
+    }
+    async getCampaignById(id) {
+        try {
+            const campaign = await this.prisma.campaign.findUnique({
+                where: {
+                    id,
+                    isActive: true,
+                    isPublic: true
+                },
+                include: {
+                    tenant: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                            domain: true,
+                        }
+                    },
+                    associationListing: {
+                        select: {
+                            id: true,
+                            name: true,
+                            description: true,
+                            logoUrl: true,
+                            location: true,
+                            isVerified: true,
+                            totalRaised: true,
+                            donationsCount: true,
+                        }
+                    },
+                    user: {
+                        select: {
+                            firstName: true,
+                            lastName: true,
+                        }
+                    },
+                    donations: {
+                        take: 10,
+                        orderBy: { createdAt: 'desc' },
+                        select: {
+                            id: true,
+                            amount: true,
+                            currency: true,
+                            createdAt: true,
+                        }
+                    },
+                    _count: {
+                        select: {
+                            donations: true,
+                        }
+                    }
+                }
+            });
+            if (!campaign) {
+                throw new Error('Campagne non trouvée');
+            }
+            const progressPercentage = Number(campaign.goal) > 0
+                ? Math.round((Number(campaign.raised) / Number(campaign.goal)) * 100)
+                : 0;
+            const daysLeft = campaign.endDate
+                ? Math.max(0, Math.ceil((campaign.endDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
+                : null;
+            return {
+                ...campaign,
+                progressPercentage,
+                daysLeft,
+                raised: Number(campaign.raised),
+                goal: Number(campaign.goal),
+                avgDonation: Number(campaign.avgDonation),
+                associationName: campaign.associationListing?.name || campaign.tenant.name,
+                associationLogo: campaign.associationListing?.logoUrl,
+                associationLocation: campaign.associationListing?.location,
+                isVerifiedAssociation: campaign.associationListing?.isVerified || false,
+                recentDonations: campaign.donations.map(donation => ({
+                    ...donation,
+                    amount: Number(donation.amount),
+                })),
+            };
+        }
+        catch (error) {
+            console.error('❌ Erreur getCampaignById:', error);
+            throw error;
+        }
+    }
+    async getDonorGlobalHistory(donorProfileId) {
+        try {
+            const donorProfile = await this.prisma.donorProfile.findUnique({
+                where: { id: donorProfileId },
+                include: {
+                    tenantAccess: {
+                        include: {}
+                    }
+                }
+            });
+            if (!donorProfile) {
+                throw new Error('Profil donateur non trouvé');
+            }
+            return {
+                id: donorProfile.id,
+                email: donorProfile.email,
+                cognitoId: donorProfile.cognitoId,
+                firstName: donorProfile.firstName,
+                lastName: donorProfile.lastName,
+                phone: donorProfile.phone,
+                totalDonations: donorProfile.totalDonations,
+                totalAmount: donorProfile.totalAmount.toNumber(),
+                preferredCurrency: donorProfile.preferredCurrency,
+                createdAt: donorProfile.createdAt,
+                updatedAt: donorProfile.updatedAt,
+                lastDonationAt: donorProfile.lastDonationAt
+            };
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async updateDonorGlobalStats(donorProfileId) {
+        try {
+            const stats = await this.prisma.tenantDonorAccess.aggregate({
+                where: { donorProfileId },
+                _sum: {
+                    totalDonations: true,
+                    totalAmount: true
+                }
+            });
+            const lastDonation = await this.prisma.tenantDonorAccess.findFirst({
+                where: { donorProfileId },
+                orderBy: { lastDonationAt: 'desc' },
+                select: { lastDonationAt: true }
+            });
+            const updatedProfile = await this.prisma.donorProfile.update({
+                where: { id: donorProfileId },
+                data: {
+                    totalDonations: stats._sum.totalDonations || 0,
+                    totalAmount: stats._sum.totalAmount || 0,
+                    lastDonationAt: lastDonation?.lastDonationAt,
+                    updatedAt: new Date()
+                }
+            });
+            return {
+                id: updatedProfile.id,
+                email: updatedProfile.email,
+                cognitoId: updatedProfile.cognitoId,
+                firstName: updatedProfile.firstName,
+                lastName: updatedProfile.lastName,
+                phone: updatedProfile.phone,
+                totalDonations: updatedProfile.totalDonations,
+                totalAmount: updatedProfile.totalAmount.toNumber(),
+                preferredCurrency: updatedProfile.preferredCurrency,
+                createdAt: updatedProfile.createdAt,
+                updatedAt: updatedProfile.updatedAt,
+                lastDonationAt: updatedProfile.lastDonationAt
+            };
+        }
+        catch (error) {
+            throw error;
+        }
+    }
     async searchAssociations(searchDto) {
         try {
             const query = searchDto.q || searchDto.query;
@@ -265,80 +543,6 @@ let HubService = class HubService {
                     isFavorite: activity.isFavorite || false
                 }
             });
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-    async getDonorGlobalHistory(donorProfileId) {
-        try {
-            const donorProfile = await this.prisma.donorProfile.findUnique({
-                where: { id: donorProfileId },
-                include: {
-                    tenantAccess: {
-                        include: {}
-                    }
-                }
-            });
-            if (!donorProfile) {
-                throw new Error('Profil donateur non trouvé');
-            }
-            return {
-                id: donorProfile.id,
-                email: donorProfile.email,
-                cognitoId: donorProfile.cognitoId,
-                firstName: donorProfile.firstName,
-                lastName: donorProfile.lastName,
-                phone: donorProfile.phone,
-                totalDonations: donorProfile.totalDonations,
-                totalAmount: donorProfile.totalAmount.toNumber(),
-                preferredCurrency: donorProfile.preferredCurrency,
-                createdAt: donorProfile.createdAt,
-                updatedAt: donorProfile.updatedAt,
-                lastDonationAt: donorProfile.lastDonationAt
-            };
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-    async updateDonorGlobalStats(donorProfileId) {
-        try {
-            const stats = await this.prisma.tenantDonorAccess.aggregate({
-                where: { donorProfileId },
-                _sum: {
-                    totalDonations: true,
-                    totalAmount: true
-                }
-            });
-            const lastDonation = await this.prisma.tenantDonorAccess.findFirst({
-                where: { donorProfileId },
-                orderBy: { lastDonationAt: 'desc' },
-                select: { lastDonationAt: true }
-            });
-            const updatedProfile = await this.prisma.donorProfile.update({
-                where: { id: donorProfileId },
-                data: {
-                    totalDonations: stats._sum.totalDonations || 0,
-                    totalAmount: stats._sum.totalAmount || 0,
-                    lastDonationAt: lastDonation?.lastDonationAt,
-                    updatedAt: new Date()
-                }
-            });
-            return {
-                id: updatedProfile.id,
-                email: updatedProfile.email,
-                cognitoId: updatedProfile.cognitoId,
-                firstName: updatedProfile.firstName,
-                lastName: updatedProfile.lastName,
-                phone: updatedProfile.phone,
-                totalDonations: updatedProfile.totalDonations,
-                totalAmount: updatedProfile.totalAmount.toNumber(),
-                preferredCurrency: updatedProfile.preferredCurrency,
-                createdAt: updatedProfile.createdAt,
-                updatedAt: updatedProfile.updatedAt,
-                lastDonationAt: updatedProfile.lastDonationAt
-            };
         }
         catch (error) {
             throw error;

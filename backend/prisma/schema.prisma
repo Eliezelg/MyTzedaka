@@ -169,29 +169,51 @@ model Campaign {
   id          String   @id @default(uuid())
   tenantId    String   // Clé d'isolation
   userId      String   // Créé par un utilisateur
+  associationListingId String? // Lien vers l'association (optionnel pour campagnes privées)
   
   // Informations de la campagne
   title       String
-  description String
+  description String   @db.Text
+  shortDescription String? // Description courte pour les cartes
   goal        Decimal  @db.Decimal(10,2)
+  raised      Decimal  @default(0) @db.Decimal(10,2) // Montant collecté
   currency    String   @default("EUR")
   
-  // Dates
-  startDate   DateTime
-  endDate     DateTime
+  // Images et média
+  coverImage  String?  // Image principale
+  images      String[] @default([]) // URLs images supplémentaires
+  videoUrl    String?  // URL vidéo de présentation
   
-  // Statut
-  status      CampaignStatus @default(DRAFT)
+  // Statistiques
+  donationsCount Int     @default(0) // Nombre de donations
+  donorsCount    Int     @default(0) // Nombre de donateurs uniques
+  avgDonation    Decimal @default(0) @db.Decimal(10,2) // Donation moyenne
+  
+  // Dates
+  startDate   DateTime @default(now())
+  endDate     DateTime?
+  
+  // Statut et visibilité
+  status      CampaignStatus @default(ACTIVE)
   isActive    Boolean  @default(true)
+  isUrgent    Boolean  @default(false) // Campagne urgente
+  isFeatured  Boolean  @default(false) // Mise en avant
+  isPublic    Boolean  @default(true)  // Visible sur la plateforme
+  isVerified  Boolean  @default(false) // Vérifiée par la plateforme
+  
+  // Catégorisation
+  category    String?  // Catégorie de la campagne
+  tags        String[] @default([]) // Tags pour la recherche
   
   // Métadonnées
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
   // Relations
-  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  user        User     @relation(fields: [userId], references: [id])
-  donations   Donation[]
+  tenant       Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user         User      @relation(fields: [userId], references: [id])
+  associationListing AssociationListing? @relation(fields: [associationListingId], references: [id])
+  donations    Donation[]
   
   @@map("campaigns")
 }
@@ -199,7 +221,9 @@ model Campaign {
 enum CampaignStatus {
   DRAFT       // Brouillon
   ACTIVE      // Active
-  COMPLETED   // Terminée
+  PAUSED      // Mise en pause
+  COMPLETED   // Terminée avec succès
+  EXPIRED     // Expirée (date de fin dépassée)
   CANCELLED   // Annulée
 }
 
@@ -386,6 +410,7 @@ model AssociationListing {
   
   // Relations
   tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  campaigns   Campaign[] // Campagnes de cette association
   
   @@map("association_listings")
 }

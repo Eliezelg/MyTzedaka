@@ -12,6 +12,20 @@ export declare class HubService {
     }>;
     getGlobalStats(): Promise<HubStatsDto>;
     getPopularCampaigns(limit?: number): Promise<any[]>;
+    getCampaigns(query: any): Promise<{
+        campaigns: any[];
+        pagination: {
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+            hasNext: boolean;
+            hasPrev: boolean;
+        };
+    }>;
+    getCampaignById(id: string): Promise<any>;
+    getDonorGlobalHistory(donorProfileId: string): Promise<DonorProfileDto>;
+    updateDonorGlobalStats(donorProfileId: string): Promise<DonorProfileDto>;
     searchAssociations(searchDto: AssociationSearchDto): Promise<{
         associations: any[];
         total: number;
@@ -22,6 +36,4 @@ export declare class HubService {
     createDonorProfile(donorData: CreateDonorProfileDto): Promise<DonorProfileDto>;
     findOrCreateDonorProfile(donorData: CreateDonorProfileDto): Promise<DonorProfileDto>;
     recordTenantActivity(donorProfileId: string, tenantId: string, activity: RecordActivityDto): Promise<any>;
-    getDonorGlobalHistory(donorProfileId: string): Promise<DonorProfileDto>;
-    updateDonorGlobalStats(donorProfileId: string): Promise<DonorProfileDto>;
 }

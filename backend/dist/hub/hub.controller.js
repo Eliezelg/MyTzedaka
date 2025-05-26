@@ -32,6 +32,12 @@ let HubController = class HubController {
         const limitNumber = limit ? parseInt(limit, 10) : 10;
         return this.hubService.getPopularCampaigns(limitNumber);
     }
+    async getCampaigns(query) {
+        return this.hubService.getCampaigns(query);
+    }
+    async getCampaignById(id) {
+        return this.hubService.getCampaignById(id);
+    }
     async searchAssociations(searchDto) {
         return this.hubService.searchAssociations(searchDto);
     }
@@ -82,6 +88,32 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], HubController.prototype, "getPopularCampaigns", null);
+__decorate([
+    (0, common_1.Get)('campaigns'),
+    (0, swagger_1.ApiOperation)({ summary: 'Récupère les campagnes publiques avec pagination et filtres' }),
+    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, description: 'Numéro de page (défaut: 1)' }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, description: 'Nombre d\'éléments par page (défaut: 12, max: 50)' }),
+    (0, swagger_1.ApiQuery)({ name: 'search', required: false, type: String, description: 'Recherche textuelle' }),
+    (0, swagger_1.ApiQuery)({ name: 'category', required: false, type: String, description: 'Filtrer par catégorie' }),
+    (0, swagger_1.ApiQuery)({ name: 'status', required: false, type: String, description: 'Statut de la campagne (défaut: ACTIVE)' }),
+    (0, swagger_1.ApiQuery)({ name: 'featured', required: false, type: Boolean, description: 'Campagnes mises en avant' }),
+    (0, swagger_1.ApiQuery)({ name: 'urgent', required: false, type: Boolean, description: 'Campagnes urgentes' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Liste paginée des campagnes' }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], HubController.prototype, "getCampaigns", null);
+__decorate([
+    (0, common_1.Get)('campaigns/:id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Récupère les détails d\'une campagne' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Détails de la campagne' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Campagne non trouvée' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], HubController.prototype, "getCampaignById", null);
 __decorate([
     (0, common_1.Get)('associations/search'),
     (0, swagger_1.ApiOperation)({ summary: 'Recherche d\'associations avec pagination et filtres' }),
