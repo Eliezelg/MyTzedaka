@@ -360,9 +360,12 @@ model AssociationListing {
   name        String
   description String   @db.Text
   logo        String?
+  logoUrl     String?  // URL du logo pour compatibilité frontend
   coverImage  String?
   category    String
   location    String
+  city        String?  // Ville pour géolocalisation
+  country     String?  // Pays pour géolocalisation
   
   // Visibilité
   isPublic    Boolean  @default(true) // Visible sur la plateforme centrale
@@ -371,8 +374,11 @@ model AssociationListing {
   siteUrl     String?  // URL du site personnalisé
   
   // Statistiques publiques
-  totalCampaigns Int    @default(0)
-  activeCampaigns Int   @default(0)
+  totalCampaigns     Int     @default(0)
+  activeCampaigns    Int     @default(0)
+  activeCampaignsCount Int   @default(0) // Alias pour compatibilité frontend
+  totalRaised        Decimal @default(0) @db.Decimal(10,2) // Total collecté
+  donationsCount     Int     @default(0) // Nombre de donations
   
   // Métadonnées
   createdAt   DateTime @default(now())

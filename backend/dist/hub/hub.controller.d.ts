@@ -3,7 +3,13 @@ import { HubStatsDto, AssociationSearchDto, DonorProfileDto } from './dto/hub.dt
 export declare class HubController {
     private readonly hubService;
     constructor(hubService: HubService);
-    getPublicAssociations(): Promise<any[]>;
+    getPublicAssociations(): Promise<{
+        data: any[];
+        total: number;
+        page: number;
+        limit: number;
+        pages: number;
+    }>;
     getGlobalStats(): Promise<HubStatsDto>;
     getPopularCampaigns(limit?: string): Promise<any[]>;
     searchAssociations(searchDto: AssociationSearchDto): Promise<{

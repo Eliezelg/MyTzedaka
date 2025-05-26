@@ -70,9 +70,12 @@ export function DefaultLoader() {
 }
 
 // Loader pour cartes avec skeleton
-export function CardLoader() {
+export function CardLoader({ className }: { className?: string }) {
+  // Valeurs fixes pour éviter les problèmes d'hydratation
+  const widthVariations = ['75%', '85%', '70%'];
+  
   return (
-    <div className="space-y-4">
+    <div className={`space-y-4 ${className || ''}`}>
       {[...Array(3)].map((_, i) => (
         <motion.div
           key={i}
@@ -99,7 +102,7 @@ export function CardLoader() {
               {/* Titre skeleton */}
               <motion.div
                 className="h-4 bg-gray-200 rounded"
-                style={{ width: `${60 + Math.random() * 40}%` }}
+                style={{ width: widthVariations[i % widthVariations.length] }}
                 animate={{
                   backgroundColor: ["#e5e7eb", "#f3f4f6", "#e5e7eb"]
                 }}

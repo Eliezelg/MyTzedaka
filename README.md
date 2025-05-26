@@ -343,3 +343,56 @@ Pour toute question technique ou contribution :
 - `truncateText` : Troncature intelligente des textes
 - `calculateProgress` : Calcul de pourcentage de progression
 - `getInitials` : Extraction des initiales d'un nom
+
+### ✅ NOUVEAU : Phase 6 Sprint 2 - Intégrations Backend Réelles (100% COMPLÉTÉE)
+**Objectif** : Connecter le frontend aux vraies données backend et résoudre tous les problèmes d'intégration API
+
+**Statut** : 🎯 **TERMINÉE AVEC SUCCÈS** - Intégration backend 100% fonctionnelle
+
+**🔧 Problèmes majeurs résolus** :
+- [x] **Boucle infinie useUrlState** : Stabilisation avec `useMemo` + imports React corrects
+- [x] **Format API incompatible** : Backend modifié pour retourner `PaginatedResponse`
+- [x] **Schéma Prisma incomplet** : Ajout champs `totalRaised`, `donationsCount`, `logoUrl`, etc.
+- [x] **Données test vides** : Script mise à jour avec données réalistes
+- [x] **Problème hydratation** : Correction `Math.random()` par valeurs fixes
+
+**🎯 Résultats intégration** :
+- ✅ **API Backend** : http://localhost:3000/api/hub/associations (200 OK)
+- ✅ **Frontend Hub** : http://localhost:3001 (200 OK) 
+- ✅ **Base données** : 2 associations avec données complètes
+- ✅ **Types synchronisés** : Frontend/Backend parfaitement alignés
+- ✅ **Console propre** : 0 erreur, 0 warning d'hydratation
+
+**📊 Données de test validées** :
+```json
+{
+  "data": [
+    {
+      "name": "Kehilat Paris",
+      "totalRaised": "12500.75",
+      "donationsCount": 45,
+      "city": "Paris",
+      "isVerified": true
+    },
+    {
+      "name": "Shalom Marseille", 
+      "totalRaised": "8900.25",
+      "donationsCount": 32,
+      "city": "Marseille",
+      "isVerified": true
+    }
+  ],
+  "total": 2,
+  "page": 1,
+  "limit": 2,
+  "pages": 1
+}
+```
+
+**🚀 Infrastructure technique opérationnelle** :
+- **Service Layer** : HubApiClient robuste avec React Query
+- **Gestion erreurs** : États loading/error/retry automatiques
+- **Types TypeScript** : Synchronisés avec modèles Prisma backend
+- **Performance** : Cache intelligent + débouncing optimisé
+
+**Impact** : Le Hub Central est maintenant connecté aux vraies données backend avec une expérience utilisateur fluide et sans erreurs.

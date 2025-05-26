@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 function parseValue(value: string): unknown {
@@ -15,26 +15,26 @@ export function useUrlState<T extends Record<string, unknown>>(
 ): [T, (newState: Partial<T>) => void, () => void] {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [state, setState] = useState<T>(defaultState)
+  
+  // Stabiliser defaultState pour éviter les re-renders infinis
+  const stableDefaultState = useMemo(() => defaultState, [])
+  const [state, setState] = useState<T>(stableDefaultState)
 
   // Charger l'état depuis l'URL au montage
   useEffect(() => {
     const urlParams = new URLSearchParams(searchParams.toString())
     const stateFromUrl: Partial<T> = {}
 
-    Object.keys(defaultState).forEach(key => {
+    Object.keys(stableDefaultState).forEach(key => {
       const value = urlParams.get(key)
       if (value !== null) {
         // Convertir les valeurs selon le type attendu
-        if (typeof defaultState[key] === 'boolean') {
+        if (typeof stableDefaultState[key] === 'boolean') {
           stateFromUrl[key as keyof T] = (value === 'true') as T[keyof T]
-        } else if (typeof defaultState[key] === 'number') {
-          const num = parseInt(value, 10)
-          if (!isNaN(num)) {
-            stateFromUrl[key as keyof T] = num as T[keyof T]
-          }
+        } else if (typeof stableDefaultState[key] === 'number') {
+          stateFromUrl[key as keyof T] = (Number(value) || 0) as T[keyof T]
         } else {
-          stateFromUrl[key as keyof T] = value as T[keyof T]
+          stateFromUrl[key as keyof T] = parseValue(value) as T[keyof T]
         }
       }
     })
@@ -53,7 +53,7 @@ export function useUrlState<T extends Record<string, unknown>>(
     }
 
     setState(prevState => ({ ...prevState, ...stateFromUrl }))
-  }, [searchParams, defaultState, stateKey])
+  }, [searchParams, stateKey]) // Retirer defaultState des dépendances
 
   // Mettre à jour l'état et l'URL
   const updateState = useCallback((newState: Partial<T>) => {
@@ -65,7 +65,7 @@ export function useUrlState<T extends Record<string, unknown>>(
       Object.entries(updatedState).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
           // Ne pas inclure les valeurs par défaut dans l'URL
-          if (value !== defaultState[key as keyof T]) {
+          if (value !== stableDefaultState[key as keyof T]) {
             urlParams.set(key, value.toString())
           }
         }
@@ -88,11 +88,11 @@ export function useUrlState<T extends Record<string, unknown>>(
 
       return updatedState
     })
-  }, [router, defaultState, stateKey])
+  }, [router, stableDefaultState, stateKey])
 
   // Réinitialiser l'état
   const resetState = useCallback(() => {
-    setState(defaultState)
+    setState(stableDefaultState)
     router.push(window.location.pathname, { scroll: false })
     
     if (stateKey) {
@@ -102,7 +102,7 @@ export function useUrlState<T extends Record<string, unknown>>(
         console.error('Erreur lors de la suppression du localStorage:', error)
       }
     }
-  }, [router, defaultState, stateKey])
+  }, [router, stableDefaultState, stateKey])
 
   return [state, updateState, resetState]
 }
