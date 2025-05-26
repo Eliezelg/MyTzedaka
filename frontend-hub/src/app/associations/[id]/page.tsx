@@ -11,7 +11,6 @@ import {
   Calendar, 
   Users, 
   Heart,
-  Share2,
   MessageCircle,
   TrendingUp,
   Award,

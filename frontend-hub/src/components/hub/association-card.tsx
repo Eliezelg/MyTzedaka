@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Association } from '@/types/hub'
 import { truncateText } from '@/lib/utils'
+import Image from 'next/image'
 
 interface AssociationCardProps {
   association: Association
@@ -33,10 +34,11 @@ export function AssociationCard({ association, index = 0, onClick }: Association
         {/* Image ou placeholder */}
         <div className="h-48 bg-gradient-to-br from-primary-100 to-secondary-100 relative overflow-hidden">
           {association.coverImage ? (
-            <img 
+            <Image 
               src={association.coverImage} 
               alt={association.name}
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">

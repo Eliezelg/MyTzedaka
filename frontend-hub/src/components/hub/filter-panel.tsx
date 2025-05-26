@@ -18,6 +18,7 @@ export interface FilterOptions {
   startDate?: string
   endDate?: string
   status?: 'active' | 'completed' | 'upcoming' | null
+  [key: string]: unknown
 }
 
 interface FilterPanelProps {
@@ -75,7 +76,7 @@ export function FilterPanel({
     'Montpellier'
   ]
 
-  const handleFilterChange = (key: keyof FilterOptions, value: any) => {
+  const handleFilterChange = (key: keyof FilterOptions, value: FilterOptions[keyof FilterOptions]) => {
     const newFilters = { ...filters, [key]: value }
     setFilters(newFilters)
     onFiltersChange?.(newFilters)

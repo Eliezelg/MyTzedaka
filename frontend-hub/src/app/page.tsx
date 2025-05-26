@@ -11,6 +11,8 @@ import { StatCard } from '@/components/hub/stat-card'
 import { AssociationCard } from '@/components/hub/association-card'
 import { CampaignCard } from '@/components/hub/campaign-card'
 import { Button } from '@/components/ui/button'
+import { LoadingState, CardLoader } from '@/components/ui/loading-states'
+import { StaggerContainer, StaggerItem } from '@/components/ui/page-transition'
 
 // Types et utilitaires
 import { HubStats, Association, Campaign } from '@/types/hub'
@@ -39,22 +41,6 @@ function StatsSection() {
     queryKey: ['hub-stats'],
     queryFn: fetchHubStats,
   })
-
-  if (isLoading) {
-    return (
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="bg-gray-200 rounded-xl h-32"></div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    )
-  }
 
   if (error || !stats) {
     return (
@@ -85,37 +71,56 @@ function StatsSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard
-            title="Associations actives"
-            value={stats.totalAssociations}
-            icon={Building}
-            color="primary"
-            delay={0}
-          />
-          <StatCard
-            title="Associations vérifiées"
-            value={stats.verifiedAssociations}
-            icon={Heart}
-            color="accent"
-            delay={0.1}
-          />
-          <StatCard
-            title="Campagnes en cours"
-            value={stats.activeCampaigns}
-            icon={TrendingUp}
-            color="secondary"
-            delay={0.2}
-          />
-          <StatCard
-            title="Total collecté"
-            value={stats.totalAmount}
-            icon={Users}
-            color="orange"
-            format="currency"
-            delay={0.3}
-          />
-        </div>
+        <LoadingState
+          isLoading={isLoading}
+          loadingComponent={
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <CardLoader key={i} />
+              ))}
+            </div>
+          }
+        >
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <StaggerItem>
+              <StatCard
+                title="Associations actives"
+                value={stats?.totalAssociations || 0}
+                icon={Building}
+                color="primary"
+                delay={0}
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <StatCard
+                title="Associations vérifiées"
+                value={stats?.verifiedAssociations || 0}
+                icon={Heart}
+                color="accent"
+                delay={0.1}
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <StatCard
+                title="Campagnes en cours"
+                value={stats?.activeCampaigns || 0}
+                icon={TrendingUp}
+                color="secondary"
+                delay={0.2}
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <StatCard
+                title="Total collecté"
+                value={stats?.totalAmount || 0}
+                icon={Users}
+                color="orange"
+                format="currency"
+                delay={0.3}
+              />
+            </StaggerItem>
+          </StaggerContainer>
+        </LoadingState>
       </div>
     </section>
   )
@@ -127,31 +132,12 @@ function FeaturedAssociationsSection() {
     queryFn: fetchFeaturedAssociations,
   })
 
-  if (isLoading) {
-    return (
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Associations en vedette
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="bg-gray-200 rounded-xl h-96"></div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    )
-  }
-
   if (error || !associations?.length) {
     return (
       <section className="py-16">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Associations en vedette
+            Associations partenaires
           </h2>
           <p className="text-gray-500">Aucune association trouvée</p>
         </div>
@@ -170,27 +156,38 @@ function FeaturedAssociationsSection() {
           className="text-center mb-12"
         >
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Associations en vedette
+            Associations partenaires
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Découvrez des associations engagées qui œuvrent pour des causes importantes 
+            Découvrez des associations vérifiées et engagées qui œuvrent chaque jour pour 
             et transforment positivement notre société.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {associations.map((association, index) => (
-            <AssociationCard
-              key={association.id}
-              association={association}
-              index={index}
-              onClick={(assoc) => {
-                console.log('Clic sur association:', assoc.name)
-                // Navigation vers la page de l'association
-              }}
-            />
-          ))}
-        </div>
+        <LoadingState
+          isLoading={isLoading}
+          loadingComponent={
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <CardLoader key={i} />
+              ))}
+            </div>
+          }
+        >
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {associations?.map((association) => (
+              <StaggerItem key={association.id}>
+                <AssociationCard
+                  association={association}
+                  onClick={(assoc) => {
+                    console.log('Clic sur association:', assoc.name)
+                    // Navigation vers la page de l'association
+                  }}
+                />
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
+        </LoadingState>
 
         <div className="text-center">
           <Button variant="outline" size="lg">
@@ -207,25 +204,6 @@ function PopularCampaignsSection() {
     queryKey: ['popular-campaigns'],
     queryFn: fetchPopularCampaigns,
   })
-
-  if (isLoading) {
-    return (
-      <section className="py-16 bg-gray-50/50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Campagnes populaires
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="bg-gray-200 rounded-xl h-80"></div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    )
-  }
 
   if (error || !campaigns?.length) {
     return (
@@ -259,19 +237,30 @@ function PopularCampaignsSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {campaigns.map((campaign, index) => (
-            <CampaignCard
-              key={campaign.id}
-              campaign={campaign}
-              index={index}
-              onClick={(camp) => {
-                console.log('Clic sur campagne:', camp.title)
-                // Navigation vers la page de la campagne
-              }}
-            />
-          ))}
-        </div>
+        <LoadingState
+          isLoading={isLoading}
+          loadingComponent={
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <CardLoader key={i} />
+              ))}
+            </div>
+          }
+        >
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {campaigns?.map((campaign) => (
+              <StaggerItem key={campaign.id}>
+                <CampaignCard
+                  campaign={campaign}
+                  onClick={(camp) => {
+                    console.log('Clic sur campagne:', camp.title)
+                    // Navigation vers la page de la campagne
+                  }}
+                />
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
+        </LoadingState>
 
         <div className="text-center">
           <Button variant="outline" size="lg">

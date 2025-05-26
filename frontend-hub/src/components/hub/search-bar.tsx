@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
-import { Search, X, Clock, Filter as FilterIcon, Zap } from 'lucide-react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
+import { Search, X, Zap, Clock } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -10,59 +10,51 @@ import { useSearchHistory } from '@/hooks/useSearchHistory'
 import { SearchService, AutocompleteResponse } from '@/lib/search-service'
 
 interface SearchBarProps {
+  onSearch?: (query: string, type?: 'all' | 'associations' | 'campaigns') => void
   placeholder?: string
-  onSearch?: (query: string, type?: 'association' | 'campaign' | 'all') => void
-  onClear?: () => void
-  defaultValue?: string
-  searchType?: 'association' | 'campaign' | 'all'
-  onSearchTypeChange?: (type: 'association' | 'campaign' | 'all') => void
-  showTypeSelector?: boolean
-  showVoiceSearch?: boolean
-  size?: 'sm' | 'md' | 'lg'
-  autoFocus?: boolean
-  showHistory?: boolean
-  initialQuery?: string
+  className?: string
+}
+
+interface SpeechRecognitionResult {
+  results: {
+    [index: number]: {
+      [index: number]: {
+        transcript: string
+      }
+    }
+  }
+}
+
+interface SpeechRecognitionError {
+  error: string
+}
+
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResult['results']
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: SpeechRecognitionError['error']
 }
 
 export function SearchBar({ 
-  placeholder = "Rechercher une association, une campagne...", 
   onSearch, 
-  onClear,
-  defaultValue = "",
-  searchType = 'all',
-  onSearchTypeChange,
-  showTypeSelector = true,
-  showVoiceSearch = false,
-  size,
-  autoFocus,
-  showHistory,
-  initialQuery
+  placeholder = "Rechercher une association, une campagne...", 
+  className
 }: SearchBarProps) {
-  const [query, setQuery] = useState(defaultValue)
-  const [showTypeSelectorState, setShowTypeSelector] = useState(showTypeSelector)
+  const [query, setQuery] = useState("")
   const [autocompleteData, setAutocompleteData] = useState<AutocompleteResponse>({ suggestions: [], recent: [] })
   const [isLoading, setIsLoading] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
   const [isVoiceSearching, setIsVoiceSearching] = useState(false)
+  const [isVoiceSupported, setIsVoiceSupported] = useState(false)
   
   const inputRef = useRef<HTMLInputElement>(null)
   const suggestionsRef = useRef<HTMLDivElement>(null)
   
   const { addSearchToHistory, getRecentSuggestions } = useSearchHistory()
 
-  // Charger les suggestions en temps réel
-  useEffect(() => {
-    if (query.trim().length > 0) {
-      loadAutocompleteSuggestions(query)
-    } else {
-      setAutocompleteData({
-        suggestions: [],
-        recent: getRecentSuggestions(5)
-      })
-    }
-  }, [query])
-
-  const loadAutocompleteSuggestions = async (searchQuery: string) => {
+  const loadAutocompleteSuggestions = useCallback(async (searchQuery: string) => {
     setIsLoading(true)
     try {
       const recentSuggestions = getRecentSuggestions(5)
@@ -73,7 +65,23 @@ export function SearchBar({
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [getRecentSuggestions])
+
+  // Charger les suggestions en temps réel avec debounce
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (query) {
+        loadAutocompleteSuggestions(query)
+      } else {
+        setAutocompleteData({
+          suggestions: [],
+          recent: getRecentSuggestions(5)
+        })
+      }
+    }, 300) // Debounce de 300ms
+
+    return () => clearTimeout(timeoutId)
+  }, [query, loadAutocompleteSuggestions, getRecentSuggestions])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
@@ -81,40 +89,36 @@ export function SearchBar({
     setSelectedIndex(-1)
   }
 
-  const handleSearch = useCallback((searchQuery: string = query, type: typeof searchType = searchType) => {
+  const handleSearch = useCallback((searchQuery: string = query) => {
     const trimmedQuery = searchQuery.trim()
     if (trimmedQuery) {
       // Ajouter à l'historique
-      addSearchToHistory(trimmedQuery, type === 'all' ? 'general' : type)
+      addSearchToHistory(trimmedQuery)
       
       // Effectuer la recherche
-      onSearch?.(trimmedQuery, type)
+      onSearch?.(trimmedQuery)
       setSelectedIndex(-1)
       
       // Déselectionner l'input
       inputRef.current?.blur()
     }
-  }, [query, searchType, onSearch, addSearchToHistory])
+  }, [query, onSearch, addSearchToHistory])
 
   const handleClear = () => {
     setQuery("")
     setSelectedIndex(-1)
-    onClear?.()
     inputRef.current?.focus()
   }
 
-  const handleSuggestionClick = (suggestion: string, type?: 'association' | 'campaign') => {
+  const handleSuggestionClick = (suggestion: string) => {
     setQuery(suggestion)
-    
-    // Déterminer le type de recherche
-    const finalType = type || searchType
-    handleSearch(suggestion, finalType)
+    handleSearch(suggestion)
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     const suggestions = [
-      ...autocompleteData.recent.map(r => ({ text: r.text, type: r.type })),
-      ...autocompleteData.suggestions.map(s => ({ text: s.text, type: s.type }))
+      ...autocompleteData.recent.map(r => ({ text: r.text })),
+      ...autocompleteData.suggestions.map(s => ({ text: s.text }))
     ]
 
     if (e.key === 'Enter') {
@@ -137,16 +141,23 @@ export function SearchBar({
     }
   }
 
+  // Vérifier la disponibilité de la reconnaissance vocale côté client uniquement
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsVoiceSupported('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)
+    }
+  }, [])
+
   // Recherche vocale (Web Speech API)
   const handleVoiceSearch = () => {
-    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+    if (!isVoiceSupported) {
       console.warn('Reconnaissance vocale non supportée')
       return
     }
 
     setIsVoiceSearching(true)
 
-    // @ts-ignore - Web Speech API n'est pas dans les types standard
+    // @ts-expect-error - Types de reconnaissance vocale non standards
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
     const recognition = new SpeechRecognition()
 
@@ -154,13 +165,14 @@ export function SearchBar({
     recognition.interimResults = false
     recognition.lang = 'fr-FR'
 
-    recognition.onresult = (event: any) => {
+    recognition.onresult = (event: SpeechRecognitionEvent & Event) => {
       const transcript = event.results[0][0].transcript
       setQuery(transcript)
       handleSearch(transcript)
+      setIsVoiceSearching(false)
     }
 
-    recognition.onerror = (event: any) => {
+    recognition.onerror = (event: SpeechRecognitionErrorEvent & Event) => {
       console.error('Erreur reconnaissance vocale:', event.error)
       setIsVoiceSearching(false)
     }
@@ -170,10 +182,6 @@ export function SearchBar({
     }
 
     recognition.start()
-  }
-
-  const handleTypeChange = (type: 'association' | 'campaign' | 'all') => {
-    onSearchTypeChange?.(type)
   }
 
   // Fermer les suggestions si on clique ailleurs
@@ -193,35 +201,8 @@ export function SearchBar({
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const allSuggestions = [
-    ...autocompleteData.recent.map((r, i) => ({ 
-      ...r, 
-      isRecent: true, 
-      index: i 
-    })),
-    ...autocompleteData.suggestions.map((s, i) => ({ 
-      ...s, 
-      isRecent: false, 
-      index: i + autocompleteData.recent.length 
-    }))
-  ]
-
   return (
-    <div className={`relative w-full max-w-2xl`} ref={suggestionsRef}>
-      {/* Sélecteur de type de recherche */}
-      {showTypeSelectorState && (
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowTypeSelector(!showTypeSelectorState)}
-          className="text-xs px-2 py-1"
-        >
-          {searchType === 'all' ? 'Tout' : 
-           searchType === 'association' ? 'Associations' : 'Campagnes'}
-          <FilterIcon className="ml-1 h-3 w-3" />
-        </Button>
-      )}
-
+    <div className={`relative w-full max-w-2xl ${className}`} ref={suggestionsRef}>
       <div className="relative">
         <Input
           ref={inputRef}
@@ -230,11 +211,6 @@ export function SearchBar({
           value={query}
           onChange={handleInputChange}
           onKeyDown={handleKeyPress}
-          onFocus={() => {
-            if (query.trim() || autocompleteData.recent.length > 0) {
-            }
-          }}
-          autoFocus={autoFocus}
           className="pl-12 pr-32 h-12 text-base"
         />
         
@@ -242,19 +218,17 @@ export function SearchBar({
         
         <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
           {/* Recherche vocale */}
-          {showVoiceSearch && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleVoiceSearch}
-              disabled={!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)}
-              className={`absolute right-16 top-1/2 transform -translate-y-1/2 h-8 px-2 ${
-                isVoiceSearching ? 'text-red-500 animate-pulse' : 'text-gray-400'
-              }`}
-            >
-              <Zap className="h-4 w-4" />
-            </Button>
-          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleVoiceSearch}
+            disabled={!isVoiceSupported}
+            className={`absolute right-16 top-1/2 transform -translate-y-1/2 h-8 px-2 ${
+              isVoiceSearching ? 'text-red-500 animate-pulse' : 'text-gray-400'
+            }`}
+          >
+            <Zap className="h-4 w-4" />
+          </Button>
           
           {/* Bouton clear */}
           {query && (
@@ -331,26 +305,13 @@ export function SearchBar({
                   return (
                     <button
                       key={`suggestion-${index}`}
-                      onClick={() => handleSuggestionClick(suggestion.text, suggestion.type as any)}
+                      onClick={() => handleSuggestionClick(suggestion.text)}
                       className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors flex items-center gap-3 ${
                         selectedIndex === globalIndex ? 'bg-blue-50' : ''
                       }`}
                     >
                       <Search className="w-4 h-4 text-gray-400" />
                       <span className="text-sm text-gray-700">{suggestion.text}</span>
-                      <div className="ml-auto flex items-center gap-2">
-                        <Badge 
-                          variant={suggestion.type === 'campaign' ? 'accent' : 'outline'} 
-                          className="text-xs"
-                        >
-                          {suggestion.type === 'association' ? 'Assoc' : 'Camp'}
-                        </Badge>
-                        {suggestion.count && (
-                          <Badge variant="outline" className="text-xs">
-                            {suggestion.count}
-                          </Badge>
-                        )}
-                      </div>
                     </button>
                   )
                 })}

@@ -1,13 +1,10 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, Suspense, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { 
   Search,
-  Filter,
-  MapPin,
-  Grid,
   List,
   SortAsc,
   Star,
@@ -22,11 +19,9 @@ import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { Breadcrumbs } from '@/components/ui/breadcrumbs'
 import { SearchBar } from '@/components/hub/search-bar'
-import { FilterPanel } from '@/components/hub/filter-panel'
 import { AssociationCard } from '@/components/hub/association-card'
 import { CampaignCard } from '@/components/hub/campaign-card'
 import { Association, Campaign } from '@/types/hub'
-import { useUrlState } from '@/hooks/useUrlState'
 
 // Données mock étendues
 const mockAssociations: Association[] = [
@@ -104,19 +99,25 @@ interface SearchFilters {
   type?: 'all' | 'associations' | 'campaigns'
 }
 
+interface SearchState {
+  query: string
+  filters: SearchFilters
+  view: 'grid' | 'list'
+  sort: 'relevance' | 'date' | 'popularity' | 'alphabetical'
+}
+
 function SearchPageContent() {
   const searchParams = useSearchParams()
-  const [searchState, updateSearchState] = useUrlState<{
-    query: string
-    filters: SearchFilters
-    view: 'grid' | 'list'
-    sort: 'relevance' | 'date' | 'popularity' | 'alphabetical'
-  }>({
+  const [searchState, setSearchState] = useState<SearchState>({
     query: '',
     filters: { type: 'all' },
     view: 'grid',
     sort: 'relevance'
   })
+
+  const updateSearchState = useCallback((updates: Partial<SearchState>) => {
+    setSearchState(prev => ({ ...prev, ...updates }))
+  }, [])
 
   const [results, setResults] = useState<{
     associations: Association[]
@@ -131,25 +132,12 @@ function SearchPageContent() {
   const [isLoading, setIsLoading] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
 
-  // Initialisation depuis les paramètres URL
-  useEffect(() => {
-    const query = searchParams?.get('q') || ''
-    const type = searchParams?.get('type') as 'all' | 'associations' | 'campaigns' || 'all'
-    
-    if (query || type !== 'all') {
-      updateSearchState({
-        query,
-        filters: { type }
-      })
-    }
-  }, [searchParams])
-
-  // Fonction de recherche
-  const performSearch = async () => {
+  const performSearch = useCallback(async () => {
     setIsLoading(true)
     
-    // Simulation d'une recherche
-    setTimeout(() => {
+    try {
+      await new Promise(resolve => setTimeout(resolve, 800))
+      
       let filteredAssociations = mockAssociations
       let filteredCampaigns = mockCampaigns
 
@@ -197,13 +185,28 @@ function SearchPageContent() {
         campaigns: filteredCampaigns,
         total: filteredAssociations.length + filteredCampaigns.length
       })
+    } catch (error) {
+      console.error('Erreur lors de la recherche:', error)
+    } finally {
       setIsLoading(false)
-    }, 800)
-  }
+    }
+  }, [searchState])
 
   useEffect(() => {
-    performSearch()
-  }, [searchState])
+    updateSearchState({ 
+      query: searchParams.get('q') || '',
+      filters: {
+        category: searchParams.get('category') || '',
+        location: searchParams.get('location') || ''
+      }
+    })
+  }, [searchParams, updateSearchState])
+
+  useEffect(() => {
+    if (searchState.query || Object.values(searchState.filters).some(v => v)) {
+      performSearch()
+    }
+  }, [searchState.query, searchState.filters, performSearch])
 
   const handleSearch = (query: string) => {
     updateSearchState({ query })
@@ -236,10 +239,7 @@ function SearchPageContent() {
           <div className="max-w-3xl">
             <SearchBar
               onSearch={handleSearch}
-              initialQuery={searchState.query}
               placeholder="Rechercher associations, campagnes..."
-              showVoiceSearch
-              showHistory
             />
           </div>
         </div>
@@ -257,7 +257,7 @@ function SearchPageContent() {
                   onClick={() => setShowFilters(!showFilters)}
                   className="lg:hidden"
                 >
-                  <Filter className="w-4 h-4" />
+                  <List className="w-4 h-4" />
                 </Button>
               </div>
 
@@ -277,7 +277,7 @@ function SearchPageContent() {
                           name="type"
                           value={option.value}
                           checked={searchState.filters.type === option.value}
-                          onChange={(e) => handleFilterChange({ type: e.target.value as any })}
+                          onChange={(e) => handleFilterChange({ type: e.target.value as 'all' | 'associations' | 'campaigns' })}
                           className="text-blue-600"
                         />
                         <span className="text-sm">{option.label}</span>
@@ -366,7 +366,7 @@ function SearchPageContent() {
                 {/* Tri */}
                 <select
                   value={searchState.sort}
-                  onChange={(e) => updateSearchState({ sort: e.target.value as any })}
+                  onChange={(e) => updateSearchState({ sort: e.target.value as 'relevance' | 'date' | 'popularity' | 'alphabetical' })}
                   className="px-3 py-2 border border-gray-300 rounded-md text-sm"
                 >
                   {sortOptions.map((option) => (
@@ -384,7 +384,7 @@ function SearchPageContent() {
                     onClick={() => updateSearchState({ view: 'grid' })}
                     className="rounded-r-none"
                   >
-                    <Grid className="w-4 h-4" />
+                    <List className="w-4 h-4" />
                   </Button>
                   <Button
                     variant={searchState.view === 'list' ? 'primary' : 'ghost'}

@@ -1,56 +1,45 @@
+import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { RelatedContent } from '@/components/hub/related-content'
+import { searchRelatedContent } from '@/lib/search-service'
 
 // Mock des données de test
 const mockRelatedItems = [
   {
     id: '1',
-    type: 'association' as const,
     title: 'Association Test 1',
-    description: 'Description test association 1',
-    location: 'Paris',
-    category: 'Social',
-    isVerified: true,
-    totalCampaigns: 3,
-    activeCampaigns: 1,
-    totalRaised: 15000,
-    createdAt: '2024-01-01T10:00:00Z',
-    score: 0.95
+    type: 'association' as const,
+    description: 'Description test 1',
+    category: 'Education',
+    verified: true,
+    image: '/test-image-1.jpg'
   },
   {
     id: '2', 
+    title: 'Campagne Test 2',
     type: 'campaign' as const,
-    title: 'Campagne Test 1',
-    description: 'Description test campagne 1',
-    category: 'Éducation',
-    targetAmount: 10000,
-    currentAmount: 7500,
-    donorCount: 25,
-    daysLeft: 15,
-    associationName: 'Association Parent',
-    isUrgent: false,
-    createdAt: '2024-02-01T10:00:00Z',
-    score: 0.88
+    description: 'Description test 2',
+    category: 'Santé',
+    verified: false,
+    image: '/test-image-2.jpg'
   }
 ]
 
 // Mock du service de recherche
 jest.mock('@/lib/search-service', () => ({
-  searchRelatedContent: jest.fn().mockResolvedValue(mockRelatedItems)
+  searchRelatedContent: jest.fn()
 }))
 
 describe('RelatedContent', () => {
   const defaultProps = {
-    currentId: 'test-id',
+    currentId: '1',
     currentType: 'association' as const,
-    showType: 'association' as const,
-    algorithm: 'similar' as const,
-    maxItems: 3,
-    variant: 'cards' as const,
+    variant: 'carousel' as const
   }
 
   beforeEach(() => {
     jest.clearAllMocks()
+    ;(searchRelatedContent as jest.Mock).mockResolvedValue(mockRelatedItems)
   })
 
   it('affiche le titre correctement', () => {
@@ -72,18 +61,18 @@ describe('RelatedContent', () => {
   })
 
   it('permet de filtrer par catégorie', async () => {
-    render(<RelatedContent {...defaultProps} showType="all" />)
+    render(<RelatedContent {...defaultProps} />)
     
     await waitFor(() => {
       expect(screen.getByText('Association Test 1')).toBeInTheDocument()
     })
 
-    // Clique sur le filtre "Social"
-    const socialFilter = screen.getByText('Social')
-    fireEvent.click(socialFilter)
+    // Clique sur le filtre "Education"
+    const educationFilter = screen.getByText('Education')
+    fireEvent.click(educationFilter)
     
     // Vérifie que le filtre est actif
-    expect(socialFilter).toHaveClass('bg-blue-600')
+    expect(educationFilter).toHaveClass('bg-blue-600')
   })
 
   it('permet de changer le tri', async () => {
@@ -112,7 +101,7 @@ describe('RelatedContent', () => {
     })
 
     // Ne devrait afficher qu'un seul élément
-    expect(screen.queryByText('Campagne Test 1')).not.toBeInTheDocument()
+    expect(screen.queryByText('Campagne Test 2')).not.toBeInTheDocument()
   })
 
   it('gère les variantes d\'affichage', () => {
@@ -128,8 +117,7 @@ describe('RelatedContent', () => {
 
   it('affiche un message quand aucun contenu n\'est trouvé', async () => {
     // Mock pour retourner une liste vide
-    const { searchRelatedContent } = require('@/lib/search-service')
-    searchRelatedContent.mockResolvedValueOnce([])
+    ;(searchRelatedContent as jest.Mock).mockResolvedValueOnce([])
     
     render(<RelatedContent {...defaultProps} />)
     
@@ -140,13 +128,12 @@ describe('RelatedContent', () => {
 
   it('gère les erreurs de chargement', async () => {
     // Mock pour simuler une erreur
-    const { searchRelatedContent } = require('@/lib/search-service')
-    searchRelatedContent.mockRejectedValueOnce(new Error('Erreur réseau'))
+    ;(searchRelatedContent as jest.Mock).mockRejectedValueOnce(new Error('Erreur réseau'))
     
     render(<RelatedContent {...defaultProps} />)
     
     await waitFor(() => {
-      expect(screen.getByText('Erreur lors du chargement du contenu similaire.')).toBeInTheDocument()
+      expect(screen.getByText('Erreur lors du chargement')).toBeInTheDocument()
     })
   })
 
@@ -165,5 +152,54 @@ describe('RelatedContent', () => {
     await waitFor(() => {
       expect(screen.getByText('Association Test 1')).toBeInTheDocument()
     })
+  })
+
+  describe('animations', () => {
+    beforeEach(() => {
+      // Mock pour IntersectionObserver
+      global.IntersectionObserver = jest.fn().mockImplementation(() => ({
+        observe: jest.fn(),
+        unobserve: jest.fn(),
+        disconnect: jest.fn(),
+      }))
+    })
+
+    it('anime l\'apparition des éléments', async () => {
+      render(<RelatedContent {...defaultProps} />)
+      
+      await waitFor(() => {
+        expect(screen.getByText('Association Test 1')).toBeInTheDocument()
+      })
+    })
+  })
+
+  it('adapte l\'affichage selon le variant', () => {
+    const mockIntersectionObserver = jest.fn()
+    mockIntersectionObserver.mockReturnValue({
+      observe: () => null,
+      unobserve: () => null,
+      disconnect: () => null
+    })
+    
+    window.IntersectionObserver = mockIntersectionObserver as unknown as typeof IntersectionObserver
+    window.HTMLElement.prototype.scrollIntoView = jest.fn()
+
+    render(<RelatedContent currentId="test" currentType="association" variant="list" />)
+    expect(screen.getByText('Contenu similaire')).toBeInTheDocument()
+  })
+
+  it('affiche les éléments en mode carousel', () => {
+    const mockIntersectionObserver = jest.fn()
+    mockIntersectionObserver.mockReturnValue({
+      observe: () => null,
+      unobserve: () => null,
+      disconnect: () => null
+    })
+    
+    window.IntersectionObserver = mockIntersectionObserver as unknown as typeof IntersectionObserver
+    window.HTMLElement.prototype.scrollIntoView = jest.fn()
+
+    render(<RelatedContent currentId="test" currentType="association" variant="carousel" />)
+    expect(screen.getByText('Contenu similaire')).toBeInTheDocument()
   })
 })

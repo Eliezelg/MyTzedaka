@@ -2,25 +2,26 @@ import * as React from "react"
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { motion } from "framer-motion"
 
 interface PaginationProps {
   currentPage: number
-  totalPages: number
   onPageChange: (page: number) => void
   showFirstLast?: boolean
   showPrevNext?: boolean
   siblingCount?: number
   className?: string
+  totalPages: number
 }
 
 export function Pagination({
   currentPage,
-  totalPages,
   onPageChange,
   showFirstLast = true,
   showPrevNext = true,
   siblingCount = 1,
-  className
+  className,
+  totalPages
 }: PaginationProps) {
   // Générer la liste des pages à afficher
   const generatePageNumbers = () => {
@@ -136,7 +137,6 @@ export function Pagination({
 // Composant d'information de pagination
 interface PaginationInfoProps {
   currentPage: number
-  totalPages: number
   totalItems: number
   itemsPerPage: number
   className?: string
@@ -144,19 +144,19 @@ interface PaginationInfoProps {
 
 export function PaginationInfo({
   currentPage,
-  totalPages,
   totalItems,
   itemsPerPage,
   className
 }: PaginationInfoProps) {
-  const startItem = (currentPage - 1) * itemsPerPage + 1
-  const endItem = Math.min(currentPage * itemsPerPage, totalItems)
 
   return (
-    <div className={cn("text-sm text-gray-700", className)}>
-      Affichage de <span className="font-medium">{startItem}</span> à{' '}
-      <span className="font-medium">{endItem}</span> sur{' '}
+    <motion.div
+      key={`pagination-info-${currentPage}-${totalItems}`}
+      className={cn("text-sm text-gray-700", className)}
+    >
+      Affichage de <span className="font-medium">{Math.min((currentPage - 1) * itemsPerPage + 1, totalItems)}</span> à{' '}
+      <span className="font-medium">{Math.min(currentPage * itemsPerPage, totalItems)}</span> sur{' '}
       <span className="font-medium">{totalItems}</span> résultats
-    </div>
+    </motion.div>
   )
 }

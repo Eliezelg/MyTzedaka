@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 export interface SearchHistoryItem {
   id: string
@@ -62,11 +62,11 @@ export function useSearchHistory() {
   }
 
   // Obtenir les suggestions récentes
-  const getRecentSuggestions = (limit: number = 5): SearchHistoryItem[] => {
+  const getRecentSuggestions = useCallback((limit: number = 5): SearchHistoryItem[] => {
     return history
       .slice(0, limit)
       .sort((a, b) => b.timestamp - a.timestamp)
-  }
+  }, [history])
 
   return {
     history,

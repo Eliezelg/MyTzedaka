@@ -3,15 +3,14 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { 
-  ArrowRight, 
-  Eye, 
+  ExternalLink, 
   Heart, 
-  Share2,
-  Clock,
-  MapPin,
-  TrendingUp,
+  MapPin, 
+  Calendar,
+  Filter,
   Sparkles,
-  Users
+  TrendingUp,
+  ArrowRight
 } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -20,7 +19,6 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { Association, Campaign } from '@/types/hub'
 
 // Fonctions utilitaires locales
 function formatCurrency(amount: number, currency: string = 'EUR'): string {
@@ -333,7 +331,7 @@ function RelatedItemCard({ item, variant, showProgress }: RelatedItemCardProps) 
                   {item.location}
                 </div>
                 <div className="flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
+                  <Calendar className="w-3 h-3" />
                   {formatDistanceToNow(new Date(item.createdAt))}
                 </div>
               </div>
@@ -438,17 +436,17 @@ function RelatedItemCard({ item, variant, showProgress }: RelatedItemCardProps) 
         
         <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-1 text-xs text-gray-500">
-            <Clock className="w-3 h-3" />
+            <Calendar className="w-3 h-3" />
             {formatDistanceToNow(new Date(item.createdAt))}
           </div>
           
           <div className="flex gap-1">
             <Button variant="ghost" size="sm" className="text-xs">
-              <Eye className="w-3 h-3 mr-1" />
+              <ExternalLink className="w-3 h-3 mr-1" />
               Voir
             </Button>
             <Button variant="ghost" size="sm" className="text-xs">
-              <Share2 className="w-3 h-3" />
+              <Filter className="w-3 h-3" />
             </Button>
           </div>
         </div>
