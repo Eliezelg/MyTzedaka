@@ -1,19 +1,25 @@
 'use client'
+
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { 
   MapPin, 
-  Users, 
-  ExternalLink, 
-  Phone, 
-  Mail, 
   Globe, 
-  Heart, 
-  Share2, 
-  ArrowLeft,
+  Mail, 
+  Phone, 
+  Calendar, 
+  Users, 
+  Heart,
+  Share2,
+  MessageCircle,
+  TrendingUp,
+  Award,
   CheckCircle,
-  Star
+  ExternalLink,
+  ChevronDown,
+  ChevronUp,
+  ArrowRight
 } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -21,11 +27,17 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
-import { Association, Campaign } from '@/types/hub'
+import { Breadcrumbs } from '@/components/ui/breadcrumbs'
 import { CampaignCard } from '@/components/hub/campaign-card'
+import { SocialShare } from '@/components/hub/social-share'
+import { CommentSystem } from '@/components/hub/comment-system'
+import { ImpactMetrics } from '@/components/hub/impact-metrics'
+import { RelatedContent } from '@/components/hub/related-content'
+import { Association, Campaign } from '@/types/hub'
+import { formatDistanceToNow } from '@/utils/format'
 
 // Données mock pour le développement
-const mockAssociation: Association = {
+const mockAssociation: Association & { campaigns: Campaign[] } = {
   id: '1',
   tenantId: 'kehilat-paris',
   name: 'Kehilat Paris - Centre Communautaire',
@@ -41,95 +53,81 @@ const mockAssociation: Association = {
   totalCampaigns: 5,
   activeCampaigns: 2,
   createdAt: '2023-01-15T10:00:00Z',
-  updatedAt: '2024-01-15T10:00:00Z'
+  updatedAt: '2024-01-15T10:00:00Z',
+  campaigns: [
+    {
+      id: '1',
+      tenantId: 'kehilat-paris',
+      userId: 'user1',
+      title: 'Rénovation de la salle communautaire',
+      description: 'Collecte pour moderniser notre salle communautaire et améliorer l\'accueil.',
+      goal: 50000,
+      currency: 'EUR',
+      startDate: '2024-01-01T00:00:00Z',
+      endDate: '2024-06-30T23:59:59Z',
+      status: 'ACTIVE',
+      isActive: true,
+      createdAt: '2024-01-01T10:00:00Z',
+      updatedAt: '2024-01-15T10:00:00Z',
+      _count: { donations: 23 }
+    },
+    {
+      id: '2',
+      tenantId: 'kehilat-paris',
+      userId: 'user1',
+      title: 'Programme éducatif jeunesse',
+      description: 'Financement des activités éducatives pour les jeunes de la communauté.',
+      goal: 25000,
+      currency: 'EUR',
+      startDate: '2024-02-01T00:00:00Z',
+      endDate: '2024-08-31T23:59:59Z',
+      status: 'ACTIVE',
+      isActive: true,
+      createdAt: '2024-02-01T10:00:00Z',
+      updatedAt: '2024-02-15T10:00:00Z',
+      _count: { donations: 15 }
+    }
+  ]
 }
-
-const mockCampaigns: Campaign[] = [
-  {
-    id: '1',
-    tenantId: 'kehilat-paris',
-    userId: 'user1',
-    title: 'Rénovation de la salle communautaire',
-    description: 'Collecte pour moderniser notre salle communautaire et améliorer l\'accueil.',
-    goal: 50000,
-    currency: 'EUR',
-    startDate: '2024-01-01T00:00:00Z',
-    endDate: '2024-06-30T23:59:59Z',
-    status: 'ACTIVE',
-    isActive: true,
-    createdAt: '2024-01-01T10:00:00Z',
-    updatedAt: '2024-01-15T10:00:00Z',
-    _count: { donations: 23 }
-  },
-  {
-    id: '2',
-    tenantId: 'kehilat-paris',
-    userId: 'user1',
-    title: 'Programme éducatif jeunesse',
-    description: 'Financement des activités éducatives pour les jeunes de la communauté.',
-    goal: 25000,
-    currency: 'EUR',
-    startDate: '2024-02-01T00:00:00Z',
-    endDate: '2024-08-31T23:59:59Z',
-    status: 'ACTIVE',
-    isActive: true,
-    createdAt: '2024-02-01T10:00:00Z',
-    updatedAt: '2024-02-15T10:00:00Z',
-    _count: { donations: 15 }
-  }
-]
 
 export default function AssociationDetailPage() {
   const params = useParams()
-  const [association, setAssociation] = useState<Association | null>(null)
-  const [campaigns, setCampaigns] = useState<Campaign[]>([])
+  const [association, setAssociation] = useState<typeof mockAssociation | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isFavorite, setIsFavorite] = useState(false)
-  const [selectedTab, setSelectedTab] = useState<'about' | 'campaigns' | 'impact' | 'contact'>('about')
+  const [activeTab, setActiveTab] = useState<'overview' | 'campaigns' | 'impact' | 'about'>('overview')
+  const [showFullDescription, setShowFullDescription] = useState(false)
 
   useEffect(() => {
     // Simulation du chargement des données
     setTimeout(() => {
       setAssociation(mockAssociation)
-      setCampaigns(mockCampaigns)
       setIsLoading(false)
     }, 1000)
   }, [params.id])
 
   const handleFavoriteToggle = () => {
     setIsFavorite(!isFavorite)
-    // TODO: Intégrer avec l'API favoris
-  }
-
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: association?.name,
-          text: association?.description,
-          url: window.location.href,
-        })
-      } catch (error) {
-        console.log('Erreur partage:', error)
-      }
-    } else {
-      // Fallback: copier l'URL
-      navigator.clipboard.writeText(window.location.href)
-      // TODO: Afficher toast de confirmation
-    }
   }
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        {/* Skeleton loading */}
         <div className="animate-pulse">
-          <div className="h-96 bg-gray-300"></div>
-          <div className="container mx-auto px-4 py-8">
-            <div className="space-y-4">
-              <div className="h-8 bg-gray-300 rounded w-1/2"></div>
-              <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-              <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+          <div className="h-64 bg-gray-300"></div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="h-8 bg-gray-300 rounded w-1/3 mb-4"></div>
+            <div className="h-4 bg-gray-300 rounded w-2/3 mb-6"></div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 space-y-6">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-48 bg-gray-300 rounded"></div>
+                ))}
+              </div>
+              <div className="space-y-6">
+                <div className="h-64 bg-gray-300 rounded"></div>
+                <div className="h-32 bg-gray-300 rounded"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -142,118 +140,119 @@ export default function AssociationDetailPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Association non trouvée</h1>
+          <p className="text-gray-600 mb-6">L&apos;association que vous recherchez n&apos;existe pas ou a été supprimée.</p>
           <Link href="/associations">
-            <Button variant="outline">Retour aux associations</Button>
+            <Button>Retour aux associations</Button>
           </Link>
         </div>
       </div>
     )
   }
 
-  const tabs = [
-    { id: 'about', label: 'À propos', icon: Users },
-    { id: 'campaigns', label: 'Campagnes', icon: ExternalLink },
-    { id: 'impact', label: 'Impact', icon: Heart },
-    { id: 'contact', label: 'Contact', icon: Mail }
-  ] as const
+  const currentUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://hub.example.com'}/associations/${association.id}`
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <div className="relative h-96 bg-gradient-to-r from-blue-600 to-purple-600">
-        {association.coverImage && (
-          <Image
-            src={association.coverImage}
-            alt={association.name}
-            fill
-            className="object-cover"
-            priority
+      {/* Breadcrumbs */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <Breadcrumbs
+            items={[
+              { label: 'Accueil', href: '/' },
+              { label: 'Associations', href: '/associations' },
+              { label: association.name, href: `#` }
+            ]}
           />
-        )}
-        <div className="absolute inset-0 bg-black bg-opacity-40" />
-        
-        {/* Breadcrumb et actions */}
-        <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
-          <Link href="/associations">
-            <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Retour
-            </Button>
-          </Link>
-          
-          <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleFavoriteToggle}
-              className="text-white hover:bg-white/20"
-            >
-              <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current text-red-500' : ''}`} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleShare}
-              className="text-white hover:bg-white/20"
-            >
-              <Share2 className="w-4 h-4" />
-            </Button>
-          </div>
         </div>
+      </div>
 
-        {/* Informations principales */}
-        <div className="absolute bottom-8 left-4 right-4">
-          <div className="flex items-end gap-6">
-            {association.logo && (
-              <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-lg">
-                <Image
-                  src={association.logo}
-                  alt={association.name}
-                  width={96}
-                  height={96}
-                  className="object-cover"
-                />
-              </div>
-            )}
-            
+      {/* En-tête avec image de couverture */}
+      <div className="relative h-64 bg-gradient-to-r from-blue-600 to-purple-600">
+        <div className="absolute inset-0 bg-black opacity-20"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-end pb-8">
+          <div className="flex items-end gap-6 w-full">
+            {/* Logo de l'association */}
+            <div className="relative">
+              <Image
+                src={association.logo!}
+                alt={association.name}
+                width={120}
+                height={120}
+                className="rounded-2xl border-4 border-white shadow-lg"
+              />
+              {association.isVerified && (
+                <div className="absolute -top-2 -right-2 bg-green-500 rounded-full p-1">
+                  <CheckCircle className="w-6 h-6 text-white" />
+                </div>
+              )}
+            </div>
+
+            {/* Informations principales */}
             <div className="flex-1 text-white">
               <div className="flex items-center gap-3 mb-2">
                 <h1 className="text-3xl font-bold">{association.name}</h1>
                 {association.isVerified && (
-                  <CheckCircle className="w-6 h-6 text-green-400" />
+                  <Badge className="bg-green-100 text-green-700 border-green-200">
+                    Vérifié
+                  </Badge>
                 )}
               </div>
               
               <div className="flex items-center gap-4 text-white/90">
                 <div className="flex items-center gap-1">
                   <MapPin className="w-4 h-4" />
-                  <span>{association.location}</span>
+                  {association.location}
                 </div>
-                <Badge variant="outline" className="text-white border-white/30">
+                <div className="flex items-center gap-1">
+                  <Calendar className="w-4 h-4" />
+                  Depuis {new Date(association.createdAt).getFullYear()}
+                </div>
+                <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
                   {association.category}
                 </Badge>
-                <div className="flex items-center gap-1">
-                  <ExternalLink className="w-4 h-4" />
-                  <span>{association.activeCampaigns} campagnes actives</span>
-                </div>
               </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3">
+              <Button
+                variant="secondary"
+                onClick={handleFavoriteToggle}
+                className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+              >
+                <Heart className={`w-4 h-4 mr-2 ${isFavorite ? 'fill-current' : ''}`} />
+                {isFavorite ? 'Suivi' : 'Suivre'}
+              </Button>
+              
+              <SocialShare
+                url={currentUrl}
+                title={association.name}
+                description={association.description}
+                variant="modal"
+                className="[&>button]:bg-white/20 [&>button]:border-white/30 [&>button]:text-white [&>button]:hover:bg-white/30"
+              />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Navigation par onglets */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="container mx-auto px-4">
+      {/* Navigation des onglets */}
+      <div className="bg-white border-b sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex space-x-8">
-            {tabs.map((tab) => {
+            {[
+              { id: 'overview', label: 'Vue d&apos;ensemble', icon: TrendingUp },
+              { id: 'campaigns', label: `Campagnes (${association.campaigns.length})`, icon: Heart },
+              { id: 'impact', label: 'Impact', icon: Award },
+              { id: 'about', label: 'À propos', icon: Users }
+            ].map((tab) => {
               const Icon = tab.icon
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setSelectedTab(tab.id)}
-                  className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                    selectedTab === tab.id
+                  onClick={() => setActiveTab(tab.id as typeof activeTab)}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 transition-colors ${
+                    activeTab === tab.id
                       ? 'border-blue-500 text-blue-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
@@ -268,168 +267,268 @@ export default function AssociationDetailPage() {
       </div>
 
       {/* Contenu principal */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Contenu principal */}
-          <div className="lg:col-span-2">
-            <motion.div
-              key={selectedTab}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              {selectedTab === 'about' && (
-                <div className="space-y-8">
-                  <Card className="p-6">
-                    <h2 className="text-2xl font-bold mb-4">À propos de {association.name}</h2>
-                    <p className="text-gray-700 leading-relaxed mb-6">
+          <div className="lg:col-span-2 space-y-8">
+            {/* Onglet Vue d'ensemble */}
+            {activeTab === 'overview' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-8"
+              >
+                {/* Description */}
+                <Card className="p-6">
+                  <h3 className="text-xl font-bold mb-4">À propos de {association.name}</h3>
+                  <div className="prose max-w-none">
+                    <p className={`text-gray-700 leading-relaxed ${!showFullDescription ? 'line-clamp-4' : ''}`}>
                       {association.description}
                     </p>
                     
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="text-2xl font-bold text-blue-600">{association.totalCampaigns}</div>
-                        <div className="text-sm text-gray-600">Campagnes créées</div>
-                      </div>
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="text-2xl font-bold text-green-600">{association.activeCampaigns}</div>
-                        <div className="text-sm text-gray-600">Campagnes actives</div>
-                      </div>
-                    </div>
-                  </Card>
+                    {association.description.length > 200 && (
+                      <button
+                        onClick={() => setShowFullDescription(!showFullDescription)}
+                        className="flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium mt-2"
+                      >
+                        {showFullDescription ? (
+                          <>
+                            Voir moins <ChevronUp className="w-4 h-4" />
+                          </>
+                        ) : (
+                          <>
+                            Voir plus <ChevronDown className="w-4 h-4" />
+                          </>
+                        )}
+                      </button>
+                    )}
+                  </div>
+                </Card>
 
-                  {/* Galerie photos - Placeholder */}
-                  <Card className="p-6">
-                    <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                      <Star className="w-5 h-5" />
-                      Galerie photos
-                    </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {[1, 2, 3, 4, 5, 6].map((i) => (
-                        <div key={i} className="aspect-square bg-gray-200 rounded-lg">
-                          <div className="w-full h-full flex items-center justify-center text-gray-400">
-                            <Star className="w-8 h-8" />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </Card>
-                </div>
-              )}
+                {/* Métriques d'impact résumé */}
+                <ImpactMetrics
+                  targetId={association.id}
+                  targetType="association"
+                  variant="summary"
+                  showGrowth={true}
+                />
 
-              {selectedTab === 'campaigns' && (
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-bold">Campagnes de {association.name}</h2>
-                    <Badge variant="outline">{campaigns.length} campagnes</Badge>
+                {/* Campagnes en vedette */}
+                <Card className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl font-bold">Campagnes en cours</h3>
+                    <Link href="#campaigns" onClick={() => setActiveTab('campaigns')}>
+                      <Button variant="outline" size="sm">
+                        Voir toutes ({association.campaigns.length})
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </Link>
                   </div>
                   
-                  <div className="grid gap-6">
-                    {campaigns.map((campaign) => (
+                  <div className="grid gap-4">
+                    {association.campaigns.slice(0, 2).map((campaign: Campaign) => (
                       <CampaignCard key={campaign.id} campaign={campaign} />
                     ))}
                   </div>
-                </div>
-              )}
+                </Card>
 
-              {selectedTab === 'impact' && (
-                <div className="space-y-6">
-                  <h2 className="text-2xl font-bold">Impact et réalisations</h2>
-                  
-                  <Card className="p-6">
-                    <h3 className="text-xl font-semibold mb-4">Nos réalisations récentes</h3>
-                    <div className="space-y-4">
-                      <div className="border-l-4 border-blue-500 pl-4">
-                        <h4 className="font-semibold">Rénovation de la bibliothèque</h4>
-                        <p className="text-gray-600 text-sm">Modernisation complète avec 200 nouveaux ouvrages</p>
-                        <p className="text-xs text-gray-500">Janvier 2024</p>
-                      </div>
-                      <div className="border-l-4 border-green-500 pl-4">
-                        <h4 className="font-semibold">Programme d&apos;aide alimentaire</h4>
-                        <p className="text-gray-600 text-sm">Distribution hebdomadaire pour 50 familles</p>
-                        <p className="text-xs text-gray-500">Décembre 2023</p>
-                      </div>
-                    </div>
+                {/* Contenu similaire */}
+                <RelatedContent
+                  currentId={association.id}
+                  currentType="association"
+                  showType="association"
+                  algorithm="similar"
+                  maxItems={3}
+                  variant="cards"
+                />
+              </motion.div>
+            )}
+
+            {/* Onglet Campagnes */}
+            {activeTab === 'campaigns' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-6"
+              >
+                <div className="flex items-center justify-between">
+                  <h3 className="text-2xl font-bold">Campagnes</h3>
+                  <div className="text-sm text-gray-600">
+                    {association.activeCampaigns} actives sur {association.totalCampaigns} au total
+                  </div>
+                </div>
+
+                <div className="grid gap-6">
+                  {association.campaigns.map((campaign: Campaign) => (
+                    <CampaignCard key={campaign.id} campaign={campaign} />
+                  ))}
+                </div>
+
+                {association.campaigns.length === 0 && (
+                  <Card className="p-8 text-center">
+                    <Heart className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                    <h4 className="text-lg font-medium text-gray-900 mb-2">
+                      Aucune campagne pour le moment
+                    </h4>
+                    <p className="text-gray-600">
+                      Cette association n&apos;a pas encore lancé de campagnes de collecte.
+                    </p>
                   </Card>
-                </div>
-              )}
+                )}
+              </motion.div>
+            )}
 
-              {selectedTab === 'contact' && (
-                <div className="space-y-6">
-                  <h2 className="text-2xl font-bold">Contactez-nous</h2>
+            {/* Onglet Impact */}
+            {activeTab === 'impact' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-8"
+              >
+                <ImpactMetrics
+                  targetId={association.id}
+                  targetType="association"
+                  variant="full"
+                  showGrowth={true}
+                  showGoals={true}
+                  showAchievements={true}
+                />
+              </motion.div>
+            )}
+
+            {/* Onglet À propos */}
+            {activeTab === 'about' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-8"
+              >
+                {/* Informations détaillées */}
+                <Card className="p-6">
+                  <h3 className="text-xl font-bold mb-6">Informations détaillées</h3>
                   
-                  <Card className="p-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-3">
-                        <Mail className="w-5 h-5 text-blue-600" />
-                        <span>contact@kehilat-paris.org</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Phone className="w-5 h-5 text-blue-600" />
-                        <span>01 42 85 63 92</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <MapPin className="w-5 h-5 text-blue-600" />
-                        <span>15 rue de la Paix, 75017 Paris</span>
-                      </div>
-                      {association.siteUrl && (
-                        <div className="flex items-center gap-3">
-                          <Globe className="w-5 h-5 text-blue-600" />
-                          <a 
-                            href={association.siteUrl} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline"
-                          >
-                            Site web officiel
-                          </a>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <h4 className="font-semibold text-gray-900 mb-3">Contact</h4>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <Mail className="w-4 h-4" />
+                            contact@kehilat-paris.org
+                          </div>
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <Phone className="w-4 h-4" />
+                            +33 1 23 45 67 89
+                          </div>
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <Globe className="w-4 h-4" />
+                            <a href="#" className="text-blue-600 hover:underline">
+                              www.kehilat-paris.org
+                            </a>
+                          </div>
                         </div>
-                      )}
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-semibold text-gray-900 mb-3">Statut</h4>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4 text-green-500" />
+                            <span className="text-gray-600">Association vérifiée</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Award className="w-4 h-4 text-blue-500" />
+                            <span className="text-gray-600">Reconnue d&apos;utilité publique</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4 text-purple-500" />
+                            <span className="text-gray-600">
+                              Créée le {new Date(association.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </Card>
-                </div>
-              )}
-            </motion.div>
+                    
+                    <div className="border-t pt-4">
+                      <h4 className="font-semibold text-gray-900 mb-3">Mission et valeurs</h4>
+                      <p className="text-gray-700 leading-relaxed">
+                        {association.description}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Système de commentaires */}
+                <CommentSystem
+                  targetId={association.id}
+                  targetType="association"
+                  allowComments={true}
+                  currentUserId="user-current"
+                />
+              </motion.div>
+            )}
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Widget de donation */}
-            <Card className="p-6 bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
-              <h3 className="text-xl font-bold mb-4 text-center">Soutenez {association.name}</h3>
-              <p className="text-gray-600 text-sm mb-6 text-center">
-                Votre don contribue directement aux actions de l&apos;association
-              </p>
-              
+            {/* Statistiques rapides */}
+            <Card className="p-6">
+              <h3 className="text-lg font-bold mb-4">Statistiques</h3>
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-2">
-                  {[25, 50, 100, 200].map((amount) => (
-                    <Button key={amount} variant="outline" size="sm">
-                      {amount}€
-                    </Button>
-                  ))}
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Campagnes totales</span>
+                  <span className="font-semibold">{association.totalCampaigns}</span>
                 </div>
-                
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Campagnes actives</span>
+                  <span className="font-semibold text-green-600">{association.activeCampaigns}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Membre depuis</span>
+                  <span className="font-semibold">
+                    {formatDistanceToNow(new Date(association.createdAt))}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Dernière activité</span>
+                  <span className="font-semibold">
+                    {formatDistanceToNow(new Date(association.updatedAt))}
+                  </span>
+                </div>
+              </div>
+            </Card>
+
+            {/* Actions rapides */}
+            <Card className="p-6">
+              <h3 className="text-lg font-bold mb-4">Actions</h3>
+              <div className="space-y-3">
                 <Button className="w-full" size="lg">
                   <Heart className="w-4 h-4 mr-2" />
                   Faire un don
+                </Button>
+                
+                <Button variant="outline" className="w-full">
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  Contacter
+                </Button>
+                
+                <Button variant="outline" className="w-full">
+                  <ExternalLink className="w-4 h-4 mr-2" />
+                  Site web
                 </Button>
               </div>
             </Card>
 
             {/* Associations similaires */}
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Associations similaires</h3>
-              <div className="space-y-4">
-                {/* Placeholder pour associations similaires */}
-                <p className="text-gray-500 text-sm">
-                  Découvrez d&apos;autres associations dans la catégorie &quot;{association.category}&quot;
-                </p>
-                <Button variant="outline" size="sm" className="w-full">
-                  Voir plus
-                </Button>
-              </div>
-            </Card>
+            <RelatedContent
+              currentId={association.id}
+              currentType="association"
+              showType="association"
+              algorithm="similar"
+              maxItems={3}
+              variant="list"
+            />
           </div>
         </div>
       </div>
