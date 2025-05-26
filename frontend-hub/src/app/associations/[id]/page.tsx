@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { 
@@ -18,7 +18,8 @@ import {
   ExternalLink,
   ChevronDown,
   ChevronUp,
-  ArrowRight
+  ArrowRight,
+  Loader2
 } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -26,89 +27,36 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
 import { Breadcrumbs } from '@/components/ui/breadcrumbs'
 import { CampaignCard } from '@/components/hub/campaign-card'
 import { SocialShare } from '@/components/hub/social-share'
 import { CommentSystem } from '@/components/hub/comment-system'
 import { ImpactMetrics } from '@/components/hub/impact-metrics'
 import { RelatedContent } from '@/components/hub/related-content'
-import { Association, Campaign } from '@/types/hub'
+import { useAssociation } from '@/hooks/useAssociation'
+import type { Campaign } from '@/lib/hub-client'
 import { formatDistanceToNow } from '@/utils/format'
-
-// Données mock pour le développement
-const mockAssociation: Association & { campaigns: Campaign[] } = {
-  id: '1',
-  tenantId: 'kehilat-paris',
-  name: 'Kehilat Paris - Centre Communautaire',
-  description: 'Centre communautaire juif proposant des services religieux, éducatifs et sociaux pour la communauté parisienne. Nous organisons des événements culturels, des cours de judaïsme et des actions solidaires.',
-  logo: 'https://images.unsplash.com/photo-1590650516494-0c8e4a4dd67e?w=150&h=150&fit=crop&crop=center',
-  coverImage: 'https://images.unsplash.com/photo-1551845041-63d0d249c3ad?w=1200&h=400&fit=crop&crop=center',
-  category: 'Religion',
-  location: 'Paris 17ème',
-  isPublic: true,
-  isVerified: true,
-  hasSite: true,
-  siteUrl: 'https://kehilat-paris.org',
-  totalCampaigns: 5,
-  activeCampaigns: 2,
-  createdAt: '2023-01-15T10:00:00Z',
-  updatedAt: '2024-01-15T10:00:00Z',
-  campaigns: [
-    {
-      id: '1',
-      tenantId: 'kehilat-paris',
-      userId: 'user1',
-      title: 'Rénovation de la salle communautaire',
-      description: 'Collecte pour moderniser notre salle communautaire et améliorer l\'accueil.',
-      goal: 50000,
-      currency: 'EUR',
-      startDate: '2024-01-01T00:00:00Z',
-      endDate: '2024-06-30T23:59:59Z',
-      status: 'ACTIVE',
-      isActive: true,
-      createdAt: '2024-01-01T10:00:00Z',
-      updatedAt: '2024-01-15T10:00:00Z',
-      _count: { donations: 23 }
-    },
-    {
-      id: '2',
-      tenantId: 'kehilat-paris',
-      userId: 'user1',
-      title: 'Programme éducatif jeunesse',
-      description: 'Financement des activités éducatives pour les jeunes de la communauté.',
-      goal: 25000,
-      currency: 'EUR',
-      startDate: '2024-02-01T00:00:00Z',
-      endDate: '2024-08-31T23:59:59Z',
-      status: 'ACTIVE',
-      isActive: true,
-      createdAt: '2024-02-01T10:00:00Z',
-      updatedAt: '2024-02-15T10:00:00Z',
-      _count: { donations: 15 }
-    }
-  ]
-}
 
 export default function AssociationDetailPage() {
   const params = useParams()
-  const [association, setAssociation] = useState<typeof mockAssociation | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const associationId = params.id as string
+  
+  const { 
+    data: association, 
+    isLoading, 
+    error 
+  } = useAssociation(associationId)
+  
   const [isFavorite, setIsFavorite] = useState(false)
   const [activeTab, setActiveTab] = useState<'overview' | 'campaigns' | 'impact' | 'about'>('overview')
   const [showFullDescription, setShowFullDescription] = useState(false)
-
-  useEffect(() => {
-    // Simulation du chargement des données
-    setTimeout(() => {
-      setAssociation(mockAssociation)
-      setIsLoading(false)
-    }, 1000)
-  }, [params.id])
 
   const handleFavoriteToggle = () => {
     setIsFavorite(!isFavorite)
   }
 
+  // Loading state
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -119,12 +67,11 @@ export default function AssociationDetailPage() {
             <div className="h-4 bg-gray-300 rounded w-2/3 mb-6"></div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-6">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="h-48 bg-gray-300 rounded"></div>
-                ))}
+                <div className="h-32 bg-gray-300 rounded"></div>
+                <div className="h-64 bg-gray-300 rounded"></div>
               </div>
               <div className="space-y-6">
-                <div className="h-64 bg-gray-300 rounded"></div>
+                <div className="h-32 bg-gray-300 rounded"></div>
                 <div className="h-32 bg-gray-300 rounded"></div>
               </div>
             </div>
@@ -134,15 +81,34 @@ export default function AssociationDetailPage() {
     )
   }
 
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Association non trouvée
+          </h1>
+          <p className="text-gray-600 mb-6">
+            L'association que vous recherchez n'existe pas ou n'est plus disponible.
+          </p>
+          <Link href="/associations">
+            <Button>
+              Retour aux associations
+            </Button>
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  // No data state
   if (!association) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Association non trouvée</h1>
-          <p className="text-gray-600 mb-6">L&apos;association que vous recherchez n&apos;existe pas ou a été supprimée.</p>
-          <Link href="/associations">
-            <Button>Retour aux associations</Button>
-          </Link>
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-gray-400" />
+          <p className="text-gray-600">Chargement des données...</p>
         </div>
       </div>
     )
@@ -241,7 +207,7 @@ export default function AssociationDetailPage() {
           <nav className="flex space-x-8">
             {[
               { id: 'overview', label: 'Vue d&apos;ensemble', icon: TrendingUp },
-              { id: 'campaigns', label: `Campagnes (${association.campaigns.length})`, icon: Heart },
+              { id: 'campaigns', label: `Campagnes (${association.campaigns?.length || 0})`, icon: Heart },
               { id: 'impact', label: 'Impact', icon: Award },
               { id: 'about', label: 'À propos', icon: Users }
             ].map((tab) => {
@@ -313,23 +279,46 @@ export default function AssociationDetailPage() {
                 />
 
                 {/* Campagnes en vedette */}
-                <Card className="p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-bold">Campagnes en cours</h3>
-                    <Link href="#campaigns" onClick={() => setActiveTab('campaigns')}>
-                      <Button variant="outline" size="sm">
-                        Voir toutes ({association.campaigns.length})
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
-                    </Link>
-                  </div>
-                  
-                  <div className="grid gap-4">
-                    {association.campaigns.slice(0, 2).map((campaign: Campaign) => (
-                      <CampaignCard key={campaign.id} campaign={campaign} />
-                    ))}
-                  </div>
-                </Card>
+                {association.campaigns && association.campaigns.length > 0 && (
+                  <Card className="p-6">
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-xl font-bold">Campagnes en cours</h3>
+                      <Link 
+                        href={`/campaigns?association=${association.id}`}
+                        className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                      >
+                        Voir toutes les campagnes
+                      </Link>
+                    </div>
+                    
+                    <div className="grid gap-4">
+                      {association.campaigns.slice(0, 2).map((campaign) => 
+                        campaign && (
+                          <div key={campaign.id} className="border rounded-lg p-4">
+                            <h4 className="font-bold mb-2">{campaign.title}</h4>
+                            <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                              {campaign.description}
+                            </p>
+                            <div className="space-y-2">
+                              <Progress 
+                                value={(campaign.raised || 0) / Number(campaign.goal) * 100} 
+                                className="h-2" 
+                              />
+                              <div className="flex justify-between text-sm">
+                                <span className="text-gray-600">
+                                  {(campaign.raised || 0).toLocaleString()}€ collectés
+                                </span>
+                                <span className="text-gray-600">
+                                  Objectif: {Number(campaign.goal).toLocaleString()}€
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </Card>
+                )}
 
                 {/* Contenu similaire */}
                 <RelatedContent
@@ -351,29 +340,46 @@ export default function AssociationDetailPage() {
                 className="space-y-6"
               >
                 <div className="flex items-center justify-between">
-                  <h3 className="text-2xl font-bold">Campagnes</h3>
-                  <div className="text-sm text-gray-600">
-                    {association.activeCampaigns} actives sur {association.totalCampaigns} au total
-                  </div>
+                  <h2 className="text-2xl font-bold">Campagnes</h2>
+                  <p className="text-gray-600">{association.campaigns?.length || 0} campagne(s)</p>
                 </div>
 
                 <div className="grid gap-6">
-                  {association.campaigns.map((campaign: Campaign) => (
-                    <CampaignCard key={campaign.id} campaign={campaign} />
-                  ))}
+                  {association.campaigns?.map((campaign) => 
+                    campaign && (
+                      <div key={campaign.id} className="border rounded-lg p-6">
+                        <h3 className="text-xl font-bold mb-3">{campaign.title}</h3>
+                        <p className="text-gray-600 mb-4">{campaign.description}</p>
+                        <div className="space-y-3">
+                          <Progress 
+                            value={(campaign.raised || 0) / Number(campaign.goal) * 100} 
+                            className="h-3" 
+                          />
+                          <div className="flex justify-between text-sm">
+                            <span>
+                              {(campaign.raised || 0).toLocaleString()}€ collectés sur {Number(campaign.goal).toLocaleString()}€
+                            </span>
+                            <span>
+                              {Math.round((campaign.raised || 0) / Number(campaign.goal) * 100)}%
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center pt-2">
+                            <Badge variant={campaign.status === 'ACTIVE' ? 'default' : 'secondary'}>
+                              {campaign.status}
+                            </Badge>
+                            <Link href={`/campaigns/${campaign.id}`}>
+                              <Button size="sm">Voir détails</Button>
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  ) || (
+                    <div className="text-center py-8 text-gray-500">
+                      Aucune campagne disponible
+                    </div>
+                  )}
                 </div>
-
-                {association.campaigns.length === 0 && (
-                  <Card className="p-8 text-center">
-                    <Heart className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                    <h4 className="text-lg font-medium text-gray-900 mb-2">
-                      Aucune campagne pour le moment
-                    </h4>
-                    <p className="text-gray-600">
-                      Cette association n&apos;a pas encore lancé de campagnes de collecte.
-                    </p>
-                  </Card>
-                )}
               </motion.div>
             )}
 
