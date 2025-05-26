@@ -12,6 +12,18 @@ export declare class HubController {
     }>;
     getGlobalStats(): Promise<HubStatsDto>;
     getPopularCampaigns(limit?: string): Promise<any[]>;
+    getCampaigns(query: any): Promise<{
+        campaigns: any[];
+        pagination: {
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+            hasNext: boolean;
+            hasPrev: boolean;
+        };
+    }>;
+    getCampaignById(id: string): Promise<any>;
     searchAssociations(searchDto: AssociationSearchDto): Promise<{
         associations: any[];
         total: number;

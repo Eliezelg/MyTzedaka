@@ -2,20 +2,20 @@
 
 ## 🎯 OBJECTIFS SPRINT 3
 
-### 1. API Backend - Extensions Hub Central
-- [ ] Endpoint `/api/hub/campaigns` avec filtres
-- [ ] Endpoint `/api/hub/associations/{id}` pour détails  
-- [ ] Endpoint `/api/hub/campaigns/{id}` pour détails
-- [ ] Relations Association ↔ Campagnes dans Prisma
-- [ ] Données de test enrichies (3-4 campagnes par association)
+### 1. API Backend - Extensions Hub Central ✅ TERMINÉ
+- [x] Endpoint `/api/hub/campaigns` avec filtres
+- [x] Endpoint `/api/hub/associations/{id}` pour détails  
+- [x] Endpoint `/api/hub/campaigns/{id}` pour détails
+- [x] Relations Association ↔ Campagnes dans Prisma
+- [x] Données de test enrichies (3-4 campagnes par association)
 
-### 2. Frontend - Pages Dynamiques
+### 2. Frontend - Pages Dynamiques 🔄 EN COURS
 - [ ] Page `/associations/[id]` - Détail association complète
 - [ ] Page `/campaigns/[id]` - Détail campagne avec progression
 - [ ] Page `/search` - Recherche unifiée avec filtres
 - [ ] Navigation entre pages (breadcrumbs, liens)
 
-### 3. Composants Avancés
+### 3. Composants Avancés 🔄 EN COURS
 - [ ] `AssociationHero` - Section hero avec stats/image
 - [ ] `CampaignHero` - Hero campagne avec progression
 - [ ] `DonationWidget` - Widget donation (mock pour l'instant)
@@ -23,7 +23,7 @@
 - [ ] `MediaGallery` - Galerie photos/vidéos
 - [ ] `RelatedItems` - Suggestions associations/campagnes
 
-### 4. État et Navigation
+### 4. État et Navigation 🔄 EN COURS
 - [ ] Hooks `useAssociation(id)` et `useCampaign(id)`
 - [ ] Navigation contextuelle (retour, suivant/précédent)
 - [ ] Partage social (liens, méta tags)
@@ -31,7 +31,7 @@
 
 ## 📋 TÂCHES PRIORITAIRES
 
-### Backend (Étape 1)
+### Backend (Étape 1) ✅ TERMINÉ
 1. **Modèle Campagne Prisma**
    ```prisma
    model Campaign {
