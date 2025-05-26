@@ -1,26 +1,27 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Search, X, Clock, TrendingUp, Filter as FilterIcon, Zap } from 'lucide-react'
+import { Search, X, Clock, Filter as FilterIcon, Zap } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useSearchHistory } from '@/hooks/useSearchHistory'
 import { SearchService, AutocompleteResponse } from '@/lib/search-service'
-import { useDebounce } from '@/hooks/useDebounce'
 
 interface SearchBarProps {
   placeholder?: string
   onSearch?: (query: string, type?: 'association' | 'campaign' | 'all') => void
   onClear?: () => void
   defaultValue?: string
-  suggestions?: string[]
-  className?: string
   searchType?: 'association' | 'campaign' | 'all'
   onSearchTypeChange?: (type: 'association' | 'campaign' | 'all') => void
   showTypeSelector?: boolean
   showVoiceSearch?: boolean
+  size?: 'sm' | 'md' | 'lg'
+  autoFocus?: boolean
+  showHistory?: boolean
+  initialQuery?: string
 }
 
 export function SearchBar({ 
@@ -32,10 +33,13 @@ export function SearchBar({
   onSearchTypeChange,
   showTypeSelector = true,
   showVoiceSearch = false,
-  className 
+  size,
+  autoFocus,
+  showHistory,
+  initialQuery
 }: SearchBarProps) {
   const [query, setQuery] = useState(defaultValue)
-  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [showTypeSelectorState, setShowTypeSelector] = useState(showTypeSelector)
   const [autocompleteData, setAutocompleteData] = useState<AutocompleteResponse>({ suggestions: [], recent: [] })
   const [isLoading, setIsLoading] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
@@ -45,19 +49,18 @@ export function SearchBar({
   const suggestionsRef = useRef<HTMLDivElement>(null)
   
   const { addSearchToHistory, getRecentSuggestions } = useSearchHistory()
-  const debouncedQuery = useDebounce(query, 300)
 
   // Charger les suggestions en temps réel
   useEffect(() => {
-    if (debouncedQuery.trim().length > 0) {
-      loadAutocompleteSuggestions(debouncedQuery)
+    if (query.trim().length > 0) {
+      loadAutocompleteSuggestions(query)
     } else {
       setAutocompleteData({
         suggestions: [],
         recent: getRecentSuggestions(5)
       })
     }
-  }, [debouncedQuery])
+  }, [query])
 
   const loadAutocompleteSuggestions = async (searchQuery: string) => {
     setIsLoading(true)
@@ -76,12 +79,6 @@ export function SearchBar({
     const value = e.target.value
     setQuery(value)
     setSelectedIndex(-1)
-    
-    if (value.length > 0) {
-      setShowSuggestions(true)
-    } else {
-      setShowSuggestions(false)
-    }
   }
 
   const handleSearch = useCallback((searchQuery: string = query, type: typeof searchType = searchType) => {
@@ -92,7 +89,6 @@ export function SearchBar({
       
       // Effectuer la recherche
       onSearch?.(trimmedQuery, type)
-      setShowSuggestions(false)
       setSelectedIndex(-1)
       
       // Déselectionner l'input
@@ -102,7 +98,6 @@ export function SearchBar({
 
   const handleClear = () => {
     setQuery("")
-    setShowSuggestions(false)
     setSelectedIndex(-1)
     onClear?.()
     inputRef.current?.focus()
@@ -110,7 +105,6 @@ export function SearchBar({
 
   const handleSuggestionClick = (suggestion: string, type?: 'association' | 'campaign') => {
     setQuery(suggestion)
-    setShowSuggestions(false)
     
     // Déterminer le type de recherche
     const finalType = type || searchType
@@ -138,7 +132,6 @@ export function SearchBar({
       e.preventDefault()
       setSelectedIndex(prev => prev > 0 ? prev - 1 : -1)
     } else if (e.key === 'Escape') {
-      setShowSuggestions(false)
       setSelectedIndex(-1)
       inputRef.current?.blur()
     }
@@ -146,28 +139,29 @@ export function SearchBar({
 
   // Recherche vocale (Web Speech API)
   const handleVoiceSearch = () => {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      alert('La recherche vocale n\'est pas supportée sur votre navigateur')
+    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+      console.warn('Reconnaissance vocale non supportée')
       return
     }
 
-    const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition
-    const recognition = new SpeechRecognition()
-    
-    recognition.lang = 'fr-FR'
-    recognition.continuous = false
-    recognition.interimResults = false
-
     setIsVoiceSearching(true)
 
-    recognition.onresult = (event) => {
+    // @ts-ignore - Web Speech API n'est pas dans les types standard
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+    const recognition = new SpeechRecognition()
+
+    recognition.continuous = false
+    recognition.interimResults = false
+    recognition.lang = 'fr-FR'
+
+    recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript
       setQuery(transcript)
       handleSearch(transcript)
     }
 
-    recognition.onerror = (event) => {
-      console.error('Erreur de reconnaissance vocale:', event.error)
+    recognition.onerror = (event: any) => {
+      console.error('Erreur reconnaissance vocale:', event.error)
       setIsVoiceSearching(false)
     }
 
@@ -191,7 +185,6 @@ export function SearchBar({
         inputRef.current &&
         !inputRef.current.contains(event.target as Node)
       ) {
-        setShowSuggestions(false)
         setSelectedIndex(-1)
       }
     }
@@ -214,30 +207,19 @@ export function SearchBar({
   ]
 
   return (
-    <div className={`relative w-full max-w-2xl ${className}`} ref={suggestionsRef}>
+    <div className={`relative w-full max-w-2xl`} ref={suggestionsRef}>
       {/* Sélecteur de type de recherche */}
-      {showTypeSelector && (
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-sm text-gray-600">Rechercher :</span>
-          <div className="flex gap-1">
-            {[
-              { key: 'all', label: 'Tout', icon: Search },
-              { key: 'association', label: 'Associations', icon: FilterIcon },
-              { key: 'campaign', label: 'Campagnes', icon: TrendingUp }
-            ].map(({ key, label, icon: Icon }) => (
-              <Button
-                key={key}
-                variant={searchType === key ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => handleTypeChange(key as any)}
-                className="flex items-center gap-1"
-              >
-                <Icon className="w-3 h-3" />
-                {label}
-              </Button>
-            ))}
-          </div>
-        </div>
+      {showTypeSelectorState && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowTypeSelector(!showTypeSelectorState)}
+          className="text-xs px-2 py-1"
+        >
+          {searchType === 'all' ? 'Tout' : 
+           searchType === 'association' ? 'Associations' : 'Campagnes'}
+          <FilterIcon className="ml-1 h-3 w-3" />
+        </Button>
       )}
 
       <div className="relative">
@@ -250,9 +232,9 @@ export function SearchBar({
           onKeyDown={handleKeyPress}
           onFocus={() => {
             if (query.trim() || autocompleteData.recent.length > 0) {
-              setShowSuggestions(true)
             }
           }}
+          autoFocus={autoFocus}
           className="pl-12 pr-32 h-12 text-base"
         />
         
@@ -265,8 +247,10 @@ export function SearchBar({
               variant="ghost"
               size="sm"
               onClick={handleVoiceSearch}
-              disabled={isVoiceSearching}
-              className={`h-8 w-8 p-1 ${isVoiceSearching ? 'text-red-500' : 'text-gray-400'}`}
+              disabled={!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)}
+              className={`absolute right-16 top-1/2 transform -translate-y-1/2 h-8 px-2 ${
+                isVoiceSearching ? 'text-red-500 animate-pulse' : 'text-gray-400'
+              }`}
             >
               <Zap className="h-4 w-4" />
             </Button>
@@ -302,7 +286,7 @@ export function SearchBar({
 
       {/* Dropdown des suggestions */}
       <AnimatePresence>
-        {showSuggestions && (query.trim() || autocompleteData.recent.length > 0) && (
+        {(query.trim() || autocompleteData.recent.length > 0) && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}

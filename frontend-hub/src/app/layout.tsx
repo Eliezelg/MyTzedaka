@@ -3,7 +3,8 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { QueryProvider } from '@/lib/query-provider'
 import Link from 'next/link'
-import { Heart, Search, Users, Gift } from 'lucide-react'
+import { Heart } from 'lucide-react'
+import { HubHeader } from '@/components/layout/hub-header'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -40,60 +41,7 @@ export default function RootLayout({
         <QueryProvider>
           <div className="flex min-h-screen flex-col bg-gradient-to-br from-gray-50 to-blue-50">
             {/* Header Navigation */}
-            <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
-              <nav className="container mx-auto px-4">
-                <div className="flex items-center justify-between h-16">
-                  {/* Logo */}
-                  <Link href="/" className="flex items-center space-x-2">
-                    <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center">
-                      <Heart className="w-6 h-6 text-white" />
-                    </div>
-                    <span className="text-xl font-bold text-gray-900">
-                      Hub Central
-                    </span>
-                  </Link>
-
-                  {/* Navigation Links */}
-                  <div className="hidden md:flex items-center space-x-8">
-                    <Link 
-                      href="/" 
-                      className="flex items-center space-x-2 text-gray-600 hover:text-primary-600 transition-colors"
-                    >
-                      <Heart className="w-4 h-4" />
-                      <span>Accueil</span>
-                    </Link>
-                    <Link 
-                      href="/associations" 
-                      className="flex items-center space-x-2 text-gray-600 hover:text-primary-600 transition-colors"
-                    >
-                      <Users className="w-4 h-4" />
-                      <span>Associations</span>
-                    </Link>
-                    <Link 
-                      href="/campagnes" 
-                      className="flex items-center space-x-2 text-gray-600 hover:text-primary-600 transition-colors"
-                    >
-                      <Gift className="w-4 h-4" />
-                      <span>Campagnes</span>
-                    </Link>
-                    <Link 
-                      href="/recherche" 
-                      className="flex items-center space-x-2 text-gray-600 hover:text-primary-600 transition-colors"
-                    >
-                      <Search className="w-4 h-4" />
-                      <span>Rechercher</span>
-                    </Link>
-                  </div>
-
-                  {/* Mobile Menu Button */}
-                  <button className="md:hidden p-2 text-gray-600 hover:text-gray-900">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                  </button>
-                </div>
-              </nav>
-            </header>
+            <HubHeader />
 
             {/* Main Content */}
             <main className="flex-1">
