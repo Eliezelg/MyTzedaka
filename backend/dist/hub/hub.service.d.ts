@@ -3,7 +3,13 @@ import { HubStatsDto, AssociationSearchDto, DonorProfileDto, CreateDonorProfileD
 export declare class HubService {
     private readonly prisma;
     constructor(prisma: PrismaService);
-    getPublicAssociations(): Promise<any[]>;
+    getPublicAssociations(): Promise<{
+        data: any[];
+        total: number;
+        page: number;
+        limit: number;
+        pages: number;
+    }>;
     getGlobalStats(): Promise<HubStatsDto>;
     getPopularCampaigns(limit?: number): Promise<any[]>;
     searchAssociations(searchDto: AssociationSearchDto): Promise<{

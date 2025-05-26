@@ -13,6 +13,8 @@ ensuite fait un commit sur git hub
 Préparation de la phase suivante
 Ensuite, crée un nouveau fichier dédié à la phase suivante, en définissant les objectifs et les tâches à réaliser.
 
+tous les document sont et doivent etre placé dans le dossier documentation
+
 Aucune esquive de problème
 Ne contourne jamais un problème. Résous-le. Chaque obstacle doit être traité et corrigé de manière propre et durable.
 

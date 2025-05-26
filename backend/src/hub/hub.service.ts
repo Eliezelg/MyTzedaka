@@ -9,18 +9,43 @@ export class HubService {
   /**
    * Récupère toutes les associations publiques pour le hub central
    */
-  async getPublicAssociations(): Promise<any[]> {
+  async getPublicAssociations(): Promise<{
+    data: any[],
+    total: number,
+    page: number,
+    limit: number,
+    pages: number
+  }> {
     try {
-      return await this.prisma.associationListing.findMany({
-        where: { isPublic: true },
-        orderBy: [
-          { isVerified: 'desc' }, // Vérifiées en premier
-          { createdAt: 'desc' }
-        ]
-      });
+      const [data, total] = await Promise.all([
+        this.prisma.associationListing.findMany({
+          where: { isPublic: true },
+          orderBy: [
+            { isVerified: 'desc' }, // Vérifiées en premier
+            { createdAt: 'desc' }
+          ]
+        }),
+        this.prisma.associationListing.count({
+          where: { isPublic: true }
+        })
+      ]);
+
+      return {
+        data,
+        total,
+        page: 1,
+        limit: data.length,
+        pages: 1
+      };
     } catch (error) {
-      // Si la table n'existe pas encore, retourner un array vide
-      return [];
+      // Si la table n'existe pas encore, retourner une réponse vide
+      return {
+        data: [],
+        total: 0,
+        page: 1,
+        limit: 0,
+        pages: 0
+      };
     }
   }
 

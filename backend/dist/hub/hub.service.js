@@ -18,16 +18,34 @@ let HubService = class HubService {
     }
     async getPublicAssociations() {
         try {
-            return await this.prisma.associationListing.findMany({
-                where: { isPublic: true },
-                orderBy: [
-                    { isVerified: 'desc' },
-                    { createdAt: 'desc' }
-                ]
-            });
+            const [data, total] = await Promise.all([
+                this.prisma.associationListing.findMany({
+                    where: { isPublic: true },
+                    orderBy: [
+                        { isVerified: 'desc' },
+                        { createdAt: 'desc' }
+                    ]
+                }),
+                this.prisma.associationListing.count({
+                    where: { isPublic: true }
+                })
+            ]);
+            return {
+                data,
+                total,
+                page: 1,
+                limit: data.length,
+                pages: 1
+            };
         }
         catch (error) {
-            return [];
+            return {
+                data: [],
+                total: 0,
+                page: 1,
+                limit: 0,
+                pages: 0
+            };
         }
     }
     async getGlobalStats() {

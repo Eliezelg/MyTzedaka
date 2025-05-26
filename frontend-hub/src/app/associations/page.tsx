@@ -1,160 +1,199 @@
-"use client"
+'use client'
 
-import { Suspense, useState, useEffect } from 'react'
+import { Suspense, useState } from 'react'
 import { SearchBar } from '@/components/hub/search-bar'
 import { FilterPanel, type FilterOptions } from '@/components/hub/filter-panel'
 import { Pagination } from '@/components/ui/pagination'
 import { EnhancedAssociationCard } from '@/components/ui/enhanced-card'
 import { PageTransition, StaggerContainer, StaggerItem } from '@/components/ui/page-transition'
-import { LoadingState, CardLoader } from '@/components/ui/loading-states'
+import { CardLoader } from '@/components/ui/loading-states'
 import { ToastProvider, useToastHelpers } from '@/components/ui/toast'
+import { useAssociations, type AssociationsFilters } from '@/lib/services/associations-service'
+import { useUrlState } from '@/hooks/useUrlState'
 
-// Mock data - sera remplacé par de vraies données API
-const mockAssociations = [
-  {
-    id: '1',
-    name: 'Kehilat Paris',
-    description: 'Association pour l\'entraide communautaire à Paris et ses environs.',
-    category: 'Éducation',
-    location: 'Paris, France',
-    isVerified: true,
-    donationsCount: 156,
-    totalRaised: 25430,
-    image: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=300&h=200&fit=crop'
-  },
-  {
-    id: '2', 
-    name: 'Shalom Marseille',
-    description: 'Aide alimentaire et soutien aux familles en difficulté.',
-    category: 'Aide sociale',
-    location: 'Marseille, France',
-    isVerified: true,
-    donationsCount: 89,
-    totalRaised: 15620,
-    image: 'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=300&h=200&fit=crop'
-  },
-  {
-    id: '3',
-    name: 'Tikkun Olam Lyon',
-    description: 'Projets environnementaux et développement durable.',
-    category: 'Environnement',
-    location: 'Lyon, France',
-    isVerified: false,
-    donationsCount: 34,
-    totalRaised: 8920,
-    image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=300&h=200&fit=crop'
+// Interface étendue pour les filtres des associations
+interface AssociationFilterOptions extends FilterOptions {
+  sortBy: 'name' | 'totalRaised' | 'donationsCount' | 'createdAt'
+  sortOrder: 'asc' | 'desc'
+  page: number
+}
+
+// Convertir FilterOptions vers AssociationsFilters
+const convertFiltersToAPI = (filters: AssociationFilterOptions & { search?: string }): AssociationsFilters => {
+  return {
+    category: filters.category || undefined,
+    city: filters.location || undefined,
+    isVerified: filters.verified || undefined,
+    search: filters.search || undefined,
+    sortBy: filters.sortBy,
+    sortOrder: filters.sortOrder,
+    page: filters.page,
+    limit: 12, // 12 associations par page
   }
-]
+}
 
 function AssociationsContent() {
-  const [isLoading, setIsLoading] = useState(true)
-  const [associations] = useState(mockAssociations)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages] = useState(5)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filters, setFilters] = useUrlState<AssociationFilterOptions>({
+    category: '',
+    location: '',
+    verified: null,
+    sortBy: 'name',
+    sortOrder: 'asc',
+    page: 1
+  }, 'filters')
+  
   const { success, error } = useToastHelpers()
 
-  // Simulation du chargement des données
-  useEffect(() => {
-    const loadAssociations = async () => {
-      setIsLoading(true)
-      try {
-        // Simulation d'un appel API
-        await new Promise(resolve => setTimeout(resolve, 1500))
-        success('Associations chargées', 'Découvrez les associations de votre communauté')
-      } catch {
-        error('Erreur de chargement', 'Impossible de charger les associations')
-      } finally {
-        setIsLoading(false)
-      }
-    }
+  // Appel API pour récupérer les associations
+  const apiFilters = convertFiltersToAPI({ ...filters, search: searchQuery })
+  const { 
+    data: associationsResponse, 
+    isLoading, 
+    error: apiError, 
+    refetch 
+  } = useAssociations(apiFilters)
 
-    loadAssociations()
-  }, [success, error])
+  const associations = associationsResponse?.data || []
+  const totalPages = associationsResponse?.meta?.totalPages || 1
+  const totalCount = associationsResponse?.meta?.total || 0
+
+  // Gestion des erreurs API
+  if (apiError) {
+    error('Erreur lors du chargement des associations')
+  }
 
   const handleSearch = (query: string) => {
-    // Le state est déjà mis à jour par SearchBar via useUrlState
-    console.log('Recherche déclenchée:', query)
+    setSearchQuery(query)
+    setFilters({ page: 1 }) // Reset page lors d'une nouvelle recherche
   }
 
-  const handleFilterChange = (filters: FilterOptions) => {
-    console.log('Filtres appliqués:', filters)
-    success('Filtres appliqués', 'Les résultats ont été mis à jour')
+  const handleFilterChange = (newFilters: FilterOptions) => {
+    setFilters({ 
+      ...newFilters, 
+      sortBy: 'name', // valeurs par défaut
+      sortOrder: 'asc',
+      page: 1 // Reset page lors d'un changement de filtre
+    })
   }
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page)
-    // Scroll smooth vers le haut
+  const handlePageChange = (newPage: number) => {
+    setFilters({ page: newPage })
+    // Scroll to top lors du changement de page
     window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleRefresh = () => {
+    refetch()
+    success('Liste des associations actualisée')
   }
 
   return (
     <PageTransition>
-      <div className="container mx-auto px-4 py-8">
-        {/* Header avec animations */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            Découvrez nos Associations
-          </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Trouvez et soutenez les associations qui vous tiennent à cœur dans notre communauté.
-          </p>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+        <div className="container mx-auto px-4 py-8">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              Annuaire des Associations
+            </h1>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Découvrez et soutenez les associations qui œuvrent pour notre communauté.
+              {totalCount > 0 && (
+                <span className="block mt-2 font-medium text-blue-600">
+                  {totalCount} association{totalCount > 1 ? 's' : ''} trouvée{totalCount > 1 ? 's' : ''}
+                </span>
+              )}
+            </p>
+          </div>
 
-        {/* Barre de recherche et filtres */}
-        <div className="mb-8 space-y-6">
-          <SearchBar 
-            onSearch={handleSearch}
-            placeholder="Rechercher une association..."
-          />
-          
-          <FilterPanel 
-            onFiltersChange={handleFilterChange}
-          />
-        </div>
-
-        {/* Contenu principal avec gestion du loading */}
-        <LoadingState 
-          isLoading={isLoading} 
-          loadingComponent={<CardLoader />}
-          className="mb-8"
-        >
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {associations.map((association) => (
-              <StaggerItem key={association.id}>
-                <EnhancedAssociationCard 
-                  association={association}
-                  className="h-full"
-                />
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
-        </LoadingState>
-
-        {/* Pagination avec animations */}
-        {!isLoading && associations.length > 0 && (
-          <div className="flex justify-center">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
+          {/* Barre de recherche */}
+          <div className="mb-8">
+            <SearchBar 
+              onSearch={handleSearch}
+              placeholder="Rechercher une association par nom, catégorie ou localisation..."
+              className="max-w-2xl mx-auto"
             />
           </div>
-        )}
 
-        {/* État vide avec animation */}
-        {!isLoading && associations.length === 0 && (
-          <div className="text-center py-12">
-            <div className="max-w-md mx-auto">
-              <div className="text-6xl mb-4">🔍</div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                Aucune association trouvée
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Essayez de modifier vos critères de recherche ou filtres.
-              </p>
+          {/* Contenu principal */}
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Panel de filtres */}
+            <div className="lg:w-80 flex-shrink-0">
+              <FilterPanel 
+                onFiltersChange={handleFilterChange}
+                totalResults={totalCount}
+                isLoading={isLoading}
+              />
+            </div>
+
+            {/* Liste des associations */}
+            <div className="flex-1">
+              {isLoading ? (
+                <div className="space-y-6">
+                  <div className="flex justify-between items-center">
+                    <div className="h-6 w-48 bg-gray-200 rounded animate-pulse" />
+                    <div className="h-8 w-32 bg-gray-200 rounded animate-pulse" />
+                  </div>
+                  <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <CardLoader key={i} />
+                    ))}
+                  </div>
+                </div>
+              ) : associations.length > 0 ? (
+                <StaggerContainer>
+                  <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    {associations.map((association, index) => (
+                      <StaggerItem key={association.id}>
+                        <EnhancedAssociationCard
+                          association={{
+                            ...association,
+                            location: `${association.city || ''}${association.city && association.country ? ', ' : ''}${association.country || ''}`,
+                            image: association.logoUrl || `https://images.unsplash.com/photo-${1559027615 + index}-cd4628902d4a?w=300&h=200&fit=crop`
+                          }}
+                        />
+                      </StaggerItem>
+                    ))}
+                  </div>
+
+                  {/* Pagination */}
+                  {totalPages > 1 && (
+                    <div className="mt-12 flex justify-center">
+                      <Pagination
+                        currentPage={filters.page}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                      />
+                    </div>
+                  )}
+                </StaggerContainer>
+              ) : (
+                <div className="text-center py-16">
+                  <div className="w-32 h-32 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+                    <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" 
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    Aucune association trouvée
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    Essayez de modifier vos critères de recherche ou vos filtres.
+                  </p>
+                  <button 
+                    onClick={handleRefresh}
+                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Actualiser la liste
+                  </button>
+                </div>
+              )}
             </div>
           </div>
-        )}
+        </div>
       </div>
     </PageTransition>
   )
@@ -163,7 +202,14 @@ function AssociationsContent() {
 export default function AssociationsPage() {
   return (
     <ToastProvider>
-      <Suspense fallback={<CardLoader />}>
+      <Suspense fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600">Chargement des associations...</p>
+          </div>
+        </div>
+      }>
         <AssociationsContent />
       </Suspense>
     </ToastProvider>
