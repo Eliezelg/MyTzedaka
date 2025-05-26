@@ -8,7 +8,9 @@ import { hubApiService, HubApiError } from '@/lib/services/hub-api'
 import { 
   AssociationsFilters,
   CampaignsFilters,
-  SearchFilters
+  SearchFilters,
+  PaginatedResponse,
+  AssociationListing
 } from '@/lib/types/backend'
 
 // Clés de cache pour React Query
@@ -56,9 +58,9 @@ const DEFAULT_QUERY_CONFIG = {
  */
 export function useAssociations(
   filters: AssociationsFilters = {},
-  options?: Partial<UseQueryOptions>
+  options?: Partial<UseQueryOptions<PaginatedResponse<AssociationListing>>>
 ) {
-  return useQuery({
+  return useQuery<PaginatedResponse<AssociationListing>>({
     queryKey: HUB_QUERY_KEYS.associationsList(filters),
     queryFn: () => hubApiService.getAssociations(filters),
     ...DEFAULT_QUERY_CONFIG,
