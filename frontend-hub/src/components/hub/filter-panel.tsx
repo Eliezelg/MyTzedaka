@@ -9,7 +9,7 @@ import { Select } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { useUrlState } from '@/hooks/useUrlState'
 
-interface FilterOptions {
+export interface FilterOptions {
   category: string
   location: string
   verified: boolean | null
@@ -38,7 +38,7 @@ export function FilterPanel({
   const [isExpanded, setIsExpanded] = useState(false)
   
   // Utiliser le hook URL state pour persister les filtres
-  const { state: filters, updateState: setFilters } = useUrlState<FilterOptions>({
+  const [filters, setFilters] = useUrlState<FilterOptions>({
     category: '',
     location: '',
     verified: null,
@@ -166,17 +166,12 @@ export function FilterPanel({
               Catégorie
             </label>
             <Select
-              value={filters.category || 'Toutes les catégories'}
-              onValueChange={(value) => 
-                handleFilterChange('category', value === 'Toutes les catégories' ? '' : value)
+              options={categories.map(category => ({ label: category, value: category === 'Toutes les catégories' ? '' : category }))}
+              value={filters.category || ''}
+              onChange={(e) => 
+                handleFilterChange('category', e.target.value)
               }
-            >
-              {categories.map(category => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </Select>
+            />
           </div>
 
           {/* Localisation */}
@@ -186,17 +181,12 @@ export function FilterPanel({
               Localisation
             </label>
             <Select
-              value={filters.location || 'Toutes les locations'}
-              onValueChange={(value) => 
-                handleFilterChange('location', value === 'Toutes les locations' ? '' : value)
+              options={locations.map(location => ({ label: location, value: location === 'Toutes les locations' ? '' : location }))}
+              value={filters.location || ''}
+              onChange={(e) => 
+                handleFilterChange('location', e.target.value)
               }
-            >
-              {locations.map(location => (
-                <option key={location} value={location}>
-                  {location}
-                </option>
-              ))}
-            </Select>
+            />
           </div>
 
           {/* Vérification */}
@@ -206,17 +196,19 @@ export function FilterPanel({
               Statut
             </label>
             <Select
-              value={filters.verified === null ? 'Toutes' : filters.verified ? 'Vérifiées' : 'Non vérifiées'}
-              onValueChange={(value) => {
-                if (value === 'Toutes') handleFilterChange('verified', null)
-                else if (value === 'Vérifiées') handleFilterChange('verified', true)
+              options={[
+                { label: 'Toutes', value: '' },
+                { label: 'Vérifiées', value: 'true' },
+                { label: 'Non vérifiées', value: 'false' },
+              ]}
+              value={filters.verified === null ? '' : filters.verified ? 'true' : 'false'}
+              onChange={(e) => {
+                const value = e.target.value
+                if (value === '') handleFilterChange('verified', null)
+                else if (value === 'true') handleFilterChange('verified', true)
                 else handleFilterChange('verified', false)
               }}
-            >
-              <option value="Toutes">Toutes</option>
-              <option value="Vérifiées">Vérifiées uniquement</option>
-              <option value="Non vérifiées">Non vérifiées</option>
-            </Select>
+            />
           </div>
         </div>
       </div>
@@ -266,16 +258,17 @@ export function FilterPanel({
                     Statut des campagnes
                   </label>
                   <Select
-                    value={filters.status || 'Tous les statuts'}
-                    onValueChange={(value) => 
-                      handleFilterChange('status', value === 'Tous les statuts' ? null : value)
+                    options={[
+                      { label: 'Tous les statuts', value: '' },
+                      { label: 'Actives', value: 'active' },
+                      { label: 'Terminées', value: 'completed' },
+                      { label: 'À venir', value: 'upcoming' },
+                    ]}
+                    value={filters.status || ''}
+                    onChange={(e) => 
+                      handleFilterChange('status', e.target.value === '' ? null : e.target.value)
                     }
-                  >
-                    <option value="Tous les statuts">Tous les statuts</option>
-                    <option value="active">Actives</option>
-                    <option value="completed">Terminées</option>
-                    <option value="upcoming">À venir</option>
-                  </Select>
+                  />
                 </div>
 
                 {/* Plage de dates */}
