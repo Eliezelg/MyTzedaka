@@ -13,8 +13,8 @@ jest.setTimeout(30000);
 process.env.NODE_ENV = 'test';
 process.env.DATABASE_URL = process.env.DATABASE_URL || 'postgresql://postgres:password@localhost:5432/platform_test';
 process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-jwt-secret-key-for-testing-only-very-long-and-secure';
-process.env.AWS_REGION = process.env.AWS_REGION || 'eu-west-1';
-process.env.AWS_COGNITO_USER_POOL_ID = process.env.AWS_COGNITO_USER_POOL_ID || 'eu-west-1_TEST123456';
+process.env.AWS_REGION = process.env.AWS_REGION || 'eu-central-1';
+process.env.AWS_COGNITO_USER_POOL_ID = process.env.AWS_COGNITO_USER_POOL_ID || 'eu-central-1_TEST123456';
 process.env.AWS_COGNITO_CLIENT_ID = process.env.AWS_COGNITO_CLIENT_ID || 'test123456789abcdef123456789';
 process.env.REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379/1';
 

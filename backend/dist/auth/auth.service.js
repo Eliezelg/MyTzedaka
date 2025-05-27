@@ -20,7 +20,7 @@ let AuthService = class AuthService {
         this.jwtService = jwtService;
         this.prisma = prisma;
         this.cognitoClient = new client_cognito_identity_provider_1.CognitoIdentityProviderClient({
-            region: process.env.AWS_REGION || 'eu-west-1',
+            region: process.env.AWS_REGION || 'eu-central-1',
             credentials: {
                 accessKeyId: process.env.AWS_ACCESS_KEY_ID,
                 secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
