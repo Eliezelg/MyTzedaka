@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueries } from '@tanstack/react-query'
 import { hubApiClient } from '@/lib/hub-client'
 import type { Campaign } from '@/lib/hub-client'
 
