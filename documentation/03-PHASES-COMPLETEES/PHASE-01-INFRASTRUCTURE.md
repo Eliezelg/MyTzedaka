@@ -104,8 +104,8 @@ DATABASE_URL="postgresql://user:password@localhost:5432/platform_dev"
 REDIS_URL="redis://localhost:6379"
 
 # AWS Cognito
-AWS_REGION="eu-west-1"
-COGNITO_USER_POOL_ID="eu-west-1_XXXXXXXXX"
+AWS_REGION="eu-central-1"
+COGNITO_USER_POOL_ID="eu-central-1_XXXXXXXXX"
 COGNITO_CLIENT_ID="xxxxxxxxxxxxxxxxxxxxxxxxxx"
 
 # JWT et sécurité
