@@ -23,4 +23,8 @@ Le développement doit toujours se conformer au schéma Prisma existant :
 
 Tu peux le modifier si nécessaire.
 
+
 Avant toute création de fichier ou de fonctionnalité, assure-toi d'utiliser les termes et structures déjà définis dans ce schéma.
+
+
+On utilise PowerShell donc utilise Invoke-WebRequest et adapte donc toujours tes commande pour powershell

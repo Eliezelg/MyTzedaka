@@ -43,7 +43,7 @@ export interface SearchResult {
 }
 
 export class SearchService {
-  private static baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+  private static baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002'
   private static cache = new Map<string, { data: unknown, timestamp: number }>()
   private static CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
 

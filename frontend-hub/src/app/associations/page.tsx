@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useState } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import { SearchBar } from '@/components/hub/search-bar'
 import { FilterPanel, type FilterOptions } from '@/components/hub/filter-panel'
 import { Pagination } from '@/components/ui/pagination'
@@ -58,10 +58,12 @@ function AssociationsContent() {
   const totalPages = associationsResponse?.meta?.totalPages || 1
   const totalCount = associationsResponse?.meta?.total || 0
 
-  // Gestion des erreurs API
-  if (apiError) {
-    error('Erreur lors du chargement des associations')
-  }
+  // Gestion des erreurs API avec useEffect pour éviter l'appel pendant le rendu
+  useEffect(() => {
+    if (apiError) {
+      error('Erreur lors du chargement des associations')
+    }
+  }, [apiError, error])
 
   const handleSearch = (query: string) => {
     setSearchQuery(query)

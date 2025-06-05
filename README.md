@@ -320,7 +320,24 @@ Pour toute question technique ou contribution :
 
 ---
 
-**Prochaine étape** : Développement du Hub Central (Phase 2)
+## 🐛 CORRECTIONS RÉCENTES
+
+### ✅ Bug Fix : URL API Dupliquée (5 juin 2025)
+**Problème résolu** : Erreur 404 sur `/api/api/hub/associations`
+
+**Cause** : Duplication préfixe `/api` dans `associations-service.ts`
+```diff
+- return apiClient.get('/api/hub/associations')
++ return apiClient.get('/hub/associations')
+```
+
+**Impact** :
+- ✅ Page associations fonctionnelle
+- ✅ API endpoints corrigés (200 OK)
+- ✅ Données test créées (5 associations)
+- ✅ UX validation complète
+
+**Documentation** : [`DEBUG-API-URL-RESOLUTION.md`](./documentation/DEBUG-API-URL-RESOLUTION.md)
 
 ## 🎨 Frontend Hub Central
 
@@ -416,3 +433,23 @@ Pour toute question technique ou contribution :
 - **Performance** : Cache intelligent + débouncing optimisé
 
 **Impact** : Le Hub Central est maintenant connecté aux vraies données backend avec une expérience utilisateur fluide et sans erreurs.
+
+## 🚀 Phase 8 : Système de Paiements Stripe (EN COURS)
+
+**Statut** : 🔄 **EN DÉVELOPPEMENT ACTIF**  
+**Deadline** : 10 juin 2025
+
+**Objectifs Phase 8** :
+- 💳 Intégration Stripe Connect multi-tenant
+- 🎯 Widget donation complet avec suivi
+- 🧾 Gestion reçus fiscaux automatisés
+- 📊 Dashboard analytique paiements
+- 🔒 Sécurité PCI DSS compliant
+
+**Prérequis validés** :
+- ✅ Widget donation frontend prêt (Phase 7)
+- ✅ Backend API campagnes fonctionnel
+- ✅ Infrastructure multi-tenant stable
+- ✅ Tests utilisateur validés (90%+ satisfaction)
+
+---
