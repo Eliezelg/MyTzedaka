@@ -14,12 +14,14 @@ async function bootstrap() {
         origin: process.env.CORS_ORIGINS?.split(',') || [
             'http://localhost:3000',
             'http://localhost:3001',
+            'http://localhost:3002',
+            'http://localhost:3003',
             'http://127.0.0.1:3001'
         ],
         credentials: true,
     });
     app.setGlobalPrefix(process.env.API_PREFIX || 'api');
-    const port = process.env.PORT || 3000;
+    const port = process.env.PORT || 3002;
     await app.listen(port);
     console.log(`🚀 Application is running on: http://localhost:${port}`);
     console.log(`📚 API endpoints available at: http://localhost:${port}/api`);

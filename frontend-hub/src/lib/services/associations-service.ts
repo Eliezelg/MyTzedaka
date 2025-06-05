@@ -79,27 +79,27 @@ export interface AssociationStats {
 export class AssociationsService {
   // Récupérer la liste des associations
   static async getAssociations(filters?: AssociationsFilters): Promise<ApiResponse<Association[]>> {
-    return apiClient.get<Association[]>('/api/hub/associations', filters)
+    return apiClient.get<Association[]>('/hub/associations', filters)
   }
 
   // Récupérer une association par ID
   static async getAssociation(id: string): Promise<ApiResponse<Association>> {
-    return apiClient.get<Association>(`/api/hub/associations/${id}`)
+    return apiClient.get<Association>(`/hub/associations/${id}`)
   }
 
   // Récupérer les campagnes d'une association
   static async getAssociationCampaigns(id: string): Promise<ApiResponse<Campaign[]>> {
-    return apiClient.get<Campaign[]>(`/api/hub/associations/${id}/campaigns`)
+    return apiClient.get<Campaign[]>(`/hub/associations/${id}/campaigns`)
   }
 
   // Récupérer les statistiques d'une association
   static async getAssociationStats(id: string): Promise<ApiResponse<AssociationStats>> {
-    return apiClient.get(`/api/hub/associations/${id}/stats`)
+    return apiClient.get(`/hub/associations/${id}/stats`)
   }
 
   // Rechercher des associations
   static async searchAssociations(query: string, filters?: Partial<AssociationsFilters>): Promise<ApiResponse<Association[]>> {
-    return apiClient.get<Association[]>('/api/hub/associations/search', {
+    return apiClient.get<Association[]>('/hub/associations/search', {
       q: query,
       ...filters
     })
@@ -107,17 +107,17 @@ export class AssociationsService {
 
   // Créer une nouvelle association (admin/auth)
   static async createAssociation(data: Partial<Association>): Promise<ApiResponse<Association>> {
-    return apiClient.post<Association>('/api/hub/associations', data)
+    return apiClient.post<Association>('/hub/associations', data)
   }
 
   // Mettre à jour une association
   static async updateAssociation(id: string, data: Partial<Association>): Promise<ApiResponse<Association>> {
-    return apiClient.patch<Association>(`/api/hub/associations/${id}`, data)
+    return apiClient.patch<Association>(`/hub/associations/${id}`, data)
   }
 
   // Supprimer une association
   static async deleteAssociation(id: string): Promise<ApiResponse<void>> {
-    return apiClient.delete(`/api/hub/associations/${id}`)
+    return apiClient.delete(`/hub/associations/${id}`)
   }
 }
 

@@ -24,7 +24,7 @@ Frontend Next.js 14 pour le Hub Central MyTzedaka - plateforme permettant de dé
 ```bash
 # Développement
 npm run dev
-# → http://localhost:3000
+# → http://localhost:3002
 
 # Tests
 npm test              # Tests unitaires
@@ -85,7 +85,7 @@ src/
 ### 🔧 Scripts Disponibles
 
 ```bash
-npm run dev          # Serveur développement (localhost:3000)
+npm run dev          # Serveur développement (localhost:3002)
 npm run build        # Build production
 npm run start        # Serveur production
 npm run lint         # Vérification ESLint

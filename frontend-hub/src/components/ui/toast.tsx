@@ -82,7 +82,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     }
 
     return id
-  }, [removeToast])
+  }, [])
 
   const clearAll = useCallback(() => {
     setToasts([])

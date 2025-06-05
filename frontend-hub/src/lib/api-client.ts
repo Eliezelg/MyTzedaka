@@ -1,7 +1,7 @@
 import { QueryClient } from '@tanstack/react-query'
 
 // Configuration API Client
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002'
 
 // Types pour les réponses API
 export interface ApiResponse<T> {
