@@ -32,11 +32,11 @@ export interface Campaign {
   id: string
   title: string
   description: string
-  targetAmount: number
-  currentAmount: number
+  goalAmount: number
+  raisedAmount: number
   startDate: string
   endDate?: string
-  imageUrl?: string
+  image?: string
   isActive: boolean
   associationId: string
   association?: Association

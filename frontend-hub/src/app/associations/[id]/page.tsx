@@ -35,7 +35,7 @@ import { CommentSystem } from '@/components/hub/comment-system'
 import { ImpactMetrics } from '@/components/hub/impact-metrics'
 import { RelatedContent } from '@/components/hub/related-content'
 import { useAssociation } from '@/lib/services/associations-service'
-import type { Campaign } from '@/lib/hub-client'
+import type { Campaign } from '@/lib/services/associations-service'
 import { formatDistanceToNow } from '@/utils/format'
 
 export default function AssociationDetailPage() {
@@ -54,6 +54,31 @@ export default function AssociationDetailPage() {
 
   const handleFavoriteToggle = () => {
     setIsFavorite(!isFavorite)
+  }
+
+  // No data state
+  if (!association) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="animate-pulse">
+          <div className="h-64 bg-gray-300"></div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="h-8 bg-gray-300 rounded w-1/3 mb-4"></div>
+            <div className="h-4 bg-gray-300 rounded w-2/3 mb-6"></div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 space-y-6">
+                <div className="h-32 bg-gray-300 rounded"></div>
+                <div className="h-64 bg-gray-300 rounded"></div>
+              </div>
+              <div className="space-y-6">
+                <div className="h-32 bg-gray-300 rounded"></div>
+                <div className="h-32 bg-gray-300 rounded"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   // Loading state
@@ -102,19 +127,7 @@ export default function AssociationDetailPage() {
     )
   }
 
-  // No data state
-  if (!association) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-gray-400" />
-          <p className="text-gray-600">Chargement des données...</p>
-        </div>
-      </div>
-    )
-  }
-
-  const currentUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://hub.example.com'}/associations/${association.id}`
+  const currentUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://hub.example.com'}/associations/${association?.id}`
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -124,7 +137,7 @@ export default function AssociationDetailPage() {
           <Breadcrumbs
             items={[
               { label: 'Accueil', href: '/' },
-              { label: 'Associations', href: '/associations' },
+              { label: association?.name || '', href: `/associations/${association?.id}` },
               { label: association.name, href: `#` }
             ]}
           />
@@ -353,7 +366,7 @@ export default function AssociationDetailPage() {
                 </div>
 
                 <div className="grid gap-6">
-                  {association.campaigns?.map((campaign) => 
+                  {association.campaigns?.map((campaign: Campaign) => (
                     campaign && (
                       <div key={campaign.id} className="border rounded-lg p-6">
                         <h3 className="text-xl font-bold mb-3">{campaign.title}</h3>
@@ -535,7 +548,7 @@ export default function AssociationDetailPage() {
 
             {/* Associations similaires */}
             <RelatedContent
-              currentId={association.id}
+              currentId={association?.id}
               currentType="association"
               showType="association"
               algorithm="similar"

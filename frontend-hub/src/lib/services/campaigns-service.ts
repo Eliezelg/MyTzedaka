@@ -18,6 +18,25 @@ export interface CampaignsFilters extends Record<string, string | number | boole
   limit?: number
 }
 
+// Types pour les filtres et pagination
+export interface CampaignsFilters {
+  status?: 'active' | 'completed'
+  search?: string
+  associationId?: string
+  page?: number
+  limit?: number
+}
+
+export interface CampaignsPaginatedResponse {
+  campaigns: Campaign[]
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+  }
+}
+
 // Données pour créer/modifier une campagne
 export interface CreateCampaignData extends Record<string, unknown> {
   title: string
@@ -42,28 +61,28 @@ export interface CampaignStats {
 // Service des campagnes
 export class CampaignsService {
   // Récupérer la liste des campagnes
-  static async getCampaigns(filters?: CampaignsFilters): Promise<ApiResponse<Campaign[]>> {
-    return apiClient.get<Campaign[]>('/api/hub/campaigns', filters)
+  static async getCampaigns(filters?: CampaignsFilters): Promise<ApiResponse<CampaignsPaginatedResponse>> {
+    return apiClient.get<CampaignsPaginatedResponse>('/hub/campaigns', filters)
   }
 
   // Récupérer une campagne par ID
   static async getCampaign(id: string): Promise<ApiResponse<Campaign>> {
-    return apiClient.get<Campaign>(`/api/hub/campaigns/${id}`)
+    return apiClient.get<Campaign>(`/hub/campaigns/${id}`)
   }
 
   // Récupérer les statistiques d'une campagne
   static async getCampaignStats(id: string): Promise<ApiResponse<CampaignStats>> {
-    return apiClient.get<CampaignStats>(`/api/hub/campaigns/${id}/stats`)
+    return apiClient.get<CampaignStats>(`/hub/campaigns/${id}/stats`)
   }
 
   // Récupérer les donations d'une campagne
   static async getCampaignDonations(id: string, page = 1, limit = 20): Promise<ApiResponse<Donation[]>> {
-    return apiClient.get<Donation[]>(`/api/hub/campaigns/${id}/donations`, { page, limit })
+    return apiClient.get<Donation[]>(`/hub/campaigns/${id}/donations`, { page, limit })
   }
 
   // Rechercher des campagnes
   static async searchCampaigns(query: string, filters?: Partial<CampaignsFilters>): Promise<ApiResponse<Campaign[]>> {
-    return apiClient.get<Campaign[]>('/api/hub/campaigns/search', {
+    return apiClient.get<Campaign[]>('/hub/campaigns/search', {
       q: query,
       ...filters
     })
@@ -71,22 +90,22 @@ export class CampaignsService {
 
   // Créer une nouvelle campagne
   static async createCampaign(data: CreateCampaignData): Promise<ApiResponse<Campaign>> {
-    return apiClient.post<Campaign>('/api/hub/campaigns', data)
+    return apiClient.post<Campaign>('/hub/campaigns', data)
   }
 
   // Mettre à jour une campagne
   static async updateCampaign(id: string, data: Partial<CreateCampaignData>): Promise<ApiResponse<Campaign>> {
-    return apiClient.patch<Campaign>(`/api/hub/campaigns/${id}`, data)
+    return apiClient.put<Campaign>(`/hub/campaigns/${id}`, data)
   }
 
   // Supprimer une campagne
   static async deleteCampaign(id: string): Promise<ApiResponse<void>> {
-    return apiClient.delete(`/api/hub/campaigns/${id}`)
+    return apiClient.delete<void>(`/hub/campaigns/${id}`)
   }
 
   // Activer/désactiver une campagne
   static async toggleCampaignStatus(id: string, isActive: boolean): Promise<ApiResponse<Campaign>> {
-    return apiClient.patch<Campaign>(`/api/hub/campaigns/${id}/status`, { isActive })
+    return apiClient.patch<Campaign>(`/hub/campaigns/${id}/status`, { isActive })
   }
 
   // Faire un don à une campagne
@@ -100,7 +119,7 @@ export class CampaignsService {
       donorEmail?: string
     }
   ): Promise<ApiResponse<Donation>> {
-    return apiClient.post<Donation>(`/api/hub/campaigns/${campaignId}/donate`, data)
+    return apiClient.post<Donation>(`/hub/campaigns/${campaignId}/donate`, data)
   }
 }
 
