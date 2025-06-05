@@ -1,16 +1,22 @@
-import { useQuery, useQueries } from '@tanstack/react-query'
-import { hubApiClient } from '@/lib/hub-client'
-import type { Campaign } from '@/lib/hub-client'
+import { useQuery } from '@tanstack/react-query'
+import { CampaignsService, type CampaignsFilters } from '@/lib/services/campaigns-service'
+import type { Campaign } from '@/lib/services/associations-service'
+
+const queryKeys = {
+  campaignDetail: (id: string) => ['campaign', id] as const,
+  campaigns: (filters: any) => ['campaigns', filters] as const,
+}
 
 export function useCampaign(id: string) {
-  return useQuery<Campaign, Error>({
-    queryKey: ['campaign', id],
+  return useQuery({
+    queryKey: queryKeys.campaignDetail(id),
     queryFn: async () => {
       if (!id || id === 'undefined') {
         throw new Error('Campaign ID is required')
       }
 
-      return await hubApiClient.getCampaignById(id)
+      const response = await CampaignsService.getCampaign(id)
+      return response // Retour direct comme pour useAssociation
     },
     enabled: !!id && id !== 'undefined',
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -25,29 +31,16 @@ export function useCampaign(id: string) {
   })
 }
 
-export function useCampaigns(filters = {}) {
+export function useCampaigns(filters: CampaignsFilters = {}) {
   return useQuery({
-    queryKey: ['campaigns', filters],
-    queryFn: () => hubApiClient.getCampaigns(filters),
+    queryKey: queryKeys.campaigns(filters),
+    queryFn: async () => {
+      const response = await CampaignsService.getCampaigns(filters)
+      // response contient {campaigns: [], pagination: {}} directement
+      // car api-client extrait déjà les données de ApiResponse
+      return response.campaigns || []
+    },
     staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false
-  })
-}
-
-export function useFeaturedCampaigns(limit = 6) {
-  return useQuery({
-    queryKey: ['featured-campaigns', limit],
-    queryFn: () => hubApiClient.getFeaturedCampaigns(limit),
-    staleTime: 10 * 60 * 1000, // 10 minutes pour les campagnes en vedette
-    refetchOnWindowFocus: false
-  })
-}
-
-export function useUrgentCampaigns(limit = 6) {
-  return useQuery({
-    queryKey: ['urgent-campaigns', limit],
-    queryFn: () => hubApiClient.getUrgentCampaigns(limit),
-    staleTime: 2 * 60 * 1000, // 2 minutes pour les campagnes urgentes
-    refetchOnWindowFocus: true // On veut rafraîchir les urgentes
+    refetchOnWindowFocus: false,
   })
 }
