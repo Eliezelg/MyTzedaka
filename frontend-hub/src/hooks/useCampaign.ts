@@ -16,7 +16,7 @@ export function useCampaign(id: string) {
       }
 
       const response = await CampaignsService.getCampaign(id)
-      return response // Retour direct comme pour useAssociation
+      return response.data // Extraire les données de la réponse
     },
     enabled: !!id && id !== 'undefined',
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -36,9 +36,8 @@ export function useCampaigns(filters: CampaignsFilters = {}) {
     queryKey: queryKeys.campaigns(filters),
     queryFn: async () => {
       const response = await CampaignsService.getCampaigns(filters)
-      // response contient {campaigns: [], pagination: {}} directement
-      // car api-client extrait déjà les données de ApiResponse
-      return response.campaigns || []
+      // response contient déjà les données extraites
+      return response.data || []
     },
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,

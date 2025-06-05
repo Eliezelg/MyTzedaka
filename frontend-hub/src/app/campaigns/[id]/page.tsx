@@ -19,10 +19,12 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Card } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
+import { Separator } from '@/components/ui/separator'
 import { useCampaign } from '@/hooks/useCampaign'
+import { DonationWidget } from '@/components/ui/donation-widget'
 
 export default function CampaignDetailPage() {
   const params = useParams()
@@ -35,8 +37,6 @@ export default function CampaignDetailPage() {
   } = useCampaign(campaignId)
   
   const [isFavorite, setIsFavorite] = useState(false)
-  const [selectedAmount, setSelectedAmount] = useState<number | null>(null)
-  const [customAmount, setCustomAmount] = useState('')
   const [selectedTab, setSelectedTab] = useState<'story' | 'progress'>('story')
 
   const handleFavoriteToggle = () => {
@@ -59,11 +59,6 @@ export default function CampaignDetailPage() {
       navigator.clipboard.writeText(window.location.href)
       // TODO: Afficher une notification
     }
-  }
-
-  const handleDonate = (amount: number) => {
-    // TODO: Rediriger vers la page de donation
-    console.log(`Donation de ${amount}€ pour la campagne ${campaign?.id}`)
   }
 
   // Loading state
@@ -123,7 +118,6 @@ export default function CampaignDetailPage() {
   }
 
   const progressPercentage = (Number(campaign.raised || 0) / Number(campaign.goal)) * 100
-  const suggestedAmounts = [25, 50, 100, 250]
   const tabs = [
     { id: 'story', label: 'Histoire', icon: MessageCircle },
     { id: 'progress', label: 'Progression', icon: TrendingUp },
@@ -352,92 +346,10 @@ export default function CampaignDetailPage() {
 
           {/* Sidebar - Widget de donation */}
           <div className="space-y-6">
-            <Card className="p-6 bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200 sticky top-4">
-              <h3 className="text-xl font-bold mb-4 text-center">Soutenir ce projet</h3>
-              
-              {/* Montants suggérés */}
-              <div className="grid grid-cols-2 gap-2 mb-4">
-                {suggestedAmounts.map((amount) => (
-                  <Button
-                    key={amount}
-                    variant={selectedAmount === amount ? "secondary" : "outline"}
-                    size="sm"
-                    onClick={() => {
-                      setSelectedAmount(amount)
-                      setCustomAmount('')
-                    }}
-                  >
-                    {amount}€
-                  </Button>
-                ))}
-              </div>
-
-              {/* Montant personnalisé */}
-              <div className="mb-4">
-                <input
-                  type="number"
-                  placeholder="Autre montant"
-                  value={customAmount}
-                  onChange={(e) => {
-                    setCustomAmount(e.target.value)
-                    setSelectedAmount(null)
-                  }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Bouton de don */}
-              <Button 
-                className="w-full mb-4" 
-                size="lg"
-                onClick={() => {
-                  const amount = selectedAmount || parseInt(customAmount)
-                  if (amount) handleDonate(amount)
-                }}
-                disabled={!selectedAmount && !customAmount}
-              >
-                <Heart className="w-4 h-4 mr-2" />
-                Faire un don
-              </Button>
-
-              {/* Informations sur la campagne */}
-              <div className="border-t pt-4">
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Créée le:</span>
-                    <span className="font-medium">
-                      {new Date(campaign.createdAt).toLocaleDateString('fr-FR')}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Mise à jour:</span>
-                    <span className="font-medium">
-                      {new Date(campaign.updatedAt).toLocaleDateString('fr-FR')}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">ID Campagne:</span>
-                    <span className="font-mono text-xs">{campaign.id.slice(-8)}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Partage */}
-              <div className="border-t pt-4">
-                <p className="text-sm text-gray-600 mb-2">Partagez cette campagne</p>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1">
-                    Facebook
-                  </Button>
-                  <Button variant="outline" size="sm" className="flex-1">
-                    Twitter
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={handleShare}>
-                    <Copy className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </Card>
+            <DonationWidget 
+              campaignId={campaignId} 
+              campaignTitle={campaign?.title}
+            />
           </div>
         </div>
       </div>

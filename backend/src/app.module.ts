@@ -12,6 +12,7 @@ import { DeploymentModule } from './deployment/deployment.module';
 import { HubModule } from './hub/hub.module';
 import { S3Service } from './s3/s3.service';
 import { DonorPortalModule } from './donor-portal/donor-portal.module';
+import { StripeModule } from './stripe/stripe.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { DonorPortalModule } from './donor-portal/donor-portal.module';
     DeploymentModule,
     HubModule,
     DonorPortalModule,
+    StripeModule,
   ],
   controllers: [AppController],
   providers: [AppService, S3Service],
