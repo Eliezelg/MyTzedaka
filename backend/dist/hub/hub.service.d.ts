@@ -10,6 +10,7 @@ export declare class HubService {
         limit: number;
         pages: number;
     }>;
+    getAssociationById(id: string): Promise<any>;
     getGlobalStats(): Promise<HubStatsDto>;
     getPopularCampaigns(limit?: number): Promise<any[]>;
     getCampaigns(query: any): Promise<{

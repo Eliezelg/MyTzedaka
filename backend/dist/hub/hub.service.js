@@ -48,6 +48,71 @@ let HubService = class HubService {
             };
         }
     }
+    async getAssociationById(id) {
+        try {
+            const association = await this.prisma.associationListing.findUnique({
+                where: {
+                    id,
+                    isPublic: true
+                },
+                include: {
+                    tenant: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                            domain: true,
+                        }
+                    },
+                    campaigns: {
+                        where: {
+                            status: 'ACTIVE',
+                            isActive: true,
+                            isPublic: true
+                        },
+                        select: {
+                            id: true,
+                            title: true,
+                            description: true,
+                            goal: true,
+                            raised: true,
+                            status: true,
+                            createdAt: true,
+                            coverImage: true,
+                            isUrgent: true,
+                            isFeatured: true,
+                        },
+                        orderBy: {
+                            createdAt: 'desc'
+                        },
+                        take: 10
+                    }
+                }
+            });
+            if (!association) {
+                throw new Error('Association non trouvée');
+            }
+            const activeCampaignsCount = association.campaigns.length;
+            const totalRaised = association.campaigns.reduce((sum, campaign) => sum + Number(campaign.raised || 0), 0);
+            return {
+                ...association,
+                activeCampaignsCount,
+                totalRaised,
+                tenantInfo: association.tenant,
+                campaigns: association.campaigns.map(campaign => ({
+                    ...campaign,
+                    goal: Number(campaign.goal),
+                    raised: Number(campaign.raised),
+                    progressPercentage: campaign.goal ?
+                        Math.round((Number(campaign.raised) / Number(campaign.goal)) * 100) : 0
+                }))
+            };
+        }
+        catch (error) {
+            console.error('❌ Erreur getAssociationById:', error);
+            throw error;
+        }
+    }
     async getGlobalStats() {
         try {
             const [totalAssociations, verifiedAssociations, totalCampaigns, activeCampaigns, totalDonations, totalAmount] = await Promise.all([

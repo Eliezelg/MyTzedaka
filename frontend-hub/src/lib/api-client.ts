@@ -48,7 +48,9 @@ export class ApiClient {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
-    const url = `${this.baseURL}${endpoint}`
+    // Ajouter automatiquement le préfixe /api si pas déjà présent
+    const apiEndpoint = endpoint.startsWith('/api') ? endpoint : `/api${endpoint}`
+    const url = `${this.baseURL}${apiEndpoint}`
     
     const config: RequestInit = {
       headers: {

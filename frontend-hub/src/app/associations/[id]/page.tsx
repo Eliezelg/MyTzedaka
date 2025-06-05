@@ -34,7 +34,7 @@ import { SocialShare } from '@/components/hub/social-share'
 import { CommentSystem } from '@/components/hub/comment-system'
 import { ImpactMetrics } from '@/components/hub/impact-metrics'
 import { RelatedContent } from '@/components/hub/related-content'
-import { useAssociation } from '@/hooks/useAssociation'
+import { useAssociation } from '@/lib/services/associations-service'
 import type { Campaign } from '@/lib/hub-client'
 import { formatDistanceToNow } from '@/utils/format'
 
@@ -138,13 +138,21 @@ export default function AssociationDetailPage() {
           <div className="flex items-end gap-6 w-full">
             {/* Logo de l'association */}
             <div className="relative">
-              <Image
-                src={association.logo!}
-                alt={association.name}
-                width={120}
-                height={120}
-                className="rounded-2xl border-4 border-white shadow-lg"
-              />
+              {association.logo ? (
+                <Image
+                  src={association.logo}
+                  alt={association.name}
+                  width={120}
+                  height={120}
+                  className="rounded-2xl border-4 border-white shadow-lg"
+                />
+              ) : (
+                <div className="w-[120px] h-[120px] rounded-2xl border-4 border-white shadow-lg bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-400 text-2xl font-bold">
+                    {association.name.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+              )}
               {association.isVerified && (
                 <div className="absolute -top-2 -right-2 bg-green-500 rounded-full p-1">
                   <CheckCircle className="w-6 h-6 text-white" />
