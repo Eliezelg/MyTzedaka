@@ -908,6 +908,9 @@ video {
 .h-9 {
   height: 2.25rem;
 }
+.h-\[120px\] {
+  height: 120px;
+}
 .h-full {
   height: 100%;
 }
@@ -997,6 +1000,9 @@ video {
 }
 .w-9 {
   width: 2.25rem;
+}
+.w-\[120px\] {
+  width: 120px;
 }
 .w-full {
   width: 100%;

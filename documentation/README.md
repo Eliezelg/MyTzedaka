@@ -58,7 +58,39 @@ La plateforme fonctionne comme un écosystème interconnecté :
 - **Performance middleware < 50ms** même en concurrence
 - **Scripts de setup database** automatisés
 
-### 🚀 Phase 2 : Hub Central (EN COURS - 4 semaines)
+### ✅ Phase 6-7 : Hub Central Frontend (EN COURS - 70% COMPLÉTÉ)
+**Objectif** : Interface utilisateur complète pour le hub central
+
+**✅ RÉALISATIONS :**
+- Frontend Next.js 14 + Shadcn/UI entièrement configuré
+- API Client avec gestion d'erreurs et retry automatique
+- Pages principales : Homepage, Liste associations, Détail association
+- Hooks React Query pour la gestion des données
+- Système de navigation avec breadcrumbs
+- Composants UI réutilisables (Card, Badge, Button, etc.)
+- Gestion des images avec fallbacks (placeholder initiales)
+
+**✅ FONCTIONNALITÉS VALIDÉES :**
+- ✅ Backend API : http://localhost:3002 (fonctionnel)
+- ✅ Frontend : http://localhost:3001 (fonctionnel) 
+- ✅ API Associations : GET /api/hub/associations, GET /api/hub/associations/:id
+- ✅ Page détail association avec données réelles
+- ✅ Gestion robuste des erreurs et cas edge
+- ✅ Architecture TypeScript stricte (0 any, 100% typé)
+
+**🔧 BUGS RÉSOLUS RÉCEMMENT (5 juin 2025) :**
+- ✅ Duplication URL `/api/api` dans les appels API
+- ✅ Hook `useAssociation` retournait `undefined`
+- ✅ Erreur Image Next.js avec logo `null`
+- ✅ Variables d'environnement API corrigées
+
+**🎯 PROCHAINES ÉTAPES PHASE 7 :**
+- [ ] Tests complets pages campagnes et recherche
+- [ ] Optimisations performance (Lighthouse ≥95)
+- [ ] Tests accessibilité WCAG 2.1 AA
+- [ ] Préparation intégration Stripe (Phase 8)
+
+### 🔄 Phase 2 : Hub Central Backend API (À REPRENDRE)
 **Objectif** : Créer le HUB CENTRAL avec portail donateur unifié
 
 **Sprint 1-2 : Infrastructure Hub**

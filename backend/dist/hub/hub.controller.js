@@ -25,6 +25,9 @@ let HubController = class HubController {
     async getPublicAssociations() {
         return this.hubService.getPublicAssociations();
     }
+    async getAssociationById(id) {
+        return this.hubService.getAssociationById(id);
+    }
     async getGlobalStats() {
         return this.hubService.getGlobalStats();
     }
@@ -70,6 +73,16 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], HubController.prototype, "getPublicAssociations", null);
+__decorate([
+    (0, common_1.Get)('associations/:id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Récupère les détails d\'une association' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Détails de l\'association' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Association non trouvée' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], HubController.prototype, "getAssociationById", null);
 __decorate([
     (0, common_1.Get)('stats'),
     (0, swagger_1.ApiOperation)({ summary: 'Récupère les statistiques globales du hub' }),

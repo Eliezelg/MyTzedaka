@@ -133,7 +133,10 @@ export const useAssociations = (filters?: AssociationsFilters) => {
 export const useAssociation = (id: string) => {
   return useQuery({
     queryKey: queryKeys.associationDetail(id),
-    queryFn: () => AssociationsService.getAssociation(id),
+    queryFn: async () => {
+      const response = await AssociationsService.getAssociation(id)
+      return response // L'api-client retourne déjà les données directement
+    },
     enabled: !!id,
   })
 }
@@ -141,7 +144,10 @@ export const useAssociation = (id: string) => {
 export const useAssociationCampaigns = (id: string) => {
   return useQuery({
     queryKey: queryKeys.associationCampaigns(id),
-    queryFn: () => AssociationsService.getAssociationCampaigns(id),
+    queryFn: async () => {
+      const response = await AssociationsService.getAssociationCampaigns(id)
+      return response // L'api-client retourne déjà les données directement
+    },
     enabled: !!id,
   })
 }

@@ -16,6 +16,14 @@ export class HubController {
     return this.hubService.getPublicAssociations();
   }
 
+  @Get('associations/:id')
+  @ApiOperation({ summary: 'Récupère les détails d\'une association' })
+  @ApiResponse({ status: 200, description: 'Détails de l\'association' })
+  @ApiResponse({ status: 404, description: 'Association non trouvée' })
+  async getAssociationById(@Param('id') id: string) {
+    return this.hubService.getAssociationById(id);
+  }
+
   @Get('stats')
   @ApiOperation({ summary: 'Récupère les statistiques globales du hub' })
   @ApiResponse({ status: 200, type: HubStatsDto })
