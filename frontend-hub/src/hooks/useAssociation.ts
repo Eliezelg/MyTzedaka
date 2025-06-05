@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { hubApiClient } from '@/lib/hub-client'
 import type { Association, Campaign } from '@/lib/hub-client'
 
-interface AssociationWithCampaigns extends Association {
+export interface AssociationWithCampaigns extends Association {
   campaigns?: Campaign[]
 }
 

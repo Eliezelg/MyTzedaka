@@ -133,6 +133,7 @@ model Donation {
   
   @@index([userId]) // Index pour requêtes cross-tenant par user
   @@index([tenantId, source]) // Index pour filtrer par source
+  @@unique([stripePaymentIntentId]) // Index unique pour PaymentIntent Stripe
   @@map("donations")
 }
 

@@ -1,3 +1,11 @@
 {
-  "/page": "app/page.js"
+  "/_not-found/page": "app/_not-found/page.js",
+  "/associations/[id]/page": "app/associations/[id]/page.js",
+  "/campaigns/page": "app/campaigns/page.js",
+  "/associations/page": "app/associations/page.js",
+  "/campaigns/[id]/page": "app/campaigns/[id]/page.js",
+  "/page": "app/page.js",
+  "/search/page": "app/search/page.js",
+  "/test-debug/page": "app/test-debug/page.js",
+  "/test-api/page": "app/test-api/page.js"
 }
