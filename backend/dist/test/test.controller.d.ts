@@ -25,6 +25,7 @@ export declare class TestController {
                 status: import(".prisma/client").$Enums.TenantStatus;
                 theme: import("@prisma/client/runtime/library").JsonValue;
                 settings: import("@prisma/client/runtime/library").JsonValue;
+                stripeMode: import(".prisma/client").$Enums.StripeMode;
                 createdAt: Date;
                 updatedAt: Date;
             };
@@ -50,6 +51,7 @@ export declare class TestController {
             status: import(".prisma/client").$Enums.TenantStatus;
             theme: import("@prisma/client/runtime/library").JsonValue;
             settings: import("@prisma/client/runtime/library").JsonValue;
+            stripeMode: import(".prisma/client").$Enums.StripeMode;
             createdAt: Date;
             updatedAt: Date;
         };

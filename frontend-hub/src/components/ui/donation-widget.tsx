@@ -1,245 +1,206 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Heart, CreditCard, Lock } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { StripeService } from '@/lib/stripe/stripe-service';
+import { useState } from 'react'
+import { loadStripe } from '@stripe/stripe-js'
+import { Elements } from '@stripe/react-stripe-js'
+import { AmountSelection } from './amount-selection'
+import { PaymentForm } from './payment-form'
+import { Confirmation } from './confirmation'
+import { useDonations } from '@/hooks/useDonations'
+import { AlertCircle } from 'lucide-react'
+import { Button } from './button'
 
-// Configuration Stripe
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
-export interface DonationWidgetProps {
-  campaignId?: string;
-  campaignTitle?: string;
-  suggestedAmounts?: number[];
-  className?: string;
-  onSuccess?: (donationId: string, amount: number) => void;
+type WidgetStep = 'amount' | 'payment' | 'processing' | 'success' | 'error'
+
+interface DonationWidgetProps {
+  campaignId: string
+  campaignTitle: string
 }
 
-export function DonationWidget({
-  campaignId,
-  campaignTitle,
-  suggestedAmounts = [25, 50, 100, 250],
-  className,
-  onSuccess,
-}: DonationWidgetProps) {
-  const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
-  const [customAmount, setCustomAmount] = useState('');
-  const [isAnonymous, setIsAnonymous] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [step, setStep] = useState<'amount' | 'payment'>('amount');
+export function DonationWidget({ campaignId, campaignTitle }: DonationWidgetProps) {
+  const [step, setStep] = useState<WidgetStep>('amount')
+  const [amount, setAmount] = useState<number>(0)
+  const [isAnonymous, setIsAnonymous] = useState(false)
+  const [clientSecret, setClientSecret] = useState<string>('')
+  const [paymentIntentId, setPaymentIntentId] = useState<string>('')
+  const [error, setError] = useState<string | null>(null)
 
-  const finalAmount = selectedAmount || parseFloat(customAmount) || 0;
+  const { createDonation, isCreatingDonation } = useDonations()
 
-  const handleAmountSelect = (amount: number) => {
-    setSelectedAmount(amount);
-    setCustomAmount('');
-  };
+  const handleAmountSelect = async (selectedAmount: number) => {
+    setAmount(selectedAmount)
+    setError(null)
+    setStep('processing')
 
-  const handleCustomAmountChange = (value: string) => {
-    setCustomAmount(value);
-    setSelectedAmount(null);
-  };
-
-  const handleContinueToPayment = () => {
-    if (finalAmount >= 0.5) {
-      setStep('payment');
-    }
-  };
-
-  const handleDonation = async () => {
-    setIsLoading(true);
-    
     try {
-      // Simulation - ici on intégrerait Stripe Elements
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // En attendant l'intégration complète Stripe
-      console.log('Donation simulée:', {
-        amount: finalAmount,
+      // Créer PaymentIntent via notre backend
+      const response = await createDonation.mutateAsync({
         campaignId,
-        isAnonymous,
-      });
-      
-      onSuccess?.(crypto.randomUUID(), finalAmount);
-    } catch (error) {
-      console.error('Erreur donation:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        amount: selectedAmount,
+        isAnonymous
+      })
 
-  if (step === 'payment') {
-    return (
-      <Card className={cn('w-full max-w-md', className)}>
-        <CardHeader className="text-center">
-          <CardTitle className="flex items-center gap-2 justify-center">
-            <CreditCard className="w-5 h-5" />
-            Finaliser la donation
-          </CardTitle>
-          <p className="text-sm text-gray-600">
-            {StripeService.formatAmount(finalAmount)}
-            {campaignTitle && (
-              <span className="block text-xs mt-1">pour {campaignTitle}</span>
-            )}
-          </p>
-        </CardHeader>
-        
-        <CardContent className="space-y-4">
-          {/* Placeholder pour Stripe Elements */}
-          <div className="p-4 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-500">
-            <Lock className="w-8 h-8 mx-auto mb-2" />
-            <p className="text-sm">Formulaire de paiement sécurisé</p>
-            <p className="text-xs">Stripe Elements sera intégré ici</p>
-          </div>
-          
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={isAnonymous}
-                onChange={(e) => setIsAnonymous(e.target.checked)}
-                className="rounded"
-              />
-              Donation anonyme
-            </label>
-          </div>
-          
-          <Separator />
-          
-          <div className="space-y-2">
-            <Button
-              onClick={handleDonation}
-              disabled={isLoading}
-              className="w-full"
-              size="lg"
-            >
-              {isLoading ? (
-                <span className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Traitement...
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  <Heart className="w-4 h-4" />
-                  Donner {StripeService.formatAmount(finalAmount)}
-                </span>
-              )}
-            </Button>
-            
-            <Button
-              variant="outline"
-              onClick={() => setStep('amount')}
-              className="w-full"
-              disabled={isLoading}
-            >
-              Retour
-            </Button>
-          </div>
-          
-          <p className="text-xs text-gray-500 text-center">
-            🔒 Paiement 100% sécurisé par Stripe
-          </p>
-        </CardContent>
-      </Card>
-    );
+      if (response.clientSecret) {
+        setClientSecret(response.clientSecret)
+        setStep('payment')
+      } else {
+        throw new Error('Aucun client secret reçu')
+      }
+    } catch (err) {
+      console.error('Erreur création donation:', err)
+      setError('Impossible de préparer le paiement. Veuillez réessayer.')
+      setStep('error')
+    }
+  }
+
+  const handlePaymentSuccess = (paymentId: string) => {
+    setPaymentIntentId(paymentId)
+    setStep('success')
+  }
+
+  const handlePaymentError = (errorMessage: string) => {
+    setError(errorMessage)
+    setStep('error')
+  }
+
+  const handleRetryPayment = () => {
+    setError(null)
+    setStep('amount')
+    setClientSecret('')
+    setPaymentIntentId('')
+  }
+
+  const handleNewDonation = () => {
+    setStep('amount')
+    setAmount(0)
+    setIsAnonymous(false)
+    setClientSecret('')
+    setPaymentIntentId('')
+    setError(null)
   }
 
   return (
-    <Card className={cn('w-full max-w-md', className)}>
-      <CardHeader className="text-center">
-        <CardTitle className="flex items-center gap-2 justify-center">
-          <Heart className="w-5 h-5 text-red-500" />
-          Faire une donation
-        </CardTitle>
-        {campaignTitle && (
-          <p className="text-sm text-gray-600">pour {campaignTitle}</p>
+    <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+      {/* Header du widget */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
+        <h3 className="text-xl font-bold mb-2">
+          Soutenir cette campagne
+        </h3>
+        <p className="text-blue-100 text-sm">
+          {campaignTitle}
+        </p>
+      </div>
+
+      {/* Contenu principal */}
+      <div className="p-6">
+        {step === 'amount' && (
+          <AmountSelection
+            onAmountSelect={handleAmountSelect}
+            onAnonymousChange={setIsAnonymous}
+            isAnonymous={isAnonymous}
+            isLoading={isCreatingDonation}
+          />
         )}
-      </CardHeader>
-      
-      <CardContent className="space-y-4">
-        {/* Montants suggérés */}
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            Montants suggérés
-          </label>
-          <div className="grid grid-cols-2 gap-2">
-            {suggestedAmounts.map((amount) => (
-              <Button
-                key={amount}
-                variant={selectedAmount === amount ? 'default' : 'outline'}
-                onClick={() => handleAmountSelect(amount)}
-                className="h-12"
-              >
-                {StripeService.formatAmountSimple(amount)}
-              </Button>
-            ))}
-          </div>
-        </div>
-        
-        <Separator />
-        
-        {/* Montant personnalisé */}
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            Montant personnalisé
-          </label>
-          <div className="relative">
-            <Input
-              type="number"
-              placeholder="0.00"
-              value={customAmount}
-              onChange={(e) => handleCustomAmountChange(e.target.value)}
-              className="pr-8"
-              min="0.5"
-              step="0.5"
-            />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
-              €
-            </span>
-          </div>
-          {(selectedAmount || customAmount) && finalAmount < 0.5 && (
-            <p className="text-sm text-red-500 mt-1">
-              Le montant minimum est de 0.50€
+
+        {step === 'processing' && (
+          <div className="text-center py-12">
+            <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4" />
+            <p className="text-gray-600 font-medium">
+              Préparation du paiement...
             </p>
-          )}
-        </div>
-        
-        {/* Résumé */}
-        {finalAmount > 0 && (
-          <div className="p-3 bg-gray-50 rounded-lg">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Total</span>
-              <Badge variant="secondary" className="text-lg font-bold">
-                {StripeService.formatAmount(finalAmount)}
-              </Badge>
+            <p className="text-sm text-gray-500 mt-2">
+              Veuillez patienter quelques instants
+            </p>
+          </div>
+        )}
+
+        {step === 'payment' && clientSecret && (
+          <Elements 
+            stripe={stripePromise} 
+            options={{ 
+              clientSecret,
+              appearance: {
+                theme: 'stripe',
+                variables: {
+                  colorPrimary: '#2563eb',
+                  colorBackground: '#ffffff',
+                  colorText: '#1f2937',
+                  colorDanger: '#dc2626',
+                  fontFamily: 'Inter, system-ui, sans-serif',
+                  borderRadius: '8px',
+                }
+              }
+            }}
+          >
+            <PaymentForm
+              amount={amount}
+              clientSecret={clientSecret}
+              onSuccess={handlePaymentSuccess}
+              onError={handlePaymentError}
+              onBack={() => setStep('amount')}
+              campaignTitle={campaignTitle}
+            />
+          </Elements>
+        )}
+
+        {step === 'success' && (
+          <Confirmation
+            amount={amount}
+            campaignTitle={campaignTitle}
+            paymentIntentId={paymentIntentId}
+            onNewDonation={handleNewDonation}
+          />
+        )}
+
+        {step === 'error' && (
+          <div className="text-center py-8 space-y-4">
+            <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+              <AlertCircle className="w-8 h-8 text-red-600" />
+            </div>
+            
+            <div className="space-y-2">
+              <h4 className="text-lg font-semibold text-gray-900">
+                Une erreur est survenue
+              </h4>
+              <p className="text-red-600 text-sm max-w-md mx-auto">
+                {error || 'Erreur inconnue lors du traitement du paiement'}
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <Button
+                onClick={handleRetryPayment}
+                className="w-full"
+              >
+                Réessayer
+              </Button>
+              
+              <p className="text-xs text-gray-500">
+                Si le problème persiste, contactez notre support.
+              </p>
             </div>
           </div>
         )}
-        
-        <Button
-          onClick={handleContinueToPayment}
-          disabled={finalAmount < 0.5}
-          className="w-full"
-          size="lg"
-        >
-          Continuer
-        </Button>
-        
-        <p className="text-xs text-gray-500 text-center">
-          Vos informations sont protégées et sécurisées
-        </p>
-      </CardContent>
-    </Card>
-  );
-}
+      </div>
 
-// Export par défaut pour utilisation dynamique
-export default DonationWidget;
+      {/* Footer avec badges de confiance */}
+      {step !== 'success' && (
+        <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+          <div className="flex items-center justify-center space-x-4 text-xs text-gray-500">
+            <span className="flex items-center">
+              🔒 SSL sécurisé
+            </span>
+            <span className="flex items-center">
+              💳 Stripe
+            </span>
+            <span className="flex items-center">
+              📧 Reçu fiscal
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}

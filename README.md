@@ -188,7 +188,7 @@
 - ✅ **API Campagnes** : `GET /api/hub/campaigns?limit=2` → Campagnes fonctionnelles  
 - ✅ **Frontend connecté** : Port 3001 avec appels API réussis
 - ✅ **Backend stable** : Port 3000 compilé sans erreurs
-- ✅ **Types synchronisés** : Frontend ↔ Backend parfaitement alignés
+- ✅ **Types synchronisés** : Frontend/Backend parfaitement alignés
 
 **🏗️ Architecture fonctionnelle** :
 - **Backend** : NestJS + Prisma + PostgreSQL (http://localhost:3000)
@@ -488,3 +488,41 @@ src/
 ```
 
 **Objectifs Phase 8** :
+
+### 🔄 Phase 8 Sprint 2 : Intégration Stripe Multi-Tenant Backend (EN COURS)
+**Statut** : 🚀 **Services créés et compilés** (7 juin 2025)
+
+**🎯 Architecture Multi-Tenant Stripe Implémentée** :
+- [x] **MultiTenantStripeService** : Gestion dynamique instances Stripe par tenant
+- [x] **Mode PLATFORM** : Stripe Connect via MyTzedaka pour commissions
+- [x] **Mode CUSTOM** : Comptes Stripe propres aux associations
+- [x] **EncryptionService** : Chiffrement AES-256-GCM pour clés API
+- [x] **StripeConfigController** : API configuration Stripe par tenant
+
+**📋 Services Backend Créés** :
+- ✅ Cache instances Stripe pour optimisation performance
+- ✅ Onboarding Stripe Connect avec génération liens personnalisés
+- ✅ Gestion webhooks par tenant avec vérification signature
+- ✅ Support PaymentIntent adapté selon mode (PLATFORM/CUSTOM)
+- ✅ Chiffrement sécurisé des clés en base de données
+
+**🔧 Endpoints API Disponibles** :
+```typescript
+GET  /api/stripe-config/:tenantId/config         // Config actuelle
+POST /api/stripe-config/:tenantId/configure      // Changer mode
+POST /api/stripe-config/:tenantId/connect/onboarding  // Lien Connect
+GET  /api/stripe-config/:tenantId/publishable-key     // Clé publique
+POST /api/stripe-config/:tenantId/webhook        // Webhook handler
+```
+
+**✅ État Compilation** :
+- Backend : 0 erreur TypeScript
+- Types Prisma : Synchronisés avec enum StripeMode
+- Module Stripe : Intégré avec PrismaModule
+- Variables env : Configurées (STRIPE_*, ENCRYPTION_SECRET)
+
+**📌 Prochaines Étapes** :
+1. Tests endpoints configuration Stripe
+2. Adaptation donation.service.ts pour multi-tenant
+3. Interface admin configuration Stripe
+4. Tests end-to-end donation flow
