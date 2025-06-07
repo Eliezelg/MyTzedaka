@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { StripeService } from './stripe.service';
+import { MultiTenantStripeService } from './multi-tenant-stripe.service';
 import { DonationStatus, DonationType, DonationSource } from '@prisma/client';
 import Stripe from 'stripe';
 
@@ -28,7 +28,7 @@ export class DonationService {
 
   constructor(
     private prisma: PrismaService,
-    private stripeService: StripeService,
+    private multiTenantStripeService: MultiTenantStripeService,
   ) {}
 
   /**
@@ -78,23 +78,23 @@ export class DonationService {
 
     try {
       // Convertir en centimes pour Stripe
-      const amountInCents = StripeService.eurosToCents(amount);
+      const amountInCents = Math.round(amount * 100);
 
-      // Créer le PaymentIntent Stripe
-      const paymentIntent = await this.stripeService.createPaymentIntent({
-        amount: amountInCents,
-        currency: currency.toLowerCase(),
-        description: campaignId ? 
-          `Donation pour campagne ${campaignId}` : 
-          'Donation MyTzedaka',
-        metadata: {
-          tenantId,
+      // Créer le PaymentIntent Stripe via le service multi-tenant
+      const paymentIntent = await this.multiTenantStripeService.createPaymentIntent(
+        tenantId,
+        amount, // En euros, la conversion se fait dans MultiTenantStripeService
+        currency.toLowerCase(),
+        {
           userId,
           campaignId: campaignId || '',
           donorEmail: donorEmail || '',
           source,
-        },
-      });
+          description: campaignId ? 
+            `Donation pour campagne ${campaignId}` : 
+            'Donation MyTzedaka',
+        }
+      );
 
       // Créer la donation en base
       const donation = await this.prisma.donation.create({
@@ -152,23 +152,27 @@ export class DonationService {
    */
   async confirmDonation(paymentIntentId: string): Promise<any> {
     try {
-      // Récupérer le PaymentIntent depuis Stripe
-      const paymentIntent = await this.stripeService.getPaymentIntent(paymentIntentId);
-
-      if (paymentIntent.status !== 'succeeded') {
-        throw new BadRequestException('Le paiement n\'a pas été confirmé');
-      }
-
-      // Trouver la donation correspondante
+      // Récupérer la donation existante pour obtenir le tenantId
       const existingDonation = await this.prisma.donation.findFirst({
         where: { stripePaymentIntentId: paymentIntentId },
+        include: { tenant: true },
       });
 
       if (!existingDonation) {
         throw new NotFoundException('Donation non trouvée');
       }
 
-      // Mettre à jour la donation en base
+      // Récupérer le PaymentIntent depuis Stripe via le service multi-tenant
+      const paymentIntent = await this.multiTenantStripeService.getPaymentIntent(
+        existingDonation.tenantId,
+        paymentIntentId
+      );
+
+      if (paymentIntent.status !== 'succeeded') {
+        throw new BadRequestException('Le paiement n\'a pas réussi');
+      }
+
+      // Mettre à jour la donation
       const donation = await this.prisma.donation.update({
         where: { id: existingDonation.id },
         data: {

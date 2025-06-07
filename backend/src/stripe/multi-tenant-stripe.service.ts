@@ -154,6 +154,24 @@ export class MultiTenantStripeService {
   }
 
   /**
+   * Confirme un paiement avec le PaymentIntent spécifié
+   */
+  async confirmPayment(
+    tenantId: string,
+    paymentIntentId: string,
+    paymentMethodId?: string,
+  ): Promise<Stripe.PaymentIntent> {
+    const stripe = await this.getStripeInstance(tenantId);
+    
+    const params: Stripe.PaymentIntentConfirmParams = {};
+    if (paymentMethodId) {
+      params.payment_method = paymentMethodId;
+    }
+
+    return stripe.paymentIntents.confirm(paymentIntentId, params);
+  }
+
+  /**
    * Récupère les détails d'un PaymentIntent
    */
   async retrievePaymentIntent(tenantId: string, paymentIntentId: string) {
@@ -166,6 +184,17 @@ export class MultiTenantStripeService {
       this.logger.error(`Erreur récupération PaymentIntent: ${error.message}`, error.stack);
       throw error;
     }
+  }
+
+  /**
+   * Récupère un PaymentIntent existant
+   */
+  async getPaymentIntent(
+    tenantId: string,
+    paymentIntentId: string,
+  ): Promise<Stripe.PaymentIntent> {
+    const stripe = await this.getStripeInstance(tenantId);
+    return stripe.paymentIntents.retrieve(paymentIntentId);
   }
 
   /**
@@ -379,6 +408,83 @@ export class MultiTenantStripeService {
       return event;
     } catch (error) {
       this.logger.error(`Erreur validation webhook: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
+
+  /**
+   * Vérifie la signature d'un webhook Stripe
+   */
+  async verifyWebhookSignature(
+    payload: Buffer,
+    signature: string,
+  ): Promise<Stripe.Event> {
+    // Utiliser le webhook secret de la plateforme principale
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    
+    if (!webhookSecret) {
+      throw new Error('STRIPE_WEBHOOK_SECRET non configuré');
+    }
+
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: '2025-05-28.basil',
+    });
+
+    try {
+      const event = stripe.webhooks.constructEvent(
+        payload,
+        signature,
+        webhookSecret,
+      );
+      
+      this.logger.log(`Webhook vérifié: ${event.type} - ${event.id}`);
+      return event;
+    } catch (error) {
+      this.logger.error(`Erreur vérification signature webhook: ${error.message}`);
+      throw new Error(`Signature webhook invalide: ${error.message}`);
+    }
+  }
+
+  /**
+   * Met à jour le statut d'un compte Stripe Connect
+   */
+  async updateConnectAccountStatus(
+    stripeAccountId: string,
+    account: Stripe.Account,
+  ): Promise<void> {
+    try {
+      const stripeAccount = await this.prisma.stripeAccount.findFirst({
+        where: { stripeConnectAccountId: stripeAccountId },
+      });
+
+      if (!stripeAccount) {
+        this.logger.warn(`Compte Stripe non trouvé: ${stripeAccountId}`);
+        return;
+      }
+
+      // Déterminer le statut basé sur les données du compte
+      let connectStatus = 'PENDING';
+      if (account.charges_enabled && account.payouts_enabled) {
+        connectStatus = 'COMPLETE';
+      } else if (account.details_submitted) {
+        connectStatus = 'RESTRICTED';
+      }
+
+      await this.prisma.stripeAccount.update({
+        where: { id: stripeAccount.id },
+        data: {
+          stripeConnectStatus: connectStatus as any,
+          isActive: account.charges_enabled || false,
+          lastVerifiedAt: new Date(),
+        },
+      });
+
+      this.logger.log(`Statut compte Connect mis à jour: ${stripeAccountId} -> ${connectStatus}`);
+    } catch (error) {
+      this.logger.error(
+        `Erreur mise à jour statut compte Connect ${stripeAccountId}: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
