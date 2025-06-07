@@ -21,6 +21,7 @@ const deployment_module_1 = require("./deployment/deployment.module");
 const hub_module_1 = require("./hub/hub.module");
 const s3_service_1 = require("./s3/s3.service");
 const donor_portal_module_1 = require("./donor-portal/donor-portal.module");
+const stripe_module_1 = require("./stripe/stripe.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer
@@ -45,6 +46,7 @@ exports.AppModule = AppModule = __decorate([
             deployment_module_1.DeploymentModule,
             hub_module_1.HubModule,
             donor_portal_module_1.DonorPortalModule,
+            stripe_module_1.StripeModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, s3_service_1.S3Service],

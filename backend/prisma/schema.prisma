@@ -21,6 +21,9 @@ model Tenant {
   theme       Json     @default("{}")  // Configuration thème personnalisé
   settings    Json     @default("{}")  // Paramètres spécifiques
   
+  // Configuration Stripe
+  stripeMode  StripeMode @default(PLATFORM) // Mode de paiement Stripe
+  
   // Métadonnées
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -32,6 +35,7 @@ model Tenant {
   gmahs       Gmah[]
   events      Event[]
   associationListing AssociationListing?
+  stripeAccount StripeAccount? // Compte Stripe associé
   
   @@map("tenants")
 }
@@ -42,6 +46,12 @@ enum TenantStatus {
   INACTIVE
   SUSPENDED
   DELETED
+}
+
+// Énumération pour le mode Stripe
+enum StripeMode {
+  PLATFORM    // Utilise Stripe Connect via MyTzedaka
+  CUSTOM      // Utilise son propre compte Stripe
 }
 
 // Table des utilisateurs avec isolation par tenant
@@ -414,4 +424,40 @@ model AssociationListing {
   campaigns   Campaign[] // Campagnes de cette association
   
   @@map("association_listings")
+}
+
+// Table des comptes Stripe
+model StripeAccount {
+  id          String   @id @default(uuid())
+  tenantId    String   @unique
+  
+  // Configuration selon le mode
+  // Mode PLATFORM (Stripe Connect)
+  stripeConnectAccountId String? // ID du compte Connect
+  stripeConnectStatus    String? // Status du compte Connect
+  stripeConnectCapabilities Json @default("{}") // Capacités activées
+  
+  // Mode CUSTOM (Compte propre)
+  stripePublishableKey   String? // Clé publique (chiffrée)
+  stripeSecretKey        String? // Clé secrète (chiffrée)
+  stripeWebhookSecret    String? // Secret webhook (chiffré)
+  
+  // Commun aux deux modes
+  stripeAccountName      String? // Nom du compte
+  stripeAccountEmail     String? // Email du compte
+  currency               String  @default("EUR")
+  
+  // Configuration
+  feePercentage          Decimal @default(0) @db.Decimal(5,2) // Commission plateforme
+  isActive               Boolean @default(true)
+  
+  // Métadonnées
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lastVerifiedAt DateTime? // Dernière vérification
+  
+  // Relations
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  @@map("stripe_accounts")
 }

@@ -83,3 +83,18 @@ export function useCampaignDonationStats(campaignId: string) {
     retry: 2,
   });
 }
+
+/**
+ * Hook principal pour les donations (utilisé dans DonationWidget)
+ */
+export function useDonations() {
+  const createDonation = useCreateDonation();
+  const confirmDonation = useConfirmDonation();
+  
+  return {
+    createDonation,
+    confirmDonation,
+    isCreatingDonation: createDonation.isPending,
+    isConfirmingDonation: confirmDonation.isPending,
+  };
+}
