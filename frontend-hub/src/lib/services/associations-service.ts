@@ -1,7 +1,8 @@
 import { apiClient, type ApiResponse, queryKeys } from '../api-client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { Campaign } from '@/types/campaign'
 
-// Types pour les associations (conformes au backend Prisma)
+// Types pour les associations
 export interface Association {
   id: string
   name: string
@@ -26,20 +27,6 @@ export interface Association {
   // Relations possibles
   campaigns?: Campaign[]
   donations?: Donation[]
-}
-
-export interface Campaign {
-  id: string
-  title: string
-  description: string
-  goalAmount: number
-  raisedAmount: number
-  startDate: string
-  endDate?: string
-  image?: string
-  isActive: boolean
-  associationId: string
-  association?: Association
 }
 
 export interface Donation {

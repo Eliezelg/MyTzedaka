@@ -1,6 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { StripeService } from '@/lib/stripe/stripe-service';
-import type { DonationData } from '@/lib/stripe/stripe-client';
+import { 
+  donationsService, 
+  CreateDonationRequest, 
+  CreateDonationResponse,
+  ConfirmDonationResponse,
+  DonationHistoryResponse,
+  CampaignDonationStats 
+} from '@/services/donations-service';
 
 /**
  * Hook pour créer une donation
@@ -8,8 +14,8 @@ import type { DonationData } from '@/lib/stripe/stripe-client';
 export function useCreateDonation() {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (donationData: DonationData) => StripeService.createDonation(donationData),
+  return useMutation<CreateDonationResponse, Error, CreateDonationRequest>({
+    mutationFn: (donationData: CreateDonationRequest) => donationsService.createDonation(donationData),
     onSuccess: () => {
       // Invalidate queries pour actualiser les données
       queryClient.invalidateQueries({ queryKey: ['donations'] });
@@ -27,8 +33,8 @@ export function useCreateDonation() {
 export function useConfirmDonation() {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (paymentIntentId: string) => StripeService.confirmDonation(paymentIntentId),
+  return useMutation<ConfirmDonationResponse, Error, string>({
+    mutationFn: (paymentIntentId: string) => donationsService.confirmDonation(paymentIntentId),
     onSuccess: () => {
       // Invalidate queries pour actualiser les données
       queryClient.invalidateQueries({ queryKey: ['donations'] });
@@ -44,14 +50,13 @@ export function useConfirmDonation() {
  * Hook pour récupérer l'historique des donations
  */
 export function useDonationHistory(params?: {
+  page?: number;
   limit?: number;
-  offset?: number;
-  tenant?: string;
   enabled?: boolean;
 }) {
-  return useQuery({
+  return useQuery<DonationHistoryResponse, Error>({
     queryKey: ['donations', 'history', params],
-    queryFn: () => StripeService.getDonationHistory(params),
+    queryFn: () => donationsService.getDonationHistory(params?.page, params?.limit),
     enabled: params?.enabled !== false,
     staleTime: 1000 * 60 * 5, // 5 minutes
     retry: 2,
@@ -61,10 +66,10 @@ export function useDonationHistory(params?: {
 /**
  * Hook pour récupérer les donations d'une campagne
  */
-export function useCampaignDonations(campaignId: string, limit?: number) {
-  return useQuery({
-    queryKey: ['donations', 'campaign', campaignId, limit],
-    queryFn: () => StripeService.getCampaignDonations(campaignId, limit),
+export function useCampaignDonations(campaignId: string, page?: number, limit?: number) {
+  return useQuery<DonationHistoryResponse, Error>({
+    queryKey: ['donations', 'campaign', campaignId, page, limit],
+    queryFn: () => donationsService.getCampaignDonations(campaignId, page, limit),
     enabled: !!campaignId,
     staleTime: 1000 * 60 * 2, // 2 minutes
     retry: 2,
@@ -75,9 +80,9 @@ export function useCampaignDonations(campaignId: string, limit?: number) {
  * Hook pour récupérer les statistiques des donations d'une campagne
  */
 export function useCampaignDonationStats(campaignId: string) {
-  return useQuery({
+  return useQuery<CampaignDonationStats, Error>({
     queryKey: ['donations', 'stats', campaignId],
-    queryFn: () => StripeService.getCampaignDonationStats(campaignId),
+    queryFn: () => donationsService.getCampaignDonationStats(campaignId),
     enabled: !!campaignId,
     staleTime: 1000 * 60 * 5, // 5 minutes
     retry: 2,

@@ -43,6 +43,7 @@ export class AppModule {
         // Routes d'authentification globales
         { path: 'api/auth/login', method: RequestMethod.POST },
         { path: 'api/auth/register', method: RequestMethod.POST },
+        { path: 'api/auth/register-hub', method: RequestMethod.POST },
         // Routes de santé
         { path: 'api/health', method: RequestMethod.GET },
         { path: 'health', method: RequestMethod.GET }

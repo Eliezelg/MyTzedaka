@@ -740,4 +740,71 @@ export class HubService {
       throw error;
     }
   }
+
+  /**
+   * Crée une nouvelle association
+   */
+  async createAssociation(associationData: {
+    name: string;
+    description: string;
+    category?: string;
+    email: string;
+    phone?: string;
+    address?: string;
+    city?: string;
+    country?: string;
+    website?: string;
+    tenantId?: string;
+  }): Promise<any> {
+    try {
+      // Créer un nouveau tenant pour cette association
+      // Le slug est basé sur le nom de l'association (simplifié)
+      const tenantSlug = associationData.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '')
+        .substring(0, 50); // Limiter la longueur
+
+      // S'assurer que le slug est unique
+      let finalSlug = tenantSlug;
+      let counter = 1;
+      while (await this.prisma.tenant.findUnique({ where: { slug: finalSlug } })) {
+        finalSlug = `${tenantSlug}-${counter}`;
+        counter++;
+      }
+
+      // Créer le tenant pour cette association
+      const tenant = await this.prisma.tenant.create({
+        data: {
+          slug: finalSlug,
+          name: associationData.name,
+          status: 'ACTIVE'
+        }
+      });
+
+      // Créer l'association liée à ce tenant
+      const newAssociation = await this.prisma.associationListing.create({
+        data: {
+          name: associationData.name,
+          description: associationData.description,
+          category: associationData.category || 'Général',
+          location: associationData.address || '',
+          city: associationData.city,
+          country: associationData.country || 'France',
+          isPublic: true,
+          isVerified: false,
+          tenantId: tenant.id,
+        }
+      });
+
+      return {
+        association: newAssociation,
+        tenant: tenant
+      };
+    } catch (error) {
+      console.error('❌ Erreur createAssociation:', error);
+      throw new Error('Erreur lors de la création de l\'association');
+    }
+  }
 }

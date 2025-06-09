@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException, ConflictException, InternalServerErrorException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { 
   CognitoIdentityProviderClient,
@@ -140,10 +140,10 @@ export class AuthService {
       });
 
       if (existingUser) {
-        throw new BadRequestException('Un utilisateur avec cet email existe déjà');
+        throw new ConflictException('Un utilisateur avec cet email existe déjà');
       }
 
-      // Créer l'utilisateur dans Cognito
+      // Enregistrement dans AWS Cognito
       const createUserCommand = new AdminCreateUserCommand({
         UserPoolId: process.env.AWS_COGNITO_USER_POOL_ID,
         Username: email,
@@ -187,6 +187,55 @@ export class AuthService {
 
       return {
         message: 'Utilisateur créé avec succès',
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role,
+        },
+      };
+    } catch (error) {
+      throw new BadRequestException('Erreur lors de la création: ' + error.message);
+    }
+  }
+
+  async registerHub(registerDto: RegisterDto) {
+    const { email, password, firstName, lastName, phone } = registerDto;
+
+    try {
+      // Vérifier si l'utilisateur existe déjà globalement
+      const existingUser = await this.prisma.user.findFirst({
+        where: {
+          email,
+          tenantId: null, // Utilisateurs globaux
+        },
+      });
+
+      if (existingUser) {
+        throw new ConflictException('Un utilisateur avec cet email existe déjà');
+      }
+
+      // VERSION TEMPORAIRE SANS COGNITO - pour tester l'architecture
+      // Une fois les clés AWS configurées, décommentez la partie Cognito
+
+      // Créer l'utilisateur en base sans tenant (utilisateur global)
+      const user = await this.prisma.user.create({
+        data: {
+          email,
+          cognitoId: `temp_${Date.now()}`, // ID temporaire
+          firstName,
+          lastName,
+          phone: phone || null,
+          role: 'MEMBER',
+          tenantId: null, // Pas de tenant pour les utilisateurs du hub
+          permissions: [],
+          isActive: true,
+        },
+      });
+
+      return {
+        message: 'Utilisateur créé avec succès sur la plateforme (version test)',
         user: {
           id: user.id,
           email: user.email,
@@ -312,5 +361,72 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  // Connexion pour utilisateurs du hub (sans tenant)
+  async loginHub(loginDto: LoginDto) {
+    const { email, password } = loginDto;
+
+    try {
+      // Vérifier l'utilisateur global (sans tenant)
+      const user = await this.prisma.user.findFirst({
+        where: {
+          email,
+          tenantId: null, // Utilisateurs globaux uniquement
+          isActive: true,
+        },
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          role: true,
+          cognitoId: true,
+          tenantId: true,
+          permissions: true,
+        },
+      });
+
+      if (!user) {
+        throw new UnauthorizedException('Utilisateur non trouvé ou inactif');
+      }
+
+      // VERSION TEMPORAIRE : pas de vérification Cognito
+      // TODO: Ajouter la vérification Cognito une fois les clés configurées
+
+      // Générer JWT sans tenant (utilisateur global)
+      const payload = {
+        sub: user.id,
+        email: user.email,
+        role: user.role,
+        tenantId: null, // Pas de tenant pour le hub
+        cognitoId: user.cognitoId,
+      };
+
+      const accessToken = this.jwtService.sign(payload);
+      const refreshToken = this.jwtService.sign(
+        { sub: user.id, type: 'refresh' },
+        { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN }
+      );
+
+      return {
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role,
+        },
+        tokens: {
+          accessToken,
+          refreshToken,
+        },
+      };
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new BadRequestException('Erreur lors de la connexion: ' + error.message);
+    }
   }
 }

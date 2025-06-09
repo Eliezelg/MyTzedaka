@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
-import { CampaignsService, type CampaignsFilters } from '@/lib/services/campaigns-service'
-import type { Campaign } from '@/lib/services/associations-service'
+import { CampaignsService } from '@/lib/services/campaigns-service'
+import { Campaign, CampaignsPaginatedResponse, CampaignsFilters } from '@/types/campaign'
+import { ApiResponse } from '@/lib/api-client'
 
 const queryKeys = {
   campaignDetail: (id: string) => ['campaign', id] as const,
-  campaigns: (filters: any) => ['campaigns', filters] as const,
+  campaigns: (filters: CampaignsFilters) => ['campaigns', filters] as const,
 }
 
 export function useCampaign(id: string) {
@@ -15,8 +16,11 @@ export function useCampaign(id: string) {
         throw new Error('Campaign ID is required')
       }
 
-      const response = await CampaignsService.getCampaign(id)
-      return response.data // Extraire les données de la réponse
+      const response: ApiResponse<Campaign> = await CampaignsService.getCampaignById(id)
+      if (response.success) {
+        return response.data // Extraire les données de la réponse
+      }
+      throw new Error(response.message || 'Erreur lors du chargement de la campagne')
     },
     enabled: !!id && id !== 'undefined',
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -35,9 +39,12 @@ export function useCampaigns(filters: CampaignsFilters = {}) {
   return useQuery({
     queryKey: queryKeys.campaigns(filters),
     queryFn: async () => {
-      const response = await CampaignsService.getCampaigns(filters)
-      // response contient déjà les données extraites
-      return response.data || []
+      const response: ApiResponse<CampaignsPaginatedResponse> = await CampaignsService.getCampaigns(filters)
+      if (response.success) {
+        // Retourner la structure complète avec campaigns et pagination
+        return response.data
+      }
+      throw new Error(response.message || 'Erreur lors du chargement des campagnes')
     },
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,

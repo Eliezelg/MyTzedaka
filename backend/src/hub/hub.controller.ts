@@ -24,6 +24,24 @@ export class HubController {
     return this.hubService.getAssociationById(id);
   }
 
+  @Post('associations')
+  @ApiOperation({ summary: 'Crée une nouvelle association' })
+  @ApiResponse({ status: 201, description: 'Association créée avec succès' })
+  @ApiResponse({ status: 400, description: 'Données invalides' })
+  async createAssociation(@Body() associationData: {
+    name: string;
+    description: string;
+    category?: string;
+    email: string;
+    phone?: string;
+    address?: string;
+    city?: string;
+    country?: string;
+    website?: string;
+  }) {
+    return this.hubService.createAssociation(associationData);
+  }
+
   @Get('stats')
   @ApiOperation({ summary: 'Récupère les statistiques globales du hub' })
   @ApiResponse({ status: 200, type: HubStatsDto })

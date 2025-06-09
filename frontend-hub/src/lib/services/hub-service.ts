@@ -1,6 +1,7 @@
 import { apiClient, type ApiResponse, queryKeys } from '../api-client'
 import { useQuery } from '@tanstack/react-query'
-import type { Association, Campaign } from './associations-service'
+import type { Association } from './associations-service'
+import type { Campaign } from '@/types/campaign'
 
 // Types pour les statistiques du Hub
 export interface HubStats {

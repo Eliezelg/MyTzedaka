@@ -1,62 +1,9 @@
-import { apiClient, type ApiResponse, queryKeys } from '../api-client'
+import { apiClient, ApiResponse } from '../api-client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import type { Campaign, Donation } from './associations-service'
+import { Campaign, CampaignsPaginatedResponse, CampaignsFilters } from '@/types/campaign'
 
-// Filtres pour les campagnes
-export interface CampaignsFilters extends Record<string, string | number | boolean | undefined> {
-  associationId?: string
-  category?: string
-  isActive?: boolean
-  search?: string
-  minTarget?: number
-  maxTarget?: number
-  startDate?: string
-  endDate?: string
-  sortBy?: 'title' | 'targetAmount' | 'currentAmount' | 'startDate' | 'createdAt'
-  sortOrder?: 'asc' | 'desc'
-  page?: number
-  limit?: number
-}
-
-// Types pour les filtres et pagination
-export interface CampaignsFilters {
-  status?: 'active' | 'completed'
-  search?: string
-  associationId?: string
-  page?: number
-  limit?: number
-}
-
-export interface CampaignsPaginatedResponse {
-  campaigns: Campaign[]
-  pagination: {
-    page: number
-    limit: number
-    total: number
-    totalPages: number
-  }
-}
-
-// Données pour créer/modifier une campagne
-export interface CreateCampaignData extends Record<string, unknown> {
-  title: string
-  description: string
-  targetAmount: number
-  startDate: string
-  endDate?: string
-  imageUrl?: string
-  associationId: string
-}
-
-// Statistiques d'une campagne
-export interface CampaignStats {
-  totalDonations: number
-  averageDonation: number
-  donorsCount: number
-  progressPercentage: number
-  daysRemaining?: number
-  recentDonations: Donation[]
-}
+// Re-export pour compatibilité
+export type { Campaign, CampaignsPaginatedResponse, CampaignsFilters }
 
 // Service des campagnes
 export class CampaignsService {
@@ -66,18 +13,18 @@ export class CampaignsService {
   }
 
   // Récupérer une campagne par ID
-  static async getCampaign(id: string): Promise<ApiResponse<Campaign>> {
+  static async getCampaignById(id: string): Promise<ApiResponse<Campaign>> {
     return apiClient.get<Campaign>(`/hub/campaigns/${id}`)
   }
 
   // Récupérer les statistiques d'une campagne
-  static async getCampaignStats(id: string): Promise<ApiResponse<CampaignStats>> {
-    return apiClient.get<CampaignStats>(`/hub/campaigns/${id}/stats`)
+  static async getCampaignStats(id: string): Promise<ApiResponse<any>> {
+    return apiClient.get<any>(`/hub/campaigns/${id}/stats`)
   }
 
   // Récupérer les donations d'une campagne
-  static async getCampaignDonations(id: string, page = 1, limit = 20): Promise<ApiResponse<Donation[]>> {
-    return apiClient.get<Donation[]>(`/hub/campaigns/${id}/donations`, { page, limit })
+  static async getCampaignDonations(id: string, page = 1, limit = 20): Promise<ApiResponse<any[]>> {
+    return apiClient.get<any[]>(`/hub/campaigns/${id}/donations`, { page, limit })
   }
 
   // Rechercher des campagnes
@@ -89,12 +36,12 @@ export class CampaignsService {
   }
 
   // Créer une nouvelle campagne
-  static async createCampaign(data: CreateCampaignData): Promise<ApiResponse<Campaign>> {
+  static async createCampaign(data: Partial<Campaign>): Promise<ApiResponse<Campaign>> {
     return apiClient.post<Campaign>('/hub/campaigns', data)
   }
 
   // Mettre à jour une campagne
-  static async updateCampaign(id: string, data: Partial<CreateCampaignData>): Promise<ApiResponse<Campaign>> {
+  static async updateCampaign(id: string, data: Partial<Campaign>): Promise<ApiResponse<Campaign>> {
     return apiClient.put<Campaign>(`/hub/campaigns/${id}`, data)
   }
 
@@ -118,15 +65,15 @@ export class CampaignsService {
       donorName?: string
       donorEmail?: string
     }
-  ): Promise<ApiResponse<Donation>> {
-    return apiClient.post<Donation>(`/hub/campaigns/${campaignId}/donate`, data)
+  ): Promise<ApiResponse<any>> {
+    return apiClient.post<any>(`/hub/campaigns/${campaignId}/donate`, data)
   }
 }
 
 // Hooks React Query pour les campagnes
 export const useCampaigns = (filters?: CampaignsFilters) => {
   return useQuery({
-    queryKey: queryKeys.campaignsList(filters),
+    queryKey: ['campaigns', filters],
     queryFn: () => CampaignsService.getCampaigns(filters),
     staleTime: 1000 * 60 * 5, // 5 minutes
   })
@@ -134,15 +81,15 @@ export const useCampaigns = (filters?: CampaignsFilters) => {
 
 export const useCampaign = (id: string) => {
   return useQuery({
-    queryKey: queryKeys.campaignDetail(id),
-    queryFn: () => CampaignsService.getCampaign(id),
+    queryKey: ['campaign', id],
+    queryFn: () => CampaignsService.getCampaignById(id),
     enabled: !!id,
   })
 }
 
 export const useCampaignStats = (id: string) => {
   return useQuery({
-    queryKey: [...queryKeys.campaignDetail(id), 'stats'],
+    queryKey: ['campaign', id, 'stats'],
     queryFn: () => CampaignsService.getCampaignStats(id),
     enabled: !!id,
     staleTime: 1000 * 60 * 2, // 2 minutes pour les stats
@@ -151,7 +98,7 @@ export const useCampaignStats = (id: string) => {
 
 export const useCampaignDonations = (id: string, page = 1, limit = 20) => {
   return useQuery({
-    queryKey: [...queryKeys.campaignDetail(id), 'donations', page, limit],
+    queryKey: ['campaign', id, 'donations', page, limit],
     queryFn: () => CampaignsService.getCampaignDonations(id, page, limit),
     enabled: !!id,
   })
@@ -159,7 +106,7 @@ export const useCampaignDonations = (id: string, page = 1, limit = 20) => {
 
 export const useSearchCampaigns = (query: string, filters?: Partial<CampaignsFilters>) => {
   return useQuery({
-    queryKey: [...queryKeys.search, 'campaigns', query, filters],
+    queryKey: ['search', 'campaigns', query, filters],
     queryFn: () => CampaignsService.searchCampaigns(query, filters),
     enabled: query.length > 0,
     staleTime: 1000 * 60 * 2, // 2 minutes pour la recherche
@@ -171,11 +118,11 @@ export const useCreateCampaign = () => {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: (data: CreateCampaignData) => CampaignsService.createCampaign(data),
+    mutationFn: (data: Partial<Campaign>) => CampaignsService.createCampaign(data),
     onSuccess: (_, variables) => {
       // Invalider les caches pour refresh les listes
-      queryClient.invalidateQueries({ queryKey: queryKeys.campaigns })
-      queryClient.invalidateQueries({ queryKey: queryKeys.associationCampaigns(variables.associationId) })
+      queryClient.invalidateQueries({ queryKey: ['campaigns'] })
+      queryClient.invalidateQueries({ queryKey: ['campaign', variables.id] })
     },
   })
 }
@@ -184,12 +131,12 @@ export const useUpdateCampaign = () => {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<CreateCampaignData> }) => 
+    mutationFn: ({ id, data }: { id: string; data: Partial<Campaign> }) => 
       CampaignsService.updateCampaign(id, data),
     onSuccess: (_, variables) => {
       // Invalider les caches spécifiques
-      queryClient.invalidateQueries({ queryKey: queryKeys.campaignDetail(variables.id) })
-      queryClient.invalidateQueries({ queryKey: queryKeys.campaigns })
+      queryClient.invalidateQueries({ queryKey: ['campaign', variables.id] })
+      queryClient.invalidateQueries({ queryKey: ['campaigns'] })
     },
   })
 }
@@ -200,7 +147,7 @@ export const useDeleteCampaign = () => {
   return useMutation({
     mutationFn: (id: string) => CampaignsService.deleteCampaign(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.campaigns })
+      queryClient.invalidateQueries({ queryKey: ['campaigns'] })
     },
   })
 }
@@ -212,8 +159,8 @@ export const useToggleCampaignStatus = () => {
     mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) => 
       CampaignsService.toggleCampaignStatus(id, isActive),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.campaignDetail(variables.id) })
-      queryClient.invalidateQueries({ queryKey: queryKeys.campaigns })
+      queryClient.invalidateQueries({ queryKey: ['campaign', variables.id] })
+      queryClient.invalidateQueries({ queryKey: ['campaigns'] })
     },
   })
 }
@@ -234,9 +181,9 @@ export const useDonateToCampaign = () => {
     }) => CampaignsService.donateToCampaign(campaignId, data),
     onSuccess: (_, variables) => {
       // Invalider les caches pour refresh les données
-      queryClient.invalidateQueries({ queryKey: queryKeys.campaignDetail(variables.campaignId) })
-      queryClient.invalidateQueries({ queryKey: [...queryKeys.campaignDetail(variables.campaignId), 'stats'] })
-      queryClient.invalidateQueries({ queryKey: [...queryKeys.campaignDetail(variables.campaignId), 'donations'] })
+      queryClient.invalidateQueries({ queryKey: ['campaign', variables.campaignId] })
+      queryClient.invalidateQueries({ queryKey: ['campaign', variables.campaignId, 'stats'] })
+      queryClient.invalidateQueries({ queryKey: ['campaign', variables.campaignId, 'donations'] })
     },
   })
 }

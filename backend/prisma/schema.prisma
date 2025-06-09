@@ -30,6 +30,7 @@ model Tenant {
   
   // Relations
   users       User[]
+  memberships UserTenantMembership[] // Relations multi-tenant
   donations   Donation[]
   campaigns   Campaign[]
   gmahs       Gmah[]
@@ -57,7 +58,7 @@ enum StripeMode {
 // Table des utilisateurs avec isolation par tenant
 model User {
   id          String   @id @default(uuid())
-  tenantId    String   // Clé d'isolation
+  tenantId    String?  // Clé d'isolation (null pour utilisateurs globaux du hub)
   
   // Identifiants
   email       String
@@ -81,12 +82,14 @@ model User {
   updatedAt   DateTime @updatedAt
   
   // Relations
-  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant      Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   donations   Donation[]
   campaigns   Campaign[]
   gmahs       Gmah[]
+  memberships UserTenantMembership[] // Relations multi-tenant
   
   @@unique([tenantId, email]) // Unique email par tenant
+  @@unique([email], name: "unique_email_when_global") // Email unique pour utilisateurs globaux
   @@map("users")
 }
 
@@ -96,6 +99,29 @@ enum UserRole {
   TREASURER    // Trésorier
   MANAGER      // Gestionnaire
   MEMBER       // Membre standard
+}
+
+// Relations multi-tenant utilisateur
+model UserTenantMembership {
+  id          String   @id @default(uuid())
+  userId      String
+  tenantId    String
+  
+  // Rôle spécifique dans ce tenant
+  role        UserRole @default(MEMBER)
+  permissions Json     @default("[]")
+  
+  // Statut de la membership
+  isActive    Boolean  @default(true)
+  joinedAt    DateTime @default(now())
+  leftAt      DateTime?
+  
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, tenantId])
+  @@map("user_tenant_memberships")
 }
 
 // Table des dons avec isolation par tenant et source tracking

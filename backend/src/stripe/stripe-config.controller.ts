@@ -31,7 +31,7 @@ class StripeOnboardingDto {
 }
 
 @ApiTags('stripe-config')
-@Controller('api/stripe-config')
+@Controller('stripe-config')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class StripeConfigController {
   constructor(

@@ -5,7 +5,7 @@ import { Filter, X, ChevronDown, MapPin, Tag, CheckCircle, Calendar, DollarSign 
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Select } from '@/components/ui/select'
+import { CustomSelect } from '@/components/ui/custom-select'
 import { Badge } from '@/components/ui/badge'
 import { useUrlState } from '@/hooks/useUrlState'
 
@@ -166,11 +166,14 @@ export function FilterPanel({
               <Tag className="w-4 h-4 inline mr-1" />
               Catégorie
             </label>
-            <Select
-              options={categories.map(category => ({ label: category, value: category === 'Toutes les catégories' ? '' : category }))}
-              value={filters.category || ''}
-              onChange={(e) => 
-                handleFilterChange('category', e.target.value)
+            <CustomSelect
+              options={categories.map(category => ({ 
+                label: category, 
+                value: category === 'Toutes les catégories' ? 'all_categories' : category 
+              }))}
+              value={filters.category}
+              onChange={(e) =>
+                handleFilterChange('category', e.target.value === 'all_categories' ? '' : e.target.value)
               }
             />
           </div>
@@ -181,11 +184,14 @@ export function FilterPanel({
               <MapPin className="w-4 h-4 inline mr-1" />
               Localisation
             </label>
-            <Select
-              options={locations.map(location => ({ label: location, value: location === 'Toutes les locations' ? '' : location }))}
-              value={filters.location || ''}
-              onChange={(e) => 
-                handleFilterChange('location', e.target.value)
+            <CustomSelect
+              options={locations.map(location => ({ 
+                label: location, 
+                value: location === 'Toutes les locations' ? 'all_locations' : location 
+              }))}
+              value={filters.location}
+              onChange={(e) =>
+                handleFilterChange('location', e.target.value === 'all_locations' ? '' : e.target.value)
               }
             />
           </div>
@@ -196,16 +202,16 @@ export function FilterPanel({
               <CheckCircle className="w-4 h-4 inline mr-1" />
               Statut
             </label>
-            <Select
+            <CustomSelect
               options={[
-                { label: 'Toutes', value: '' },
+                { label: 'Toutes', value: 'all_status' },
                 { label: 'Vérifiées', value: 'true' },
                 { label: 'Non vérifiées', value: 'false' },
               ]}
-              value={filters.verified === null ? '' : filters.verified ? 'true' : 'false'}
+              value={filters.verified === null ? 'all_status' : filters.verified ? 'true' : 'false'}
               onChange={(e) => {
                 const value = e.target.value
-                if (value === '') handleFilterChange('verified', null)
+                if (value === 'all_status') handleFilterChange('verified', null)
                 else if (value === 'true') handleFilterChange('verified', true)
                 else handleFilterChange('verified', false)
               }}
@@ -258,16 +264,16 @@ export function FilterPanel({
                     <Calendar className="w-4 h-4 inline mr-1" />
                     Statut des campagnes
                   </label>
-                  <Select
+                  <CustomSelect
                     options={[
-                      { label: 'Tous les statuts', value: '' },
+                      { label: 'Tous les statuts', value: 'all_status' },
                       { label: 'Actives', value: 'active' },
                       { label: 'Terminées', value: 'completed' },
                       { label: 'À venir', value: 'upcoming' },
                     ]}
-                    value={filters.status || ''}
+                    value={filters.status || 'all_status'}
                     onChange={(e) => 
-                      handleFilterChange('status', e.target.value === '' ? null : e.target.value)
+                      handleFilterChange('status', e.target.value === 'all_status' ? null : e.target.value)
                     }
                   />
                 </div>

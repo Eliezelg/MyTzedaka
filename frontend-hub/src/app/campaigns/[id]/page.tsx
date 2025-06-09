@@ -24,7 +24,7 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
 import { useCampaign } from '@/hooks/useCampaign'
-import { DonationWidget } from '@/components/ui/donation-widget'
+import { DonationWidget } from '@/components/donation/DonationWidget'
 
 export default function CampaignDetailPage() {
   const params = useParams()
@@ -198,7 +198,7 @@ export default function CampaignDetailPage() {
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-orange-600">
-                    {Math.max(0, Math.ceil((new Date(campaign.endDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))}
+                    {campaign.endDate ? Math.max(0, Math.ceil((new Date(campaign.endDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))) : 0}
                   </div>
                   <div className="text-sm text-gray-600">jours restants</div>
                 </div>
@@ -262,7 +262,7 @@ export default function CampaignDetailPage() {
                             </div>
                             <div className="flex justify-between">
                               <span>Fin:</span>
-                              <span>{new Date(campaign.endDate).toLocaleDateString('fr-FR')}</span>
+                              <span>{campaign.endDate ? new Date(campaign.endDate).toLocaleDateString('fr-FR') : 'Date non définie'}</span>
                             </div>
                             <div className="flex justify-between">
                               <span>Devise:</span>

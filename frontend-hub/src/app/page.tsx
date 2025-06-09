@@ -68,9 +68,9 @@ function StatsSection() {
 
   // Calcul des statistiques à partir des données existantes
   const totalAssociations = associations?.data?.length || 0
-  const totalCampaigns = campaigns?.length || 0
-  const activeCampaigns = campaigns?.filter((c: any) => c.isActive)?.length || 0
-  const totalRaised = campaigns?.reduce((sum: number, c: any) => sum + (c.raisedAmount || 0), 0) || 0
+  const totalCampaigns = campaigns?.campaigns?.length || 0
+  const activeCampaigns = campaigns?.campaigns?.filter((c) => c.isActive)?.length || 0
+  const totalRaised = campaigns?.campaigns?.reduce((sum: number, c) => sum + (Number(c.raised) || 0), 0) || 0
 
   const stats = [
     {
@@ -270,7 +270,7 @@ function PopularCampaigns() {
     )
   }
 
-  const activeCampaigns = campaigns?.filter(c => c.isActive)?.slice(0, 6) || []
+  const activeCampaignsList = campaigns?.campaigns?.filter(c => c.isActive)?.slice(0, 6) || []
 
   return (
     <section className="py-16 bg-white">
@@ -280,18 +280,18 @@ function PopularCampaigns() {
           <p className="text-gray-600">Participez aux campagnes qui vous tiennent à cœur</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {activeCampaigns.map((campaign) => {
-            const progress = campaign.goalAmount 
-              ? Math.min((campaign.raisedAmount / campaign.goalAmount) * 100, 100) 
+          {activeCampaignsList.map((campaign) => {
+            const progress = campaign.goal 
+              ? Math.min((Number(campaign.raised || 0) / Number(campaign.goal)) * 100, 100) 
               : 0
 
             return (
               <Link href={`/campaigns/${campaign.id}`} key={campaign.id}>
                 <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer">
                   <div className="relative h-48">
-                    {campaign.image ? (
+                    {campaign.coverImage ? (
                       <img 
-                        src={campaign.image} 
+                        src={campaign.coverImage} 
                         alt={campaign.title}
                         className="w-full h-full object-cover rounded-t-lg"
                       />
@@ -310,7 +310,7 @@ function PopularCampaigns() {
                         {campaign.description}
                       </p>
                     )}
-                    {campaign.goalAmount && (
+                    {campaign.goal && (
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-600">Collecté</span>
@@ -324,10 +324,10 @@ function PopularCampaigns() {
                         </div>
                         <div className="flex justify-between text-sm">
                           <span className="font-semibold text-gray-900">
-                            {campaign.raisedAmount?.toLocaleString('fr-FR')} €
+                            {Number(campaign.raised || 0)?.toLocaleString('fr-FR')} €
                           </span>
                           <span className="text-gray-600">
-                            / {campaign.goalAmount.toLocaleString('fr-FR')} €
+                            / {Number(campaign.goal)?.toLocaleString('fr-FR')} €
                           </span>
                         </div>
                       </div>

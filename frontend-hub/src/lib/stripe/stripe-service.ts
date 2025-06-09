@@ -15,7 +15,7 @@ export class StripeService {
    */
   static async createDonation(donationData: DonationData): Promise<CreateDonationResponse> {
     try {
-      const response = await apiClient.post('/donations/create', donationData);
+      const response = await apiClient.post<CreateDonationResponse>('/donations/create', donationData as unknown as Record<string, unknown>);
       return response.data;
     } catch (error) {
       console.error('Error creating donation:', error);
@@ -28,7 +28,7 @@ export class StripeService {
    */
   static async confirmDonation(paymentIntentId: string): Promise<ConfirmDonationResponse> {
     try {
-      const response = await apiClient.post(`/donations/confirm/${paymentIntentId}`);
+      const response = await apiClient.post<ConfirmDonationResponse>(`/donations/confirm/${paymentIntentId}`);
       return response.data;
     } catch (error) {
       console.error('Error confirming donation:', error);

@@ -1,16 +1,23 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
-import { Search, Filter, Calendar, Target, TrendingUp, Clock } from 'lucide-react'
-
+import { useState, useMemo } from 'react'
+import { Search, Filter, Star, MapPin, Calendar, Users, TrendingUp, Target, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 import { useCampaigns } from '@/hooks/useCampaign'
+import { Campaign } from '@/types/campaign'
+import Image from 'next/image'
+import Link from 'next/link'
 
 export default function CampaignsPage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -25,13 +32,13 @@ export default function CampaignsPage() {
     status: statusFilter === 'all' ? undefined : statusFilter
   })
 
-  const filteredCampaigns = campaigns?.filter(campaign => 
+  const filteredCampaigns = campaigns?.campaigns?.filter((campaign: Campaign) => 
     campaign.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     campaign.description?.toLowerCase().includes(searchQuery.toLowerCase())
   ) || []
 
-  const getStatusBadge = (campaign: any) => {
-    const progress = campaign.goalAmount ? (campaign.raisedAmount / campaign.goalAmount) * 100 : 0
+  const getStatusBadge = (campaign: Campaign) => {
+    const progress = campaign.goal > 0 ? (campaign.raised / campaign.goal) * 100 : 0
     
     if (progress >= 100) {
       return <Badge variant="secondary" className="bg-green-100 text-green-800">Complétée</Badge>
@@ -103,21 +110,21 @@ export default function CampaignsPage() {
           
           <div className="flex gap-2">
             <Button
-              variant={statusFilter === 'all' ? 'default' : 'outline'}
+              variant={statusFilter === 'all' ? 'primary' : 'secondary'}
               onClick={() => setStatusFilter('all')}
               size="sm"
             >
               Toutes
             </Button>
             <Button
-              variant={statusFilter === 'active' ? 'default' : 'outline'}
+              variant={statusFilter === 'active' ? 'primary' : 'secondary'}
               onClick={() => setStatusFilter('active')}
               size="sm"
             >
               Actives
             </Button>
             <Button
-              variant={statusFilter === 'completed' ? 'default' : 'outline'}
+              variant={statusFilter === 'completed' ? 'primary' : 'secondary'}
               onClick={() => setStatusFilter('completed')}
               size="sm"
             >
@@ -135,7 +142,7 @@ export default function CampaignsPage() {
               <Target className="h-8 w-8 text-blue-600" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Campagnes</p>
-                <p className="text-2xl font-bold text-gray-900">{campaigns?.length || 0}</p>
+                <p className="text-2xl font-bold text-gray-900">{campaigns?.campaigns?.length || 0}</p>
               </div>
             </div>
           </CardContent>
@@ -148,7 +155,7 @@ export default function CampaignsPage() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Campagnes Actives</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {campaigns?.filter(c => c.isActive).length || 0}
+                  {campaigns?.campaigns?.filter((c: Campaign) => c.isActive).length || 0}
                 </p>
               </div>
             </div>
@@ -162,7 +169,7 @@ export default function CampaignsPage() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Se Terminent Bientôt</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {campaigns?.filter(c => {
+                  {campaigns?.campaigns?.filter((c: Campaign) => {
                     if (!c.endDate) return false
                     const daysLeft = Math.ceil((new Date(c.endDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
                     return daysLeft <= 7 && daysLeft > 0
@@ -180,7 +187,7 @@ export default function CampaignsPage() {
           <p className="text-gray-500 text-lg">Aucune campagne trouvée</p>
           {searchQuery && (
             <Button 
-              variant="outline" 
+              variant="secondary"
               onClick={() => setSearchQuery('')}
               className="mt-4"
             >
@@ -190,10 +197,8 @@ export default function CampaignsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCampaigns.map((campaign) => {
-            const progress = campaign.goalAmount 
-              ? Math.min((campaign.raisedAmount / campaign.goalAmount) * 100, 100) 
-              : 0
+          {filteredCampaigns.map((campaign: Campaign) => {
+            const progress = campaign.goal > 0 ? Math.min((campaign.raised / campaign.goal) * 100, 100) : 0
 
             return (
               <Link href={`/campaigns/${campaign.id}`} key={campaign.id}>
@@ -201,9 +206,9 @@ export default function CampaignsPage() {
                   <CardContent className="p-0">
                     {/* Image de la campagne */}
                     <div className="relative h-48 w-full">
-                      {campaign.image ? (
+                      {campaign.coverImage ? (
                         <Image
-                          src={campaign.image}
+                          src={campaign.coverImage}
                           alt={campaign.title}
                           fill
                           className="object-cover rounded-t-lg"
@@ -236,7 +241,7 @@ export default function CampaignsPage() {
                       )}
 
                       {/* Progression */}
-                      {campaign.goalAmount && (
+                      {campaign.goal > 0 && (
                         <div className="mb-4">
                           <div className="flex justify-between text-sm mb-2">
                             <span className="text-gray-600">Collecté</span>
@@ -247,10 +252,10 @@ export default function CampaignsPage() {
                           <Progress value={progress} className="h-2 mb-2" />
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-900 font-medium">
-                              {campaign.raisedAmount?.toLocaleString('fr-FR')} €
+                              {campaign.raised.toLocaleString('fr-FR')} €
                             </span>
                             <span className="text-gray-600">
-                              / {campaign.goalAmount.toLocaleString('fr-FR')} €
+                              / {campaign.goal.toLocaleString('fr-FR')} €
                             </span>
                           </div>
                         </div>

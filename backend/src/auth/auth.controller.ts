@@ -33,6 +33,17 @@ export class AuthController {
     return this.authService.register(registerDto);
   }
 
+  @Post('register-hub')
+  async registerHub(@Body() registerDto: RegisterDto) {
+    return this.authService.registerHub(registerDto);
+  }
+
+  @Post('login-hub')
+  @HttpCode(HttpStatus.OK)
+  async loginHub(@Body() loginDto: LoginDto) {
+    return this.authService.loginHub(loginDto);
+  }
+
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
