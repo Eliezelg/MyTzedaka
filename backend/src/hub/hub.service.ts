@@ -755,6 +755,7 @@ export class HubService {
     country?: string;
     website?: string;
     tenantId?: string;
+    userId: string; // ID de l'utilisateur créateur
   }): Promise<any> {
     try {
       // Créer un nouveau tenant pour cette association
@@ -798,13 +799,208 @@ export class HubService {
         }
       });
 
+      // Vérifier d'abord que l'utilisateur existe
+      const existingUser = await this.prisma.user.findUnique({
+        where: { id: associationData.userId }
+      });
+      
+      if (!existingUser) {
+        throw new Error(`Utilisateur avec l'ID ${associationData.userId} n'existe pas`);
+      }
+      
+      // Créer automatiquement l'UserTenantMembership avec rôle ADMIN pour le créateur
+      const adminMembership = await (this.prisma as any).userTenantMembership.create({
+        data: {
+          userId: associationData.userId,
+          tenantId: tenant.id,
+          role: 'ADMIN', // Le créateur devient automatiquement admin
+          isActive: true,
+        }
+      });
+
       return {
         association: newAssociation,
-        tenant: tenant
+        tenant: tenant,
+        adminMembership: adminMembership
       };
     } catch (error) {
       console.error('❌ Erreur createAssociation:', error);
       throw new Error('Erreur lors de la création de l\'association');
+    }
+  }
+
+  /**
+   * Crée un utilisateur de test pour le développement
+   */
+  async createTestUser(userData: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    cognitoId: string;
+  }): Promise<any> {
+    try {
+      const newUser = await this.prisma.user.create({
+        data: {
+          email: userData.email,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          cognitoId: userData.cognitoId,
+          role: 'MEMBER',
+          isActive: true,
+        }
+      });
+
+      return newUser;
+    } catch (error) {
+      console.error('❌ Erreur createTestUser:', error);
+      throw new Error('Erreur lors de la création de l\'utilisateur de test');
+    }
+  }
+
+  /**
+   * Récupère la liste des administrateurs d'une association
+   */
+  async getAssociationAdmins(tenantId: string): Promise<any> {
+    try {
+      const admins = await (this.prisma as any).userTenantMembership.findMany({
+        where: {
+          tenantId: tenantId,
+          isActive: true,
+          role: {
+            in: ['ADMIN', 'MANAGER']
+          }
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              firstName: true,
+              lastName: true,
+            }
+          }
+        }
+      });
+
+      return admins.map((membership: any) => ({
+        id: membership.user.id,
+        email: membership.user.email,
+        firstName: membership.user.firstName,
+        lastName: membership.user.lastName,
+        role: membership.role,
+        joinedAt: membership.joinedAt,
+        isCreator: membership.role === 'ADMIN' // Logique simplifiée
+      }));
+    } catch (error) {
+      console.error('❌ Erreur getAssociationAdmins:', error);
+      throw new Error('Erreur lors de la récupération des administrateurs');
+    }
+  }
+
+  /**
+   * Ajoute un administrateur à une association
+   */
+  async addAssociationAdmin(tenantId: string, adminData: {
+    email: string;
+    role?: string;
+  }): Promise<any> {
+    try {
+      // Chercher l'utilisateur par email
+      const user = await this.prisma.user.findFirst({
+        where: { email: adminData.email }
+      });
+
+      if (!user) {
+        throw new Error(`Utilisateur avec l'email ${adminData.email} n'existe pas`);
+      }
+
+      // Vérifier s'il n'est pas déjà admin de cette association
+      const existingMembership = await (this.prisma as any).userTenantMembership.findUnique({
+        where: {
+          userId_tenantId: {
+            userId: user.id,
+            tenantId: tenantId
+          }
+        }
+      });
+
+      if (existingMembership) {
+        throw new Error('Cet utilisateur est déjà membre de cette association');
+      }
+
+      // Créer le membership
+      const newMembership = await (this.prisma as any).userTenantMembership.create({
+        data: {
+          userId: user.id,
+          tenantId: tenantId,
+          role: adminData.role || 'MANAGER',
+          isActive: true,
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              firstName: true,
+              lastName: true,
+            }
+          }
+        }
+      });
+
+      return {
+        id: newMembership.user.id,
+        email: newMembership.user.email,
+        firstName: newMembership.user.firstName,
+        lastName: newMembership.user.lastName,
+        role: newMembership.role,
+        joinedAt: newMembership.joinedAt,
+        isCreator: false
+      };
+    } catch (error) {
+      console.error('❌ Erreur addAssociationAdmin:', error);
+      throw new Error(error.message || 'Erreur lors de l\'ajout de l\'administrateur');
+    }
+  }
+
+  /**
+   * Retire un administrateur d'une association
+   */
+  async removeAssociationAdmin(tenantId: string, userId: string): Promise<any> {
+    try {
+      // Vérifier que le membership existe
+      const membership = await (this.prisma as any).userTenantMembership.findUnique({
+        where: {
+          userId_tenantId: {
+            userId: userId,
+            tenantId: tenantId
+          }
+        }
+      });
+
+      if (!membership) {
+        throw new Error('Cet utilisateur n\'est pas administrateur de cette association');
+      }
+
+      // Ne pas permettre de retirer le créateur (premier admin)
+      if (membership.role === 'ADMIN') {
+        throw new Error('Impossible de retirer le créateur de l\'association');
+      }
+
+      // Supprimer le membership
+      await (this.prisma as any).userTenantMembership.delete({
+        where: {
+          userId_tenantId: {
+            userId: userId,
+            tenantId: tenantId
+          }
+        }
+      });
+
+      return { message: 'Administrateur retiré avec succès' };
+    } catch (error) {
+      console.error('❌ Erreur removeAssociationAdmin:', error);
+      throw new Error(error.message || 'Erreur lors de la suppression de l\'administrateur');
     }
   }
 }

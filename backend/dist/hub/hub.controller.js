@@ -63,6 +63,18 @@ let HubController = class HubController {
     async updateDonorGlobalStats(donorId) {
         return this.hubService.updateDonorGlobalStats(donorId);
     }
+    async createTestUser(userData) {
+        return this.hubService.createTestUser(userData);
+    }
+    async getAssociationAdmins(tenantId) {
+        return this.hubService.getAssociationAdmins(tenantId);
+    }
+    async addAssociationAdmin(tenantId, adminData) {
+        return this.hubService.addAssociationAdmin(tenantId, adminData);
+    }
+    async removeAssociationAdmin(tenantId, userId) {
+        return this.hubService.removeAssociationAdmin(tenantId, userId);
+    }
     async test() {
         return { message: 'Hub Controller fonctionne !', timestamp: new Date().toISOString() };
     }
@@ -194,6 +206,40 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], HubController.prototype, "updateDonorGlobalStats", null);
+__decorate([
+    (0, common_1.Post)('test-user'),
+    (0, swagger_1.ApiOperation)({ summary: 'Crée un utilisateur de test (développement uniquement)' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], HubController.prototype, "createTestUser", null);
+__decorate([
+    (0, common_1.Get)('associations/:tenantId/admins'),
+    (0, swagger_1.ApiOperation)({ summary: 'Récupère la liste des administrateurs d\'une association' }),
+    __param(0, (0, common_1.Param)('tenantId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], HubController.prototype, "getAssociationAdmins", null);
+__decorate([
+    (0, common_1.Post)('associations/:tenantId/admins'),
+    (0, swagger_1.ApiOperation)({ summary: 'Ajoute un administrateur à une association' }),
+    __param(0, (0, common_1.Param)('tenantId')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], HubController.prototype, "addAssociationAdmin", null);
+__decorate([
+    (0, common_1.Delete)('associations/:tenantId/admins/:userId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Retire un administrateur d\'une association' }),
+    __param(0, (0, common_1.Param)('tenantId')),
+    __param(1, (0, common_1.Param)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], HubController.prototype, "removeAssociationAdmin", null);
 __decorate([
     (0, common_1.Get)('test'),
     __metadata("design:type", Function),

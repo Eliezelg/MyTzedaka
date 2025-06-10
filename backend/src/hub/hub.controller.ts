@@ -38,6 +38,7 @@ export class HubController {
     city?: string;
     country?: string;
     website?: string;
+    userId: string; // ID de l'utilisateur créateur
   }) {
     return this.hubService.createAssociation(associationData);
   }
@@ -142,6 +143,44 @@ export class HubController {
   @ApiResponse({ status: 200, type: DonorProfileDto })
   async updateDonorGlobalStats(@Param('donorId') donorId: string) {
     return this.hubService.updateDonorGlobalStats(donorId);
+  }
+
+  @Post('test-user')
+  @ApiOperation({ summary: 'Crée un utilisateur de test (développement uniquement)' })
+  async createTestUser(@Body() userData: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    cognitoId: string;
+  }) {
+    return this.hubService.createTestUser(userData);
+  }
+
+  @Get('associations/:tenantId/admins')
+  @ApiOperation({ summary: 'Récupère la liste des administrateurs d\'une association' })
+  async getAssociationAdmins(@Param('tenantId') tenantId: string) {
+    return this.hubService.getAssociationAdmins(tenantId);
+  }
+
+  @Post('associations/:tenantId/admins')
+  @ApiOperation({ summary: 'Ajoute un administrateur à une association' })
+  async addAssociationAdmin(
+    @Param('tenantId') tenantId: string,
+    @Body() adminData: {
+      email: string;
+      role?: string;
+    }
+  ) {
+    return this.hubService.addAssociationAdmin(tenantId, adminData);
+  }
+
+  @Delete('associations/:tenantId/admins/:userId')
+  @ApiOperation({ summary: 'Retire un administrateur d\'une association' })
+  async removeAssociationAdmin(
+    @Param('tenantId') tenantId: string,
+    @Param('userId') userId: string
+  ) {
+    return this.hubService.removeAssociationAdmin(tenantId, userId);
   }
 
   /**

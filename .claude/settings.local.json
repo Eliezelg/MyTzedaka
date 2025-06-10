@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx jest:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(ls:*)",
+      "Bash(npm run build:*)",
+      "Bash(export NODE_OPTIONS=--max-old-space-size=4096)",
+      "Bash(npx nest build:*)",
+      "Bash(timeout 60 npm run build)",
+      "Bash(find:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(true)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git config:*)"
+    ],
+    "deny": []
+  }
+}

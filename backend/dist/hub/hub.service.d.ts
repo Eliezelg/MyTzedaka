@@ -48,5 +48,18 @@ export declare class HubService {
         country?: string;
         website?: string;
         tenantId?: string;
+        userId: string;
     }): Promise<any>;
+    createTestUser(userData: {
+        email: string;
+        firstName: string;
+        lastName: string;
+        cognitoId: string;
+    }): Promise<any>;
+    getAssociationAdmins(tenantId: string): Promise<any>;
+    addAssociationAdmin(tenantId: string, adminData: {
+        email: string;
+        role?: string;
+    }): Promise<any>;
+    removeAssociationAdmin(tenantId: string, userId: string): Promise<any>;
 }

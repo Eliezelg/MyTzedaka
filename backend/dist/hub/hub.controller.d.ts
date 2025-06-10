@@ -21,6 +21,7 @@ export declare class HubController {
         city?: string;
         country?: string;
         website?: string;
+        userId: string;
     }): Promise<any>;
     getGlobalStats(): Promise<HubStatsDto>;
     getPopularCampaigns(limit?: string): Promise<any[]>;
@@ -57,6 +58,18 @@ export declare class HubController {
     }): Promise<any>;
     getDonorGlobalHistory(donorId: string): Promise<DonorProfileDto>;
     updateDonorGlobalStats(donorId: string): Promise<DonorProfileDto>;
+    createTestUser(userData: {
+        email: string;
+        firstName: string;
+        lastName: string;
+        cognitoId: string;
+    }): Promise<any>;
+    getAssociationAdmins(tenantId: string): Promise<any>;
+    addAssociationAdmin(tenantId: string, adminData: {
+        email: string;
+        role?: string;
+    }): Promise<any>;
+    removeAssociationAdmin(tenantId: string, userId: string): Promise<any>;
     test(): Promise<{
         message: string;
         timestamp: string;

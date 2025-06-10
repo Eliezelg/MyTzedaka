@@ -598,3 +598,90 @@ POST /api/stripe-config/:tenantId/webhook        // Webhook handler
 4. Tests end-to-end donation flow
 
 ```
+
+## 🔐 **Nouvelle fonctionnalité : Gestion des administrateurs d'association**
+
+### ✨ **Fonctionnalités implémentées**
+
+#### **1. Attribution automatique du rôle admin**
+- ✅ **Créateur = Admin automatique :** Lors de la création d'association, le créateur devient automatiquement administrateur
+- ✅ **UserTenantMembership :** Création automatique du lien utilisateur-tenant avec rôle ADMIN
+- ✅ **Validation :** Vérification de l'existence de l'utilisateur avant attribution
+
+#### **2. Dashboard de gestion d'association**
+- ✅ **Interface complète :** Dashboard accessible via `/associations/[slug]/dashboard`
+- ✅ **Statistiques :** Vue d'ensemble des membres, admins, donations, campagnes
+- ✅ **Gestion des admins :** Interface pour ajouter/retirer des administrateurs
+- ✅ **Sécurité :** Protection contre la suppression du créateur
+
+#### **3. APIs backend pour la gestion des admins**
+- ✅ **GET `/api/hub/associations/:tenantId/admins`** - Liste des administrateurs
+- ✅ **POST `/api/hub/associations/:tenantId/admins`** - Ajouter un administrateur
+- ✅ **DELETE `/api/hub/associations/:tenantId/admins/:userId`** - Retirer un administrateur
+- ✅ **POST `/api/hub/test-user`** - Créer un utilisateur de test (développement)
+
+### 🏗️ **Architecture technique**
+
+#### **Modèle de données**
+```prisma
+model UserTenantMembership {
+  userId      String
+  tenantId    String
+  role        UserRole @default(MEMBER) // ADMIN, MANAGER, MEMBER
+  isActive    Boolean  @default(true)
+  joinedAt    DateTime @default(now())
+}
+```
+
+#### **Rôles et permissions**
+- **ADMIN :** Créateur de l'association (ne peut pas être retiré)
+- **MANAGER :** Administrateur ajouté (peut être retiré)
+- **MEMBER :** Membre standard
+
+#### **Flux de création d'association**
+1. **Utilisateur crée association** → Frontend appelle API
+2. **Backend crée tenant** → Slug unique généré
+3. **Backend crée association** → Liée au tenant
+4. **Backend crée membership** → Créateur = ADMIN automatique
+5. **Retour complet** → Association + tenant + membership
+
+### 🎨 **Interface utilisateur**
+
+#### **Dashboard features**
+- **📊 Statistiques rapides :** Membres, admins, donations, campagnes
+- **👥 Gestion des admins :** Ajouter par email, liste avec rôles
+- **🛡️ Sécurité :** Badges rôles, protection créateur
+- **📱 Design responsive :** Interface moderne avec Tailwind CSS
+
+#### **Pages disponibles**
+- `/associations/create` - Création d'association
+- `/associations/[slug]` - Page publique de l'association
+- `/associations/[slug]/dashboard` - Dashboard de gestion (admins uniquement)
+
+### 🧪 **Tests et validation**
+
+#### **Tests API réalisés**
+```bash
+# Création utilisateur de test
+POST /api/hub/test-user ✅ 201
+
+# Création association avec admin automatique  
+POST /api/hub/associations ✅ 201
+- Association créée ✅
+- Tenant créé ✅ 
+- Admin membership créé ✅
+
+# Gestion des admins
+GET /api/hub/associations/:tenantId/admins ✅
+POST /api/hub/associations/:tenantId/admins ✅
+DELETE /api/hub/associations/:tenantId/admins/:userId ✅
+```
+
+### 🚀 **Prochaines étapes recommandées**
+- [ ] Authentification utilisateur avec AWS Cognito
+- [ ] Middleware de vérification des permissions
+- [ ] Notifications email pour les invitations admin
+- [ ] Logs d'audit pour les actions admin
+- [ ] Tests unitaires et d'intégration automatisés
+
+---
