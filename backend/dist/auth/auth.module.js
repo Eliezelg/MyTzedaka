@@ -14,8 +14,10 @@ const passport_1 = require("@nestjs/passport");
 const auth_service_1 = require("./auth.service");
 const auth_controller_1 = require("./auth.controller");
 const jwt_strategy_1 = require("./strategies/jwt.strategy");
+const hub_jwt_strategy_1 = require("./strategies/hub-jwt.strategy");
 const cognito_strategy_1 = require("./strategies/cognito.strategy");
 const jwt_auth_guard_1 = require("./guards/jwt-auth.guard");
+const hub_jwt_auth_guard_1 = require("./guards/hub-jwt-auth.guard");
 const roles_guard_1 = require("./guards/roles.guard");
 const prisma_module_1 = require("../prisma/prisma.module");
 const tenant_module_1 = require("../tenant/tenant.module");
@@ -42,11 +44,13 @@ exports.AuthModule = AuthModule = __decorate([
         providers: [
             auth_service_1.AuthService,
             jwt_strategy_1.JwtStrategy,
+            hub_jwt_strategy_1.HubJwtStrategy,
             cognito_strategy_1.CognitoStrategy,
             jwt_auth_guard_1.JwtAuthGuard,
+            hub_jwt_auth_guard_1.HubJwtAuthGuard,
             roles_guard_1.RolesGuard,
         ],
-        exports: [auth_service_1.AuthService, jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard, passport_1.PassportModule],
+        exports: [auth_service_1.AuthService, jwt_auth_guard_1.JwtAuthGuard, hub_jwt_auth_guard_1.HubJwtAuthGuard, roles_guard_1.RolesGuard, passport_1.PassportModule],
     })
 ], AuthModule);
 //# sourceMappingURL=auth.module.js.map

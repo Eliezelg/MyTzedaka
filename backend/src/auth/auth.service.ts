@@ -331,6 +331,32 @@ export class AuthService {
     return user;
   }
 
+  async validateHubUser(payload: any) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        id: payload.sub,
+        tenantId: null, // Utilisateurs globaux du hub uniquement
+        isActive: true,
+      },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        cognitoId: true,
+        tenantId: true,
+        permissions: true,
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Utilisateur du hub non trouvé ou inactif');
+    }
+
+    return user;
+  }
+
   async getUserProfile(userId: string) {
     const tenant = getCurrentTenant();
     

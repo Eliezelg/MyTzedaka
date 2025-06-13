@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Query, Body, Param, UseGuards, Put, Delete, Patch } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
+import { Controller, Get, Post, Query, Body, Param, UseGuards, Put, Delete, Patch, Request } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { HubService } from './hub.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { HubJwtAuthGuard } from '../auth/guards/hub-jwt-auth.guard';
 import { HubStatsDto, AssociationSearchDto, DonorProfileDto } from './dto/hub.dto';
 
 @ApiTags('Hub Central')
@@ -24,23 +24,88 @@ export class HubController {
     return this.hubService.getAssociationById(id);
   }
 
+  @Get('associations/by-slug/:slug')
+  @ApiOperation({ summary: 'Récupère les détails d\'une association par slug' })
+  @ApiResponse({ status: 200, description: 'Détails de l\'association' })
+  @ApiResponse({ status: 404, description: 'Association non trouvée' })
+  async getAssociationBySlug(@Param('slug') slug: string) {
+    return this.hubService.getAssociationBySlug(slug);
+  }
+
+  @Get('my-associations')
+  @UseGuards(HubJwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Récupère les associations de l\'utilisateur connecté' })
+  @ApiResponse({ status: 200, description: 'Liste des associations dont l\'utilisateur est membre/admin' })
+  @ApiResponse({ status: 401, description: 'Non authentifié' })
+  async getMyAssociations(@Request() req) {
+    const userId = req.user.id;
+    return this.hubService.getMyAssociations(userId);
+  }
+
   @Post('associations')
+  @UseGuards(HubJwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Crée une nouvelle association' })
   @ApiResponse({ status: 201, description: 'Association créée avec succès' })
   @ApiResponse({ status: 400, description: 'Données invalides' })
-  async createAssociation(@Body() associationData: {
-    name: string;
-    description: string;
-    category?: string;
-    email: string;
-    phone?: string;
-    address?: string;
-    city?: string;
-    country?: string;
-    website?: string;
-    userId: string; // ID de l'utilisateur créateur
-  }) {
-    return this.hubService.createAssociation(associationData);
+  @ApiResponse({ status: 401, description: 'Non authentifié' })
+  async createAssociation(
+    @Body() associationData: {
+      name: string;
+      description?: string;
+      category?: string;
+      email: string;
+      phone?: string;
+      address?: string;
+      city?: string;
+      country?: string;
+      website?: string;
+      // Données progressives additionnelles
+      legalInfo?: any;
+      contactInfo?: any;
+      additionalInfo?: any;
+    },
+    @Request() req
+  ) {
+    // userId extrait automatiquement du token JWT
+    const userId = req.user.id;
+    
+    return this.hubService.createAssociation({
+      ...associationData,
+      userId // Injecté automatiquement côté serveur
+    });
+  }
+
+  @Patch('associations/:id')
+  @ApiOperation({ summary: 'Mettre à jour une association' })
+  @ApiParam({ name: 'id', description: 'ID de l\'association' })
+  @ApiResponse({ status: 200, description: 'Association mise à jour avec succès' })
+  @ApiResponse({ status: 404, description: 'Association non trouvée' })
+  async updateAssociation(
+    @Param('id') id: string,
+    @Body() updateData: {
+      name?: string
+      description?: string
+      email?: string
+      phone?: string
+      siteUrl?: string
+      city?: string
+      country?: string
+      location?: string
+      category?: string
+    }
+  ) {
+    console.log(' [PATCH /associations/:id] Mise à jour association:', { id, updateData })
+    
+    try {
+      const updatedAssociation = await this.hubService.updateAssociation(id, updateData)
+      console.log(' [PATCH /associations/:id] Association mise à jour:', updatedAssociation.id)
+      return updatedAssociation
+    } catch (error) {
+      console.error(' [PATCH /associations/:id] Erreur:', error.message)
+      throw error
+    }
   }
 
   @Get('stats')
@@ -89,7 +154,7 @@ export class HubController {
   }
 
   @Post('donor/profile')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(HubJwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Crée ou met à jour un profil donateur global' })
   @ApiResponse({ status: 201, type: DonorProfileDto })
@@ -104,7 +169,7 @@ export class HubController {
   }
 
   @Post('donor/:donorId/activity')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(HubJwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Enregistre une activité cross-tenant pour un donateur' })
   @ApiResponse({ status: 201, description: 'Activité enregistrée' })
@@ -128,7 +193,7 @@ export class HubController {
   }
 
   @Get('donor/:donorId/history')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(HubJwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Récupère l\'historique global d\'un donateur' })
   @ApiResponse({ status: 200, type: DonorProfileDto })
@@ -137,7 +202,7 @@ export class HubController {
   }
 
   @Post('donor/:donorId/update-stats')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(HubJwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Met à jour les statistiques globales d\'un donateur' })
   @ApiResponse({ status: 200, type: DonorProfileDto })

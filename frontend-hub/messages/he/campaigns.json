@@ -1,0 +1,110 @@
+{
+  "title": "קמפיינים",
+  "singleTitle": "קמפיין",
+  "create": "יצירת קמפיין",
+  "edit": "עריכת קמפיין",
+  "view": "צפייה בקמפיין",
+  "notFound": "קמפיין לא נמצא",
+  "list": {
+    "title": "רשימת קמפיינים",
+    "empty": "לא נמצאו קמפיינים",
+    "searchPlaceholder": "חיפוש קמפיין...",
+    "filterByCategory": "סינון לפי קטגוריה",
+    "filterByStatus": "סינון לפי סטטוס",
+    "sortBy": "מיון לפי",
+    "sortOptions": {
+      "name": "שם",
+      "created": "תאריך יצירה",
+      "deadline": "תאריך יעד",
+      "raised": "סכום שנגבה",
+      "progress": "התקדמות"
+    }
+  },
+  "details": {
+    "description": "תיאור",
+    "goal": "מטרה",
+    "raised": "נגבה",
+    "progress": "התקדמות",
+    "backers": "תורמים",
+    "daysLeft": "ימים נותרו",
+    "deadline": "תאריך יעד",
+    "created": "נוצר ב",
+    "status": "סטטוס",
+    "category": "קטגוריה",
+    "organizer": "מארגן",
+    "location": "מיקום",
+    "updates": "עדכונים",
+    "donations": "תרומות",
+    "share": "שיתוף"
+  },
+  "status": {
+    "active": "פעיל",
+    "completed": "הושלם",
+    "paused": "מושהה",
+    "cancelled": "בוטל",
+    "draft": "טיוטה"
+  },
+  "form": {
+    "basicInfo": "פרטים בסיסיים",
+    "title": "כותרת הקמפיין",
+    "description": "תיאור",
+    "category": "קטגוריה",
+    "goal": "מטרת הגיוס",
+    "deadline": "תאריך יעד",
+    "location": "מיקום",
+    "coverImage": "תמונת כיסוי",
+    "gallery": "גלריית תמונות",
+    "story": "סיפור הקמפיין",
+    "updates": "עדכונים",
+    "risks": "סיכונים ואתגרים",
+    "rewards": "תגמולים",
+    "visibility": "נראות",
+    "featured": "מומלץ",
+    "urgent": "דחוף",
+    "anonymous": "אפשר תרומות אנונימיות"
+  },
+  "actions": {
+    "donate": "תרומה",
+    "share": "שיתוף",
+    "follow": "מעקב",
+    "report": "דיווח",
+    "support": "תמיכה",
+    "viewAll": "צפייה בכל הקמפיינים"
+  },
+  "donation": {
+    "title": "ביצוע תרומה",
+    "amount": "סכום",
+    "suggestedAmounts": "סכומים מוצעים",
+    "customAmount": "סכום מותאם אישית",
+    "currency": "מטבע",
+    "anonymous": "תרומה אנונימית",
+    "message": "הודעה (אופציונלי)",
+    "paymentMethod": "אמצעי תשלום",
+    "recurring": "תרומה חוזרת",
+    "frequency": {
+      "monthly": "חודשי",
+      "quarterly": "רבעוני",
+      "yearly": "שנתי"
+    }
+  },
+  "progress": {
+    "funded": "{percent}% מומן",
+    "raised": "{amount} נגבו",
+    "backers": "{count} תורמים",
+    "daysLeft": "{days} ימים נותרו",
+    "hoursLeft": "{hours} שעות נותרו",
+    "completed": "המטרה הושגה!",
+    "exceeded": "המטרה עברה ב-{percent}%"
+  },
+  "messages": {
+    "createSuccess": "הקמפיין נוצר בהצלחה",
+    "updateSuccess": "הקמפיין עודכן בהצלחה",
+    "deleteSuccess": "הקמפיין נמחק בהצלחה",
+    "donationSuccess": "התרומה בוצעה בהצלחה",
+    "shareSuccess": "הקישור הועתק ללוח",
+    "createError": "שגיאה ביצירת הקמפיין",
+    "updateError": "שגיאה בעדכון הקמפיין",
+    "deleteError": "שגיאה במחיקת הקמפיין",
+    "donationError": "שגיאה בביצוע התרומה"
+  }
+}

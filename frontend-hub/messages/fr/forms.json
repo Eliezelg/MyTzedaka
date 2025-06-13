@@ -1,0 +1,56 @@
+{
+  "validation": {
+    "required": "Ce champ est obligatoire",
+    "email": "Veuillez saisir une adresse email valide",
+    "phone": "Veuillez saisir un numéro de téléphone valide",
+    "url": "Veuillez saisir une URL valide",
+    "minLength": "Minimum {min} caractères requis",
+    "maxLength": "Maximum {max} caractères autorisés",
+    "min": "La valeur doit être supérieure à {min}",
+    "max": "La valeur doit être inférieure à {max}",
+    "pattern": "Le format n'est pas valide",
+    "passwordMatch": "Les mots de passe ne correspondent pas",
+    "acceptTerms": "Vous devez accepter les conditions d'utilisation"
+  },
+  "labels": {
+    "name": "Nom",
+    "firstName": "Prénom",
+    "lastName": "Nom de famille",
+    "email": "Email",
+    "phone": "Téléphone",
+    "address": "Adresse",
+    "city": "Ville",
+    "country": "Pays",
+    "website": "Site web",
+    "description": "Description",
+    "category": "Catégorie",
+    "title": "Titre",
+    "message": "Message",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "currentPassword": "Mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "rememberMe": "Se souvenir de moi",
+    "acceptTerms": "J'accepte les conditions d'utilisation",
+    "newsletter": "S'abonner à la newsletter"
+  },
+  "placeholders": {
+    "enterName": "Saisissez le nom",
+    "enterEmail": "Saisissez votre email",
+    "enterPhone": "Saisissez votre téléphone",
+    "enterDescription": "Saisissez une description",
+    "searchPlaceholder": "Rechercher...",
+    "selectOption": "Sélectionnez une option"
+  },
+  "buttons": {
+    "submit": "Soumettre",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "reset": "Réinitialiser",
+    "clear": "Effacer",
+    "add": "Ajouter",
+    "remove": "Supprimer",
+    "upload": "Téléverser",
+    "browse": "Parcourir"
+  }
+}

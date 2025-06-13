@@ -1,6 +1,6 @@
 import { apiClient, type ApiResponse, queryKeys } from '../api-client'
 import { useQuery } from '@tanstack/react-query'
-import type { Association } from './associations-service'
+import type { AssociationFromAPI } from '@/types/association-with-campaigns'
 import type { Campaign } from '@/types/campaign'
 
 // Types pour les statistiques du Hub
@@ -43,7 +43,7 @@ export interface MonthlyGrowth {
 
 // Types pour les contenus featured
 export interface FeaturedContent {
-  featuredAssociations: Association[]
+  featuredAssociations: AssociationFromAPI[]
   featuredCampaigns: Campaign[]
   urgentCampaigns: Campaign[]
   successStories: SuccessStory[]
@@ -71,7 +71,7 @@ export interface GlobalSearchFilters extends Record<string, string | number | bo
 }
 
 export interface GlobalSearchResults {
-  associations: Association[]
+  associations: AssociationFromAPI[]
   campaigns: Campaign[]
   totalResults: number
   suggestions: string[]

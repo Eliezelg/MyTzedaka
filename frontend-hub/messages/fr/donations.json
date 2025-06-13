@@ -1,0 +1,108 @@
+{
+  "title": "Dons",
+  "singleTitle": "Don",
+  "make": "Faire un don",
+  "history": "Historique des dons",
+  "receipt": "Reçu fiscal",
+  "form": {
+    "amount": "Montant",
+    "currency": "Devise",
+    "suggestedAmounts": "Montants suggérés",
+    "customAmount": "Montant personnalisé",
+    "recipient": "Bénéficiaire",
+    "campaign": "Campagne",
+    "association": "Association",
+    "anonymous": "Don anonyme",
+    "message": "Message pour le bénéficiaire",
+    "dedication": "Dédicace",
+    "recurring": "Don récurrent",
+    "frequency": "Fréquence",
+    "frequencies": {
+      "once": "Une fois",
+      "monthly": "Mensuel",
+      "quarterly": "Trimestriel",
+      "yearly": "Annuel"
+    },
+    "paymentMethod": "Mode de paiement",
+    "paymentMethods": {
+      "card": "Carte bancaire",
+      "paypal": "PayPal",
+      "transfer": "Virement bancaire",
+      "check": "Chèque"
+    },
+    "fiscalReceipt": "Reçu fiscal souhaité",
+    "taxDeduction": "Déduction fiscale disponible"
+  },
+  "confirmation": {
+    "title": "Confirmation de don",
+    "amount": "Montant du don",
+    "recipient": "Bénéficiaire",
+    "date": "Date",
+    "reference": "Référence",
+    "paymentMethod": "Mode de paiement",
+    "status": "Statut",
+    "receipt": "Reçu fiscal",
+    "thankYou": "Merci pour votre générosité !",
+    "impact": "Votre don va faire une différence"
+  },
+  "status": {
+    "pending": "En attente",
+    "processing": "En cours de traitement",
+    "completed": "Terminé",
+    "failed": "Échoué",
+    "cancelled": "Annulé",
+    "refunded": "Remboursé"
+  },
+  "history": {
+    "title": "Historique des dons",
+    "empty": "Aucun don effectué",
+    "total": "Total des dons",
+    "thisYear": "Cette année",
+    "lastYear": "L'année dernière",
+    "allTime": "Depuis le début",
+    "filterBy": "Filtrer par",
+    "sortBy": "Trier par",
+    "exportData": "Exporter les données"
+  },
+  "recurring": {
+    "title": "Dons récurrents",
+    "manage": "Gérer les dons récurrents",
+    "cancel": "Annuler le don récurrent",
+    "modify": "Modifier le don récurrent",
+    "nextPayment": "Prochain prélèvement",
+    "totalDonated": "Total donné",
+    "since": "Depuis",
+    "pause": "Mettre en pause",
+    "resume": "Reprendre"
+  },
+  "tax": {
+    "deduction": "Déduction fiscale",
+    "rate": "Taux de déduction",
+    "eligible": "Éligible à la déduction fiscale",
+    "receiptNumber": "Numéro de reçu",
+    "downloadReceipt": "Télécharger le reçu",
+    "taxSavings": "Économies fiscales estimées"
+  },
+  "messages": {
+    "success": "Don effectué avec succès",
+    "pending": "Don en cours de traitement",
+    "failed": "Échec du don",
+    "cancelled": "Don annulé",
+    "refunded": "Don remboursé",
+    "receiptSent": "Reçu fiscal envoyé par email",
+    "recurringCancelled": "Don récurrent annulé",
+    "recurringModified": "Don récurrent modifié",
+    "thankYou": "Merci pour votre générosité !",
+    "impact": "Votre don fait une différence"
+  },
+  "amounts": {
+    "suggested": {
+      "small": "25€",
+      "medium": "50€",
+      "large": "100€",
+      "xlarge": "250€"
+    },
+    "minAmount": "Montant minimum : {amount}",
+    "maxAmount": "Montant maximum : {amount}"
+  }
+}

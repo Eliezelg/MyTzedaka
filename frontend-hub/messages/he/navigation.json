@@ -1,0 +1,31 @@
+{
+  "home": "בית",
+  "associations": "עמותות",
+  "campaigns": "קמפיינים",
+  "donations": "תרומות",
+  "search": "חיפוש",
+  "dashboard": "לוח בקרה",
+  "profile": "פרופיל",
+  "settings": "הגדרות",
+  "logout": "התנתקות",
+  "login": "התחברות",
+  "signup": "הרשמה",
+  "menu": "תפריט",
+  "breadcrumb": {
+    "home": "בית",
+    "associations": "עמותות",
+    "campaigns": "קמפיינים",
+    "dashboard": "לוח בקרה",
+    "create": "יצירה",
+    "edit": "עריכה",
+    "view": "צפייה"
+  },
+  "footer": {
+    "about": "אודות",
+    "contact": "יצירת קשר",
+    "terms": "תנאי שימוש",
+    "privacy": "מדיניות פרטיות",
+    "help": "עזרה",
+    "faq": "שאלות נפוצות"
+  }
+}

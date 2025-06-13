@@ -5,8 +5,10 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { HubJwtStrategy } from './strategies/hub-jwt.strategy';
 import { CognitoStrategy } from './strategies/cognito.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { HubJwtAuthGuard } from './guards/hub-jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { PrismaModule } from '../prisma/prisma.module';
 import { TenantModule } from '../tenant/tenant.module';
@@ -29,11 +31,13 @@ import { TenantModule } from '../tenant/tenant.module';
   controllers: [AuthController],
   providers: [
     AuthService, 
-    JwtStrategy, 
+    JwtStrategy,
+    HubJwtStrategy, 
     CognitoStrategy,
     JwtAuthGuard,
+    HubJwtAuthGuard, 
     RolesGuard,
   ],
-  exports: [AuthService, JwtAuthGuard, RolesGuard, PassportModule],
+  exports: [AuthService, JwtAuthGuard, HubJwtAuthGuard, RolesGuard, PassportModule],
 })
 export class AuthModule {}

@@ -1,0 +1,93 @@
+{
+  "title": "Associations",
+  "singleTitle": "Association",
+  "create": "Créer une association",
+  "edit": "Modifier l'association",
+  "view": "Voir l'association",
+  "notFound": "Association non trouvée",
+  "list": {
+    "title": "Liste des associations",
+    "empty": "Aucune association trouvée",
+    "searchPlaceholder": "Rechercher une association...",
+    "filterByCategory": "Filtrer par catégorie",
+    "sortBy": "Trier par",
+    "sortOptions": {
+      "name": "Nom",
+      "created": "Date de création",
+      "donations": "Nombre de dons",
+      "impact": "Impact"
+    }
+  },
+  "details": {
+    "about": "À propos",
+    "mission": "Mission",
+    "impact": "Impact",
+    "team": "Équipe",
+    "contact": "Contact",
+    "website": "Site web",
+    "email": "Email",
+    "phone": "Téléphone",
+    "address": "Adresse",
+    "founded": "Fondée en",
+    "category": "Catégorie",
+    "legalStatus": "Statut juridique",
+    "registrationNumber": "Numéro d'enregistrement",
+    "campaigns": "Campagnes",
+    "totalRaised": "Total collecté",
+    "activeCampaigns": "Campagnes actives",
+    "completedCampaigns": "Campagnes terminées",
+    "supporters": "Soutiens"
+  },
+  "form": {
+    "basicInfo": "Informations de base",
+    "name": "Nom de l'association",
+    "description": "Description",
+    "category": "Catégorie",
+    "website": "Site web",
+    "email": "Email de contact",
+    "phone": "Téléphone",
+    "address": "Adresse",
+    "city": "Ville",
+    "country": "Pays",
+    "logo": "Logo",
+    "coverImage": "Image de couverture",
+    "legalInfo": "Informations légales",
+    "legalStatus": "Statut juridique",
+    "registrationNumber": "Numéro d'enregistrement",
+    "founded": "Date de fondation",
+    "mission": "Mission et objectifs",
+    "bankInfo": "Informations bancaires",
+    "bankName": "Nom de la banque",
+    "iban": "IBAN",
+    "bic": "BIC/SWIFT"
+  },
+  "categories": {
+    "education": "Éducation",
+    "health": "Santé",
+    "environment": "Environnement",
+    "social": "Social",
+    "cultural": "Culturel",
+    "religious": "Religieux",
+    "humanitarian": "Humanitaire",
+    "sports": "Sports",
+    "animals": "Protection animale",
+    "development": "Développement",
+    "other": "Autre"
+  },
+  "actions": {
+    "donate": "Faire un don",
+    "follow": "Suivre",
+    "share": "Partager",
+    "contact": "Contacter",
+    "viewCampaigns": "Voir les campagnes",
+    "createCampaign": "Créer une campagne"
+  },
+  "messages": {
+    "createSuccess": "Association créée avec succès",
+    "updateSuccess": "Association mise à jour avec succès",
+    "deleteSuccess": "Association supprimée avec succès",
+    "createError": "Erreur lors de la création de l'association",
+    "updateError": "Erreur lors de la mise à jour de l'association",
+    "deleteError": "Erreur lors de la suppression de l'association"
+  }
+}

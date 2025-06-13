@@ -1,77 +1,47 @@
 import { apiClient, type ApiResponse, queryKeys } from '../api-client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Campaign } from '@/types/campaign'
+import { AssociationFromAPI } from '@/types/association-with-campaigns'
 
-// Types pour les associations
-export interface Association {
-  id: string
-  name: string
-  description: string
-  category: string
-  email: string
-  phone?: string
-  address?: string
-  city?: string
-  country?: string
-  zipCode?: string
-  website?: string
-  logoUrl?: string
-  bannerUrl?: string
-  isVerified: boolean
-  isActive: boolean
-  donationsCount: number
-  totalRaised: number
-  createdAt: string
-  updatedAt: string
-  
-  // Relations possibles
-  campaigns?: Campaign[]
-  donations?: Donation[]
-}
-
-export interface Donation {
-  id: string
-  amount: number
-  message?: string
-  isAnonymous: boolean
-  createdAt: string
-  donorName?: string
-  associationId: string
-  campaignId?: string
-}
-
-// Filtres pour les associations
+// Types spécifiques au service
 export interface AssociationsFilters extends Record<string, string | number | boolean | undefined> {
   category?: string
   city?: string
-  country?: string
   isVerified?: boolean
   search?: string
-  sortBy?: 'name' | 'totalRaised' | 'donationsCount' | 'createdAt'
+  sortBy?: string
   sortOrder?: 'asc' | 'desc'
   page?: number
   limit?: number
 }
 
-// Statistiques d'une association
-export interface AssociationStats {
-  donationsCount: number
-  totalRaised: number
-  campaignsCount: number
-  activeCampaignsCount: number
-  // Ajouter d'autres statistiques si nécessaire
+export interface UserAssociation {
+  association: AssociationFromAPI
+  tenant: {
+    id: string
+    slug: string
+    name: string
+  }
+  role: string
+  isActive: boolean
+  joinedAt: string
 }
 
 // Service des associations
 export class AssociationsService {
   // Récupérer la liste des associations
-  static async getAssociations(filters?: AssociationsFilters): Promise<ApiResponse<Association[]>> {
-    return apiClient.get<Association[]>('/hub/associations', filters)
+  static async getAssociations(filters?: AssociationsFilters): Promise<ApiResponse<AssociationFromAPI[]>> {
+    return apiClient.get<AssociationFromAPI[]>('/hub/associations', filters)
   }
 
   // Récupérer une association par ID
-  static async getAssociation(id: string): Promise<ApiResponse<Association>> {
-    return apiClient.get<Association>(`/hub/associations/${id}`)
+  static async getAssociation(id: string): Promise<ApiResponse<AssociationFromAPI>> {
+    return apiClient.get<AssociationFromAPI>(`/hub/associations/${id}`)
+  }
+
+  // Récupérer une association par slug
+  static async getAssociationBySlug(slug: string): Promise<ApiResponse<AssociationFromAPI>> {
+    return apiClient.get<AssociationFromAPI>(`/hub/associations/by-slug/${slug}`)
   }
 
   // Récupérer les campagnes d'une association
@@ -80,26 +50,26 @@ export class AssociationsService {
   }
 
   // Récupérer les statistiques d'une association
-  static async getAssociationStats(id: string): Promise<ApiResponse<AssociationStats>> {
+  static async getAssociationStats(id: string): Promise<ApiResponse<any>> {
     return apiClient.get(`/hub/associations/${id}/stats`)
   }
 
   // Rechercher des associations
-  static async searchAssociations(query: string, filters?: Partial<AssociationsFilters>): Promise<ApiResponse<Association[]>> {
-    return apiClient.get<Association[]>('/hub/associations/search', {
+  static async searchAssociations(query: string, filters?: Partial<AssociationsFilters>): Promise<ApiResponse<AssociationFromAPI[]>> {
+    return apiClient.get<AssociationFromAPI[]>('/hub/associations/search', {
       q: query,
       ...filters
     })
   }
 
   // Créer une nouvelle association (admin/auth)
-  static async createAssociation(data: Partial<Association>): Promise<ApiResponse<Association>> {
-    return apiClient.post<Association>('/hub/associations', data)
+  static async createAssociation(data: Partial<AssociationFromAPI>): Promise<ApiResponse<AssociationFromAPI>> {
+    return apiClient.post<AssociationFromAPI>('/hub/associations', data)
   }
 
   // Mettre à jour une association
-  static async updateAssociation(id: string, data: Partial<Association>): Promise<ApiResponse<Association>> {
-    return apiClient.patch<Association>(`/hub/associations/${id}`, data)
+  static async updateAssociation(id: string, data: Partial<AssociationFromAPI>): Promise<ApiResponse<AssociationFromAPI>> {
+    return apiClient.patch<AssociationFromAPI>(`/hub/associations/${id}`, data)
   }
 
   // Supprimer une association
@@ -128,6 +98,29 @@ export const useAssociation = (id: string) => {
   })
 }
 
+export const useAssociationBySlug = (slug: string) => {
+  return useQuery<AssociationFromAPI>({
+    queryKey: ['associationDetailBySlug', slug],
+    queryFn: async () => {
+      console.log('🔍 useAssociationBySlug - Fetching data for slug:', slug)
+      const response = await AssociationsService.getAssociationBySlug(slug)
+      console.log('🔍 useAssociationBySlug - Raw response:', response)
+      console.log('🔍 useAssociationBySlug - Response type:', typeof response)
+      console.log('🔍 useAssociationBySlug - Response keys:', Object.keys(response || {}))
+      
+      // Si l'api-client retourne une structure ApiResponse, extraire .data
+      // Sinon, retourner directement la réponse
+      if (response && typeof response === 'object' && 'data' in response) {
+        console.log('🔍 useAssociationBySlug - Extracting .data from ApiResponse')
+        return response.data
+      }
+      
+      return response // Déjà les données directes
+    },
+    enabled: !!slug,
+  })
+}
+
 export const useAssociationCampaigns = (id: string) => {
   return useQuery({
     queryKey: queryKeys.associationCampaigns(id),
@@ -153,7 +146,7 @@ export const useCreateAssociation = () => {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: (data: Partial<Association>) => AssociationsService.createAssociation(data),
+    mutationFn: (data: Partial<AssociationFromAPI>) => AssociationsService.createAssociation(data),
     onSuccess: () => {
       // Invalider les caches pour refresh les listes
       queryClient.invalidateQueries({ queryKey: queryKeys.associations })
@@ -165,12 +158,19 @@ export const useUpdateAssociation = () => {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Association> }) => 
+    mutationFn: ({ id, data }: { id: string; data: Partial<AssociationFromAPI> }) => 
       AssociationsService.updateAssociation(id, data),
-    onSuccess: (_, variables) => {
+    onSuccess: (response, variables) => {
       // Invalider les caches spécifiques
-      queryClient.invalidateQueries({ queryKey: queryKeys.associationDetail(variables.id) })
+      queryClient.invalidateQueries({ queryKey: ['associationDetailBySlug'] })
       queryClient.invalidateQueries({ queryKey: queryKeys.associations })
+      queryClient.invalidateQueries({ queryKey: queryKeys.associationDetail(variables.id) })
+      
+      // Extraire les données de la réponse API
+      const updatedAssociation = response.data || response
+      if (updatedAssociation?.tenant?.slug) {
+        queryClient.setQueryData(['associationDetailBySlug', updatedAssociation.tenant.slug], updatedAssociation)
+      }
     },
   })
 }

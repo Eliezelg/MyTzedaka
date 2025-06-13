@@ -1,0 +1,111 @@
+{
+  "title": "Tableau de bord",
+  "welcome": "Bienvenue, {name}",
+  "overview": "Vue d'ensemble",
+  "statistics": "Statistiques",
+  "quickActions": "Actions rapides",
+  "navigation": {
+    "overview": "Vue d'ensemble",
+    "associations": "Mes associations",
+    "campaigns": "Mes campagnes",
+    "donations": "Mes dons",
+    "profile": "Mon profil",
+    "settings": "Paramètres",
+    "help": "Aide"
+  },
+  "stats": {
+    "totalDonations": "Total des dons",
+    "totalRaised": "Total collecté",
+    "activeCampaigns": "Campagnes actives",
+    "supporters": "Soutiens",
+    "associations": "Associations",
+    "campaigns": "Campagnes",
+    "thisMonth": "Ce mois-ci",
+    "thisYear": "Cette année",
+    "allTime": "Depuis le début",
+    "growth": "Croissance",
+    "average": "Moyenne"
+  },
+  "quickActions": {
+    "createAssociation": "Créer une association",
+    "createCampaign": "Créer une campagne",
+    "makeDonation": "Faire un don",
+    "viewReports": "Voir les rapports",
+    "manageProfile": "Gérer le profil",
+    "inviteMembers": "Inviter des membres"
+  },
+  "recent": {
+    "activity": "Activité récente",
+    "donations": "Dons récents",
+    "campaigns": "Campagnes récentes",
+    "notifications": "Notifications récentes",
+    "empty": "Aucune activité récente"
+  },
+  "association": {
+    "manage": "Gérer l'association",
+    "members": "Membres",
+    "campaigns": "Campagnes",
+    "donations": "Dons reçus",
+    "reports": "Rapports",
+    "settings": "Paramètres",
+    "completion": "Complétion du profil",
+    "verification": "Vérification",
+    "documents": "Documents",
+    "bankAccount": "Compte bancaire"
+  },
+  "campaign": {
+    "manage": "Gérer la campagne",
+    "edit": "Modifier",
+    "publish": "Publier",
+    "pause": "Mettre en pause",
+    "resume": "Reprendre",
+    "complete": "Terminer",
+    "analytics": "Analyses",
+    "backers": "Soutiens",
+    "updates": "Mises à jour",
+    "share": "Partager"
+  },
+  "user": {
+    "role": "Rôle",
+    "permissions": "Permissions",
+    "lastActive": "Dernière activité",
+    "memberSince": "Membre depuis",
+    "totalContributions": "Contributions totales"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Tout marquer comme lu",
+    "settings": "Paramètres de notification",
+    "types": {
+      "donation": "Nouveau don",
+      "campaign": "Mise à jour de campagne",
+      "system": "Notification système",
+      "reminder": "Rappel"
+    }
+  },
+  "reports": {
+    "title": "Rapports",
+    "generate": "Générer un rapport",
+    "download": "Télécharger",
+    "dateRange": "Période",
+    "type": "Type de rapport",
+    "types": {
+      "donations": "Rapport des dons",
+      "campaigns": "Rapport des campagnes",
+      "fiscal": "Rapport fiscal",
+      "activity": "Rapport d'activité"
+    }
+  },
+  "settings": {
+    "title": "Paramètres",
+    "account": "Compte",
+    "privacy": "Confidentialité",
+    "notifications": "Notifications",
+    "payment": "Paiement",
+    "security": "Sécurité",
+    "preferences": "Préférences",
+    "language": "Langue",
+    "timezone": "Fuseau horaire",
+    "currency": "Devise"
+  }
+}

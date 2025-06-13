@@ -1,0 +1,108 @@
+{
+  "title": "תרומות",
+  "singleTitle": "תרומה",
+  "make": "ביצוע תרומה",
+  "history": "היסטוריית תרומות",
+  "receipt": "קבלה",
+  "form": {
+    "amount": "סכום",
+    "currency": "מטבע",
+    "suggestedAmounts": "סכומים מוצעים",
+    "customAmount": "סכום מותאם אישית",
+    "recipient": "מקבל",
+    "campaign": "קמפיין",
+    "association": "עמותה",
+    "anonymous": "תרומה אנונימית",
+    "message": "הודעה למקבל",
+    "dedication": "הקדשה",
+    "recurring": "תרומה חוזרת",
+    "frequency": "תדירות",
+    "frequencies": {
+      "once": "פעם אחת",
+      "monthly": "חודשי",
+      "quarterly": "רבעוני",
+      "yearly": "שנתי"
+    },
+    "paymentMethod": "אמצעי תשלום",
+    "paymentMethods": {
+      "card": "כרטיס אשראי",
+      "paypal": "PayPal",
+      "transfer": "העברה בנקאית",
+      "check": "שיק"
+    },
+    "fiscalReceipt": "קבלה לצרכי מס",
+    "taxDeduction": "זיכוי מס זמין"
+  },
+  "confirmation": {
+    "title": "אישור תרומה",
+    "amount": "סכום התרומה",
+    "recipient": "מקבל",
+    "date": "תאריך",
+    "reference": "מספר עסקה",
+    "paymentMethod": "אמצעי תשלום",
+    "status": "סטטוס",
+    "receipt": "קבלה",
+    "thankYou": "תודה על הנדיבות שלך!",
+    "impact": "התרומה שלך תעשה שינוי"
+  },
+  "status": {
+    "pending": "ממתין",
+    "processing": "בעיבוד",
+    "completed": "הושלם",
+    "failed": "נכשל",
+    "cancelled": "בוטל",
+    "refunded": "הוחזר"
+  },
+  "history": {
+    "title": "היסטוריית תרומות",
+    "empty": "לא בוצעו תרומות",
+    "total": "סה\"כ תרומות",
+    "thisYear": "השנה",
+    "lastYear": "השנה שעברה",
+    "allTime": "מתחילת הפעילות",
+    "filterBy": "סינון לפי",
+    "sortBy": "מיון לפי",
+    "exportData": "ייצוא נתונים"
+  },
+  "recurring": {
+    "title": "תרומות חוזרות",
+    "manage": "ניהול תרומות חוזרות",
+    "cancel": "ביטול תרומה חוזרת",
+    "modify": "שינוי תרומה חוזרת",
+    "nextPayment": "התשלום הבא",
+    "totalDonated": "סה\"כ נתרם",
+    "since": "מאז",
+    "pause": "השהיה",
+    "resume": "חידוש"
+  },
+  "tax": {
+    "deduction": "זיכוי מס",
+    "rate": "שיעור זיכוי",
+    "eligible": "זכאי לזיכוי מס",
+    "receiptNumber": "מספר קבלה",
+    "downloadReceipt": "הורדת קבלה",
+    "taxSavings": "חיסכון מס משוער"
+  },
+  "messages": {
+    "success": "התרומה בוצעה בהצלחה",
+    "pending": "התרומה בעיבוד",
+    "failed": "כישלון בביצוע התרומה",
+    "cancelled": "התרומה בוטלה",
+    "refunded": "התרומה הוחזרה",
+    "receiptSent": "קבלה נשלחה באימייל",
+    "recurringCancelled": "תרומה חוזרת בוטלה",
+    "recurringModified": "תרומה חוזרת שונתה",
+    "thankYou": "תודה על הנדיבות שלך!",
+    "impact": "התרומה שלך עושה שינוי"
+  },
+  "amounts": {
+    "suggested": {
+      "small": "₪100",
+      "medium": "₪250",
+      "large": "₪500",
+      "xlarge": "₪1000"
+    },
+    "minAmount": "סכום מינימלי: {amount}",
+    "maxAmount": "סכום מקסימלי: {amount}"
+  }
+}

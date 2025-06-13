@@ -11,6 +11,7 @@ export declare class HubService {
         pages: number;
     }>;
     getAssociationById(id: string): Promise<any>;
+    getAssociationBySlug(slug: string): Promise<any>;
     getGlobalStats(): Promise<HubStatsDto>;
     getPopularCampaigns(limit?: number): Promise<any[]>;
     getCampaigns(query: any): Promise<{
@@ -39,7 +40,7 @@ export declare class HubService {
     recordTenantActivity(donorProfileId: string, tenantId: string, activity: RecordActivityDto): Promise<any>;
     createAssociation(associationData: {
         name: string;
-        description: string;
+        description?: string;
         category?: string;
         email: string;
         phone?: string;
@@ -49,6 +50,9 @@ export declare class HubService {
         website?: string;
         tenantId?: string;
         userId: string;
+        legalInfo?: any;
+        contactInfo?: any;
+        additionalInfo?: any;
     }): Promise<any>;
     createTestUser(userData: {
         email: string;
@@ -62,4 +66,54 @@ export declare class HubService {
         role?: string;
     }): Promise<any>;
     removeAssociationAdmin(tenantId: string, userId: string): Promise<any>;
+    getMyAssociations(userId: string): Promise<any[]>;
+    updateAssociation(id: string, updateData: {
+        name?: string;
+        description?: string;
+        email?: string;
+        phone?: string;
+        siteUrl?: string;
+        city?: string;
+        country?: string;
+        location?: string;
+        category?: string;
+    }): Promise<{
+        id: string;
+        tenantId: string;
+        name: string;
+        description: string;
+        logo: string;
+        logoUrl: string;
+        coverImage: string;
+        category: string;
+        location: string;
+        city: string;
+        country: string;
+        email: string;
+        phone: string;
+        siteUrl: string;
+        isPublic: boolean;
+        isVerified: boolean;
+        activeCampaigns: number;
+        totalCampaigns: number;
+        totalRaised: number;
+        donationsCount: number;
+        createdAt: string;
+        updatedAt: string;
+        tenant: {
+            id: string;
+            slug: string;
+            name: string;
+        };
+        campaigns: {
+            id: string;
+            title: string;
+            description: string;
+            goal: number;
+            raised: number;
+            status: import(".prisma/client").$Enums.CampaignStatus;
+            createdAt: string;
+            updatedAt: string;
+        }[];
+    }>;
 }

@@ -127,6 +127,53 @@ export class HubService {
   }
 
   /**
+   * Récupère une association par le slug de son tenant
+   */
+  async getAssociationBySlug(slug: string): Promise<any> {
+    try {
+      const association = await this.prisma.associationListing.findFirst({
+        where: { 
+          tenant: {
+            slug: slug
+          }
+        },
+        include: {
+          tenant: {
+            select: {
+              id: true,
+              slug: true,
+              name: true,
+            }
+          },
+          campaigns: {
+            where: { status: 'ACTIVE' },
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              goal: true,
+              raised: true,
+              status: true,
+              createdAt: true,
+              endDate: true,
+              isActive: true,
+            }
+          }
+        }
+      });
+
+      if (!association) {
+        throw new Error('Association non trouvée');
+      }
+
+      return association;
+    } catch (error) {
+      console.error('Erreur lors de la récupération de l\'association par slug:', error);
+      throw new Error('Impossible de récupérer l\'association');
+    }
+  }
+
+  /**
    * Récupère les statistiques globales pour le hub central
    */
   async getGlobalStats(): Promise<HubStatsDto> {
@@ -742,11 +789,11 @@ export class HubService {
   }
 
   /**
-   * Crée une nouvelle association
+   * Crée une nouvelle association avec les données progressives
    */
   async createAssociation(associationData: {
     name: string;
-    description: string;
+    description?: string;
     category?: string;
     email: string;
     phone?: string;
@@ -756,49 +803,61 @@ export class HubService {
     website?: string;
     tenantId?: string;
     userId: string; // ID de l'utilisateur créateur
+    // Données progressives additionnelles
+    legalInfo?: any;
+    contactInfo?: any;
+    additionalInfo?: any;
   }): Promise<any> {
     try {
-      // Créer un nouveau tenant pour cette association
-      // Le slug est basé sur le nom de l'association (simplifié)
-      const tenantSlug = associationData.name
+      // ✅ VALIDATION STRICTE : Vérifier que userId est fourni
+      if (!associationData.userId || associationData.userId.trim() === '') {
+        throw new Error('userId est requis pour créer une association');
+      }
+  
+      console.log('🔍 Données reçues pour création association:', associationData);
+  
+      // Générer un slug unique basé sur le nom
+      const baseSlug = associationData.name
         .toLowerCase()
-        .replace(/[^a-z0-9]/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '')
-        .substring(0, 50); // Limiter la longueur
-
-      // S'assurer que le slug est unique
-      let finalSlug = tenantSlug;
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+      
+      let slug = baseSlug;
       let counter = 1;
-      while (await this.prisma.tenant.findUnique({ where: { slug: finalSlug } })) {
-        finalSlug = `${tenantSlug}-${counter}`;
+      
+      // Vérifier l'unicité du slug
+      while (await this.prisma.tenant.findUnique({ where: { slug } })) {
+        slug = `${baseSlug}-${counter}`;
         counter++;
       }
-
-      // Créer le tenant pour cette association
+  
+      // Créer le tenant (structure multi-tenant)
       const tenant = await this.prisma.tenant.create({
         data: {
-          slug: finalSlug,
+          slug: slug,
           name: associationData.name,
           status: 'ACTIVE'
         }
       });
 
-      // Créer l'association liée à ce tenant
+      // Créer l'association liée à ce tenant avec description par défaut si manquante
       const newAssociation = await this.prisma.associationListing.create({
         data: {
           name: associationData.name,
-          description: associationData.description,
-          category: associationData.category || 'Général',
+          description: associationData.description || `Association ${associationData.name} - Description à compléter`,
+          category: associationData.category || 'HUMANITAIRE',
           location: associationData.address || '',
           city: associationData.city,
-          country: associationData.country || 'France',
+          country: associationData.country || 'FR',
+          email: associationData.email,
+          phone: associationData.phone,
+          siteUrl: associationData.website,
           isPublic: true,
           isVerified: false,
           tenantId: tenant.id,
         }
       });
-
+  
       // Vérifier d'abord que l'utilisateur existe
       const existingUser = await this.prisma.user.findUnique({
         where: { id: associationData.userId }
@@ -913,7 +972,7 @@ export class HubService {
       if (!user) {
         throw new Error(`Utilisateur avec l'email ${adminData.email} n'existe pas`);
       }
-
+      
       // Vérifier s'il n'est pas déjà admin de cette association
       const existingMembership = await (this.prisma as any).userTenantMembership.findUnique({
         where: {
@@ -1001,6 +1060,160 @@ export class HubService {
     } catch (error) {
       console.error('❌ Erreur removeAssociationAdmin:', error);
       throw new Error(error.message || 'Erreur lors de la suppression de l\'administrateur');
+    }
+  }
+
+  /**
+   * Récupère les associations de l'utilisateur
+   */
+  async getMyAssociations(userId: string): Promise<any[]> {
+    try {
+      // Récupérer les associations où l'utilisateur est membre/admin
+      const memberships = await this.prisma.userTenantMembership.findMany({
+        where: {
+          userId,
+          isActive: true
+        },
+        include: {
+          tenant: {
+            include: {
+              associationListing: {
+                include: {
+                  campaigns: {
+                    where: { status: 'ACTIVE' },
+                    select: {
+                      id: true,
+                      title: true,
+                      goal: true,
+                      raised: true,
+                      status: true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      // Transformer les données pour retourner les associations avec le rôle
+      return memberships
+        .filter(membership => membership.tenant.associationListing) // Filtrer uniquement les tenants qui ont une association
+        .map(membership => ({
+          association: membership.tenant.associationListing,
+          role: membership.role,
+          isActive: membership.isActive,
+          joinedAt: membership.joinedAt,
+          tenant: {
+            id: membership.tenant.id,
+            slug: membership.tenant.slug,
+            name: membership.tenant.name
+          }
+        }));
+    } catch (error) {
+      console.error('Erreur lors de la récupération des associations de l\'utilisateur:', error);
+      throw new Error('Impossible de récupérer les associations de l\'utilisateur');
+    }
+  }
+
+  /**
+   * Met à jour une association
+   */
+  async updateAssociation(id: string, updateData: {
+    name?: string
+    description?: string
+    email?: string
+    phone?: string
+    siteUrl?: string
+    city?: string
+    country?: string
+    location?: string
+    category?: string
+  }) {
+    console.log('🔄 [HubService] Mise à jour association:', { id, updateData })
+
+    try {
+      // Vérifier que l'association existe
+      const existingAssociation = await this.prisma.associationListing.findUnique({
+        where: { id },
+        include: {
+          tenant: true
+        }
+      })
+
+      if (!existingAssociation) {
+        throw new Error(`Association avec l'ID ${id} non trouvée`)
+      }
+
+      // Mise à jour de l'association
+      const updatedAssociation = await this.prisma.associationListing.update({
+        where: { id },
+        data: {
+          ...(updateData.name && { name: updateData.name }),
+          ...(updateData.description && { description: updateData.description }),
+          ...(updateData.email && { email: updateData.email }),
+          ...(updateData.phone && { phone: updateData.phone }),
+          ...(updateData.siteUrl && { siteUrl: updateData.siteUrl }),
+          ...(updateData.city && { city: updateData.city }),
+          ...(updateData.country && { country: updateData.country }),
+          ...(updateData.location && { location: updateData.location }),
+          ...(updateData.category && { category: updateData.category }),
+          updatedAt: new Date()
+        },
+        include: {
+          tenant: true,
+          campaigns: {
+            take: 10,
+            orderBy: { createdAt: 'desc' }
+          }
+        }
+      })
+
+      console.log('✅ [HubService] Association mise à jour avec succès:', updatedAssociation.id)
+
+      return {
+        id: updatedAssociation.id,
+        tenantId: updatedAssociation.tenantId,
+        name: updatedAssociation.name,
+        description: updatedAssociation.description,
+        logo: updatedAssociation.logo,
+        logoUrl: updatedAssociation.logoUrl,
+        coverImage: updatedAssociation.coverImage,
+        category: updatedAssociation.category,
+        location: updatedAssociation.location,
+        city: updatedAssociation.city,
+        country: updatedAssociation.country,
+        email: updatedAssociation.email,
+        phone: updatedAssociation.phone,
+        siteUrl: updatedAssociation.siteUrl,
+        isPublic: updatedAssociation.isPublic,
+        isVerified: updatedAssociation.isVerified,
+        activeCampaigns: updatedAssociation.campaigns?.filter(c => c.status === 'ACTIVE').length || 0,
+        totalCampaigns: updatedAssociation.campaigns?.length || 0,
+        totalRaised: Number(updatedAssociation.totalRaised || 0),
+        donationsCount: updatedAssociation.donationsCount || 0,
+        createdAt: updatedAssociation.createdAt.toISOString(),
+        updatedAt: updatedAssociation.updatedAt.toISOString(),
+        tenant: {
+          id: updatedAssociation.tenant.id,
+          slug: updatedAssociation.tenant.slug,
+          name: updatedAssociation.tenant.name
+        },
+        campaigns: updatedAssociation.campaigns?.map(campaign => ({
+          id: campaign.id,
+          title: campaign.title,
+          description: campaign.description,
+          goal: Number(campaign.goal),
+          raised: Number(campaign.raised || 0),
+          status: campaign.status,
+          createdAt: campaign.createdAt.toISOString(),
+          updatedAt: campaign.updatedAt.toISOString()
+        })) || []
+      }
+
+    } catch (error) {
+      console.error('❌ [HubService] Erreur lors de la mise à jour de l\'association:', error)
+      throw error
     }
   }
 }

@@ -1,0 +1,110 @@
+{
+  "title": "לוח בקרה",
+  "welcome": "ברוך הבא, {name}",
+  "overview": "סקירה כללית",
+  "statistics": "סטטיסטיקות",
+  "navigation": {
+    "overview": "סקירה כללית",
+    "associations": "העמותות שלי",
+    "campaigns": "הקמפיינים שלי",
+    "donations": "התרומות שלי",
+    "profile": "הפרופיל שלי",
+    "settings": "הגדרות",
+    "help": "עזרה"
+  },
+  "stats": {
+    "totalDonations": "סה\"כ תרומות",
+    "totalRaised": "סה\"כ נגבה",
+    "activeCampaigns": "קמפיינים פעילים",
+    "supporters": "תומכים",
+    "associations": "עמותות",
+    "campaigns": "קמפיינים",
+    "thisMonth": "החודש",
+    "thisYear": "השנה",
+    "allTime": "מתחילת הפעילות",
+    "growth": "צמיחה",
+    "average": "ממוצע"
+  },
+  "quickActions": {
+    "createAssociation": "יצירת עמותה",
+    "createCampaign": "יצירת קמפיין",
+    "makeDonation": "ביצוע תרומה",
+    "viewReports": "צפייה בדוחות",
+    "manageProfile": "ניהול פרופיל",
+    "inviteMembers": "הזמנת חברים"
+  },
+  "recent": {
+    "activity": "פעילות אחרונה",
+    "donations": "תרומות אחרונות",
+    "campaigns": "קמפיינים אחרונים",
+    "notifications": "התראות אחרונות",
+    "empty": "אין פעילות אחרונה"
+  },
+  "association": {
+    "manage": "ניהול העמותה",
+    "members": "חברים",
+    "campaigns": "קמפיינים",
+    "donations": "תרומות שהתקבלו",
+    "reports": "דוחות",
+    "settings": "הגדרות",
+    "completion": "השלמת פרופיל",
+    "verification": "אימות",
+    "documents": "מסמכים",
+    "bankAccount": "חשבון בנק"
+  },
+  "campaign": {
+    "manage": "ניהול הקמפיין",
+    "edit": "עריכה",
+    "publish": "פרסום",
+    "pause": "השהיה",
+    "resume": "חידוש",
+    "complete": "סיום",
+    "analytics": "אנליטיקס",
+    "backers": "תומכים",
+    "updates": "עדכונים",
+    "share": "שיתוף"
+  },
+  "user": {
+    "role": "תפקיד",
+    "permissions": "הרשאות",
+    "lastActive": "פעיל לאחרונה",
+    "memberSince": "חבר מאז",
+    "totalContributions": "סה\"כ תרומות"
+  },
+  "notifications": {
+    "title": "התראות",
+    "markAllRead": "סמן הכל כנקרא",
+    "settings": "הגדרות התראות",
+    "types": {
+      "donation": "תרומה חדשה",
+      "campaign": "עדכון קמפיין",
+      "system": "התראת מערכת",
+      "reminder": "תזכורת"
+    }
+  },
+  "reports": {
+    "title": "דוחות",
+    "generate": "יצירת דוח",
+    "download": "הורדה",
+    "dateRange": "טווח תאריכים",
+    "type": "סוג דוח",
+    "types": {
+      "donations": "דוח תרומות",
+      "campaigns": "דוח קמפיינים",
+      "fiscal": "דוח פיסקלי",
+      "activity": "דוח פעילות"
+    }
+  },
+  "settings": {
+    "title": "הגדרות",
+    "account": "חשבון",
+    "privacy": "פרטיות",
+    "notifications": "התראות",
+    "payment": "תשלום",
+    "security": "אבטחה",
+    "preferences": "העדפות",
+    "language": "שפה",
+    "timezone": "אזור זמן",
+    "currency": "מטבע"
+  }
+}

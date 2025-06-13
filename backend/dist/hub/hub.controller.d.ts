@@ -11,9 +11,11 @@ export declare class HubController {
         pages: number;
     }>;
     getAssociationById(id: string): Promise<any>;
+    getAssociationBySlug(slug: string): Promise<any>;
+    getMyAssociations(req: any): Promise<any[]>;
     createAssociation(associationData: {
         name: string;
-        description: string;
+        description?: string;
         category?: string;
         email: string;
         phone?: string;
@@ -21,8 +23,59 @@ export declare class HubController {
         city?: string;
         country?: string;
         website?: string;
-        userId: string;
-    }): Promise<any>;
+        legalInfo?: any;
+        contactInfo?: any;
+        additionalInfo?: any;
+    }, req: any): Promise<any>;
+    updateAssociation(id: string, updateData: {
+        name?: string;
+        description?: string;
+        email?: string;
+        phone?: string;
+        siteUrl?: string;
+        city?: string;
+        country?: string;
+        location?: string;
+        category?: string;
+    }): Promise<{
+        id: string;
+        tenantId: string;
+        name: string;
+        description: string;
+        logo: string;
+        logoUrl: string;
+        coverImage: string;
+        category: string;
+        location: string;
+        city: string;
+        country: string;
+        email: string;
+        phone: string;
+        siteUrl: string;
+        isPublic: boolean;
+        isVerified: boolean;
+        activeCampaigns: number;
+        totalCampaigns: number;
+        totalRaised: number;
+        donationsCount: number;
+        createdAt: string;
+        updatedAt: string;
+        tenant: {
+            id: string;
+            slug: string;
+            name: string;
+        };
+        campaigns: {
+            id: string;
+            title: string;
+            description: string;
+            goal: number;
+            raised: number;
+            status: import(".prisma/client").$Enums.CampaignStatus;
+            createdAt: string;
+            updatedAt: string;
+        }[];
+    }>;
     getGlobalStats(): Promise<HubStatsDto>;
     getPopularCampaigns(limit?: string): Promise<any[]>;
     getCampaigns(query: any): Promise<{

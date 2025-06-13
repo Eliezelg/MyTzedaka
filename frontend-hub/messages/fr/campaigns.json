@@ -1,0 +1,110 @@
+{
+  "title": "Campagnes",
+  "singleTitle": "Campagne",
+  "create": "Créer une campagne",
+  "edit": "Modifier la campagne",
+  "view": "Voir la campagne",
+  "notFound": "Campagne non trouvée",
+  "list": {
+    "title": "Liste des campagnes",
+    "empty": "Aucune campagne trouvée",
+    "searchPlaceholder": "Rechercher une campagne...",
+    "filterByCategory": "Filtrer par catégorie",
+    "filterByStatus": "Filtrer par statut",
+    "sortBy": "Trier par",
+    "sortOptions": {
+      "name": "Nom",
+      "created": "Date de création",
+      "deadline": "Date limite",
+      "raised": "Montant collecté",
+      "progress": "Progression"
+    }
+  },
+  "details": {
+    "description": "Description",
+    "goal": "Objectif",
+    "raised": "Collecté",
+    "progress": "Progression",
+    "backers": "Donateurs",
+    "daysLeft": "Jours restants",
+    "deadline": "Date limite",
+    "created": "Créée le",
+    "status": "Statut",
+    "category": "Catégorie",
+    "organizer": "Organisateur",
+    "location": "Lieu",
+    "updates": "Mises à jour",
+    "donations": "Dons",
+    "share": "Partager"
+  },
+  "status": {
+    "active": "Active",
+    "completed": "Terminée",
+    "paused": "En pause",
+    "cancelled": "Annulée",
+    "draft": "Brouillon"
+  },
+  "form": {
+    "basicInfo": "Informations de base",
+    "title": "Titre de la campagne",
+    "description": "Description",
+    "category": "Catégorie",
+    "goal": "Objectif de collecte",
+    "deadline": "Date limite",
+    "location": "Lieu",
+    "coverImage": "Image de couverture",
+    "gallery": "Galerie d'images",
+    "story": "Histoire de la campagne",
+    "updates": "Mises à jour",
+    "risks": "Risques et défis",
+    "rewards": "Récompenses",
+    "visibility": "Visibilité",
+    "featured": "Mise en avant",
+    "urgent": "Urgente",
+    "anonymous": "Permettre les dons anonymes"
+  },
+  "actions": {
+    "donate": "Faire un don",
+    "share": "Partager",
+    "follow": "Suivre",
+    "report": "Signaler",
+    "support": "Soutenir",
+    "viewAll": "Voir toutes les campagnes"
+  },
+  "donation": {
+    "title": "Faire un don",
+    "amount": "Montant",
+    "suggestedAmounts": "Montants suggérés",
+    "customAmount": "Montant personnalisé",
+    "currency": "Devise",
+    "anonymous": "Don anonyme",
+    "message": "Message (optionnel)",
+    "paymentMethod": "Mode de paiement",
+    "recurring": "Don récurrent",
+    "frequency": {
+      "monthly": "Mensuel",
+      "quarterly": "Trimestriel",
+      "yearly": "Annuel"
+    }
+  },
+  "progress": {
+    "funded": "{percent}% financé",
+    "raised": "{amount} collectés",
+    "backers": "{count} donateurs",
+    "daysLeft": "{days} jours restants",
+    "hoursLeft": "{hours} heures restantes",
+    "completed": "Objectif atteint !",
+    "exceeded": "Objectif dépassé de {percent}%"
+  },
+  "messages": {
+    "createSuccess": "Campagne créée avec succès",
+    "updateSuccess": "Campagne mise à jour avec succès",
+    "deleteSuccess": "Campagne supprimée avec succès",
+    "donationSuccess": "Don effectué avec succès",
+    "shareSuccess": "Lien copié dans le presse-papiers",
+    "createError": "Erreur lors de la création de la campagne",
+    "updateError": "Erreur lors de la mise à jour de la campagne",
+    "deleteError": "Erreur lors de la suppression de la campagne",
+    "donationError": "Erreur lors du don"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "home": "Accueil",
+  "associations": "Associations",
+  "campaigns": "Campagnes",
+  "donations": "Dons",
+  "search": "Recherche",
+  "dashboard": "Tableau de bord",
+  "profile": "Profil",
+  "settings": "Paramètres",
+  "logout": "Déconnexion",
+  "login": "Connexion",
+  "signup": "Inscription",
+  "menu": "Menu",
+  "breadcrumb": {
+    "home": "Accueil",
+    "associations": "Associations",
+    "campaigns": "Campagnes",
+    "dashboard": "Tableau de bord",
+    "create": "Créer",
+    "edit": "Modifier",
+    "view": "Voir"
+  },
+  "footer": {
+    "about": "À propos",
+    "contact": "Contact",
+    "terms": "Conditions d'utilisation",
+    "privacy": "Politique de confidentialité",
+    "help": "Aide",
+    "faq": "FAQ"
+  }
+}

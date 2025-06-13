@@ -277,6 +277,29 @@ let AuthService = class AuthService {
         }
         return user;
     }
+    async validateHubUser(payload) {
+        const user = await this.prisma.user.findFirst({
+            where: {
+                id: payload.sub,
+                tenantId: null,
+                isActive: true,
+            },
+            select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                role: true,
+                cognitoId: true,
+                tenantId: true,
+                permissions: true,
+            },
+        });
+        if (!user) {
+            throw new common_1.UnauthorizedException('Utilisateur du hub non trouvé ou inactif');
+        }
+        return user;
+    }
     async getUserProfile(userId) {
         const tenant = (0, tenant_context_1.getCurrentTenant)();
         if (!tenant) {

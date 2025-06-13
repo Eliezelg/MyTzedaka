@@ -428,16 +428,18 @@ model AssociationListing {
   city        String?  // Ville pour géolocalisation
   country     String?  // Pays pour géolocalisation
   
-  // Visibilité
-  isPublic    Boolean  @default(true) // Visible sur la plateforme centrale
-  isVerified  Boolean  @default(false) // Vérifié par la plateforme
-  hasSite     Boolean  @default(false) // A un site personnalisé
-  siteUrl     String?  // URL du site personnalisé
+  // Contact
+  email       String?  // Email de contact de l'association
+  phone       String?  // Téléphone de contact
+  siteUrl     String?  // Site web de l'association
   
-  // Statistiques publiques
-  totalCampaigns     Int     @default(0)
-  activeCampaigns    Int     @default(0)
-  activeCampaignsCount Int   @default(0) // Alias pour compatibilité frontend
+  // Visibilité
+  isPublic    Boolean  @default(true)
+  isVerified  Boolean  @default(false)
+  
+  // Statistiques précalculées pour performance
+  activeCampaigns    Int     @default(0) // Nombre de campagnes actives
+  totalCampaigns     Int     @default(0) // Nombre total de campagnes
   totalRaised        Decimal @default(0) @db.Decimal(10,2) // Total collecté
   donationsCount     Int     @default(0) // Nombre de donations
   

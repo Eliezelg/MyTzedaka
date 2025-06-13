@@ -1,0 +1,93 @@
+{
+  "title": "עמותות",
+  "singleTitle": "עמותה",
+  "create": "יצירת עמותה",
+  "edit": "עריכת עמותה",
+  "view": "צפייה בעמותה",
+  "notFound": "עמותה לא נמצאה",
+  "list": {
+    "title": "רשימת עמותות",
+    "empty": "לא נמצאו עמותות",
+    "searchPlaceholder": "חיפוש עמותה...",
+    "filterByCategory": "סינון לפי קטגוריה",
+    "sortBy": "מיון לפי",
+    "sortOptions": {
+      "name": "שם",
+      "created": "תאריך יצירה",
+      "donations": "מספר תרומות",
+      "impact": "השפעה"
+    }
+  },
+  "details": {
+    "about": "אודות",
+    "mission": "משימה",
+    "impact": "השפעה",
+    "team": "צוות",
+    "contact": "יצירת קשר",
+    "website": "אתר אינטרנט",
+    "email": "אימייל",
+    "phone": "טלפון",
+    "address": "כתובת",
+    "founded": "נוסדה בשנת",
+    "category": "קטגוריה",
+    "legalStatus": "מעמד משפטי",
+    "registrationNumber": "מספר רישום",
+    "campaigns": "קמפיינים",
+    "totalRaised": "סה\"כ נגבה",
+    "activeCampaigns": "קמפיינים פעילים",
+    "completedCampaigns": "קמפיינים שהושלמו",
+    "supporters": "תומכים"
+  },
+  "form": {
+    "basicInfo": "פרטים בסיסיים",
+    "name": "שם העמותה",
+    "description": "תיאור",
+    "category": "קטגוריה",
+    "website": "אתר אינטרנט",
+    "email": "אימייל ליצירת קשר",
+    "phone": "טלפון",
+    "address": "כתובת",
+    "city": "עיר",
+    "country": "מדינה",
+    "logo": "לוגו",
+    "coverImage": "תמונת כיסוי",
+    "legalInfo": "פרטים משפטיים",
+    "legalStatus": "מעמד משפטי",
+    "registrationNumber": "מספר רישום",
+    "founded": "תאריך הקמה",
+    "mission": "משימה ומטרות",
+    "bankInfo": "פרטי בנק",
+    "bankName": "שם הבנק",
+    "iban": "IBAN",
+    "bic": "BIC/SWIFT"
+  },
+  "categories": {
+    "education": "חינוך",
+    "health": "בריאות",
+    "environment": "סביבה",
+    "social": "חברתי",
+    "cultural": "תרבות",
+    "religious": "דתי",
+    "humanitarian": "הומניטרי",
+    "sports": "ספורט",
+    "animals": "הגנת חיות",
+    "development": "פיתוח",
+    "other": "אחר"
+  },
+  "actions": {
+    "donate": "תרומה",
+    "follow": "מעקב",
+    "share": "שיתוף",
+    "contact": "יצירת קשר",
+    "viewCampaigns": "צפייה בקמפיינים",
+    "createCampaign": "יצירת קמפיין"
+  },
+  "messages": {
+    "createSuccess": "העמותה נוצרה בהצלחה",
+    "updateSuccess": "העמותה עודכנה בהצלחה",
+    "deleteSuccess": "העמותה נמחקה בהצלחה",
+    "createError": "שגיאה ביצירת העמותה",
+    "updateError": "שגיאה בעדכון העמותה",
+    "deleteError": "שגיאה במחיקת העמותה"
+  }
+}

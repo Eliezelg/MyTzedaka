@@ -52,23 +52,45 @@ export class ApiClient {
     const apiEndpoint = endpoint.startsWith('/api') ? endpoint : `/api${endpoint}`
     const url = `${this.baseURL}${apiEndpoint}`
     
+    // ✅ Récupérer automatiquement le token JWT depuis localStorage
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null
+    
+    console.log('🔑 ApiClient - État du token:', {
+      endpoint: apiEndpoint,
+      tokenPresent: !!token,
+      tokenLength: token?.length,
+      tokenPreview: token ? `${token.substring(0, 20)}...` : 'null'
+    })
+    
     const config: RequestInit = {
       headers: {
         ...this.defaultHeaders,
+        // ✅ Ajouter automatiquement Authorization header si token présent
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
         ...options.headers,
       },
       ...options,
     }
 
+    console.log('📤 Headers envoyés:', config.headers)
+
     try {
       const response = await fetch(url, config)
       
+      console.log('📥 Réponse API:', {
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url
+      })
+      
       if (!response.ok) {
         const errorData: ApiError = await response.json()
+        console.error('❌ Erreur API:', errorData)
         throw new Error(errorData.message || `HTTP Error: ${response.status}`)
       }
 
       const data = await response.json()
+      console.log('✅ Données reçues:', data)
       return data
     } catch (error) {
       console.error('API Request Error:', error)
@@ -144,6 +166,7 @@ export const queryKeys = {
   associations: ['associations'] as const,
   associationsList: (filters?: Record<string, unknown>) => [...queryKeys.associations, 'list', filters] as const,
   associationDetail: (id: string) => [...queryKeys.associations, 'detail', id] as const,
+  associationDetailBySlug: (slug: string) => [...queryKeys.associations, 'detail-by-slug', slug] as const,
   associationCampaigns: (id: string) => [...queryKeys.associations, id, 'campaigns'] as const,
   
   // Campagnes

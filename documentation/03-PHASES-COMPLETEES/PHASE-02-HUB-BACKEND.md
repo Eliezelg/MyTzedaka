@@ -115,7 +115,7 @@ enum DonationSource {
 - Développer les API endpoints cross-tenant sécurisés
 
 **Livrables** :
-- [ ] **Migration Prisma** : Nouvelles tables `DonorProfile` et `AssociationListing`
+- [ ] **Migration Prisma** : Nouvelles tables `DonorProfile`  et `AssociationListing`
 - [ ] **Extension table Donations** : Champs `source`, `donorProfileId`, `associationId`
 - [ ] **DonorService** : Service de gestion des profils donateurs cross-tenant
 - [ ] **AssociationListingService** : Service annuaire global des associations

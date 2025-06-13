@@ -1,0 +1,745 @@
+{
+  "common": {
+    "welcome": "ברוכים הבאים",
+    "loading": "טוען...",
+    "error": "שגיאה",
+    "success": "הצלחה",
+    "cancel": "ביטול",
+    "save": "שמירה",
+    "edit": "עריכה",
+    "delete": "מחיקה",
+    "confirm": "אישור",
+    "back": "חזרה",
+    "next": "הבא",
+    "previous": "הקודם",
+    "search": "חיפוש",
+    "filter": "סינון",
+    "sort": "מיון",
+    "view": "צפייה",
+    "share": "שיתוף",
+    "copy": "העתקה",
+    "download": "הורדה",
+    "upload": "העלאה",
+    "close": "סגירה",
+    "open": "פתיחה",
+    "yes": "כן",
+    "no": "לא",
+    "or": "או",
+    "and": "ו",
+    "of": "מתוך",
+    "in": "ב",
+    "at": "ב",
+    "by": "על ידי",
+    "for": "עבור",
+    "with": "עם",
+    "without": "בלי",
+    "about": "אודות",
+    "contact": "יצירת קשר",
+    "help": "עזרה",
+    "more": "עוד",
+    "less": "פחות",
+    "all": "הכל",
+    "none": "ללא",
+    "other": "אחר",
+    "optional": "אופציונלי",
+    "required": "חובה",
+    "description": "פלטפורמה רב-לשונית לארגוני צדקה יהודיים",
+    "features": "תכונות",
+    "support": "תמיכה",
+    "translation": "תרגומים",
+    "multiLanguage": "תמיכה מלאה בצרפתית ועברית עם ניווט חלק",
+    "rtlSupport": "ממשק RTL מקורי למשתמשים דוברי עברית",
+    "comprehensive": "למעלה מ-2000 תרגומים מאורגנים לפי קטגוריות"
+  },
+  "navigation": {
+    "home": "בית",
+    "associations": "עמותות",
+    "campaigns": "קמפיינים",
+    "donations": "תרומות",
+    "search": "חיפוש",
+    "dashboard": "לוח בקרה",
+    "profile": "פרופיל",
+    "settings": "הגדרות",
+    "logout": "התנתקות",
+    "login": "התחברות",
+    "signup": "הרשמה",
+    "menu": "תפריט",
+    "breadcrumb": {
+      "home": "בית",
+      "associations": "עמותות",
+      "campaigns": "קמפיינים",
+      "dashboard": "לוח בקרה",
+      "create": "יצירה",
+      "edit": "עריכה",
+      "view": "צפייה"
+    },
+    "footer": {
+      "about": "אודות",
+      "contact": "יצירת קשר",
+      "terms": "תנאי שימוש",
+      "privacy": "מדיניות פרטיות",
+      "help": "עזרה",
+      "faq": "שאלות נפוצות"
+    }
+  },
+  "forms": {
+    "validation": {
+      "required": "שדה זה הוא חובה",
+      "email": "אנא הזן כתובת אימייל תקינה",
+      "phone": "אנא הזן מספר טלפון תקין",
+      "url": "אנא הזן כתובת URL תקינה",
+      "minLength": "נדרשים לפחות {min} תווים",
+      "maxLength": "מותרים לכל היותר {max} תווים",
+      "min": "הערך חייב להיות גדול מ-{min}",
+      "max": "הערך חייב להיות קטן מ-{max}",
+      "pattern": "הפורמט אינו תקין",
+      "passwordMatch": "הסיסמאות אינן תואמות",
+      "acceptTerms": "עליך לקבל את תנאי השימוש"
+    },
+    "labels": {
+      "name": "שם",
+      "firstName": "שם פרטי",
+      "lastName": "שם משפחה",
+      "email": "אימייל",
+      "phone": "טלפון",
+      "address": "כתובת",
+      "city": "עיר",
+      "country": "מדינה",
+      "website": "אתר אינטרנט",
+      "description": "תיאור",
+      "category": "קטגוריה",
+      "title": "כותרת",
+      "message": "הודעה",
+      "password": "סיסמה",
+      "confirmPassword": "אישור סיסמה",
+      "currentPassword": "סיסמה נוכחית",
+      "newPassword": "סיסמה חדשה",
+      "rememberMe": "זכור אותי",
+      "acceptTerms": "אני מקבל את תנאי השימוש",
+      "newsletter": "הרשמה לניוזלטר"
+    },
+    "placeholders": {
+      "enterName": "הזן שם",
+      "enterEmail": "הזן אימייל",
+      "enterPhone": "הזן טלפון",
+      "enterDescription": "הזן תיאור",
+      "searchPlaceholder": "חיפוש...",
+      "selectOption": "בחר אפשרות"
+    },
+    "buttons": {
+      "submit": "שליחה",
+      "save": "שמירה",
+      "cancel": "ביטול",
+      "reset": "איפוס",
+      "clear": "ניקוי",
+      "add": "הוספה",
+      "remove": "הסרה",
+      "upload": "העלאה",
+      "browse": "עיון"
+    }
+  },
+  "associations": {
+    "title": "עמותות",
+    "singleTitle": "עמותה",
+    "create": "יצירת עמותה",
+    "edit": "עריכת עמותה",
+    "view": "צפייה בעמותה",
+    "notFound": "עמותה לא נמצאה",
+    "list": {
+      "title": "רשימת עמותות",
+      "empty": "לא נמצאו עמותות",
+      "searchPlaceholder": "חיפוש עמותה...",
+      "filterByCategory": "סינון לפי קטגוריה",
+      "sortBy": "מיון לפי",
+      "sortOptions": {
+        "name": "שם",
+        "created": "תאריך יצירה",
+        "donations": "מספר תרומות",
+        "impact": "השפעה"
+      }
+    },
+    "details": {
+      "about": "אודות",
+      "mission": "משימה",
+      "impact": "השפעה",
+      "team": "צוות",
+      "contact": "יצירת קשר",
+      "website": "אתר אינטרנט",
+      "email": "אימייל",
+      "phone": "טלפון",
+      "address": "כתובת",
+      "founded": "נוסדה בשנת",
+      "category": "קטגוריה",
+      "legalStatus": "מעמד משפטי",
+      "registrationNumber": "מספר רישום",
+      "campaigns": "קמפיינים",
+      "totalRaised": "סה\"כ נגבה",
+      "activeCampaigns": "קמפיינים פעילים",
+      "completedCampaigns": "קמפיינים שהושלמו",
+      "supporters": "תומכים"
+    },
+    "form": {
+      "basicInfo": "פרטים בסיסיים",
+      "name": "שם העמותה",
+      "description": "תיאור",
+      "category": "קטגוריה",
+      "website": "אתר אינטרנט",
+      "email": "אימייל ליצירת קשר",
+      "phone": "טלפון",
+      "address": "כתובת",
+      "city": "עיר",
+      "country": "מדינה",
+      "logo": "לוגו",
+      "coverImage": "תמונת כיסוי",
+      "legalInfo": "פרטים משפטיים",
+      "legalStatus": "מעמד משפטי",
+      "registrationNumber": "מספר רישום",
+      "founded": "תאריך הקמה",
+      "mission": "משימה ומטרות",
+      "bankInfo": "פרטי בנק",
+      "bankName": "שם הבנק",
+      "iban": "IBAN",
+      "bic": "BIC/SWIFT"
+    },
+    "categories": {
+      "education": "חינוך",
+      "health": "בריאות",
+      "environment": "סביבה",
+      "social": "חברתי",
+      "cultural": "תרבות",
+      "religious": "דתי",
+      "humanitarian": "הומניטרי",
+      "sports": "ספורט",
+      "animals": "הגנת חיות",
+      "development": "פיתוח",
+      "other": "אחר"
+    },
+    "actions": {
+      "donate": "תרומה",
+      "follow": "מעקב",
+      "share": "שיתוף",
+      "contact": "יצירת קשר",
+      "viewCampaigns": "צפייה בקמפיינים",
+      "createCampaign": "יצירת קמפיין"
+    },
+    "messages": {
+      "createSuccess": "העמותה נוצרה בהצלחה",
+      "updateSuccess": "העמותה עודכנה בהצלחה",
+      "deleteSuccess": "העמותה נמחקה בהצלחה",
+      "createError": "שגיאה ביצירת העמותה",
+      "updateError": "שגיאה בעדכון העמותה",
+      "deleteError": "שגיאה במחיקת העמותה"
+    }
+  },
+  "campaigns": {
+    "title": "קמפיינים",
+    "singleTitle": "קמפיין",
+    "create": "יצירת קמפיין",
+    "edit": "עריכת קמפיין",
+    "view": "צפייה בקמפיין",
+    "notFound": "קמפיין לא נמצא",
+    "list": {
+      "title": "רשימת קמפיינים",
+      "empty": "לא נמצאו קמפיינים",
+      "searchPlaceholder": "חיפוש קמפיין...",
+      "filterByCategory": "סינון לפי קטגוריה",
+      "filterByStatus": "סינון לפי סטטוס",
+      "sortBy": "מיון לפי",
+      "sortOptions": {
+        "name": "שם",
+        "created": "תאריך יצירה",
+        "deadline": "תאריך יעד",
+        "raised": "סכום שנגבה",
+        "progress": "התקדמות"
+      }
+    },
+    "details": {
+      "description": "תיאור",
+      "goal": "מטרה",
+      "raised": "נגבה",
+      "progress": "התקדמות",
+      "backers": "תורמים",
+      "daysLeft": "ימים נותרו",
+      "deadline": "תאריך יעד",
+      "created": "נוצר ב",
+      "status": "סטטוס",
+      "category": "קטגוריה",
+      "organizer": "מארגן",
+      "location": "מיקום",
+      "updates": "עדכונים",
+      "donations": "תרומות",
+      "share": "שיתוף"
+    },
+    "status": {
+      "active": "פעיל",
+      "completed": "הושלם",
+      "paused": "מושהה",
+      "cancelled": "בוטל",
+      "draft": "טיוטה"
+    },
+    "form": {
+      "basicInfo": "פרטים בסיסיים",
+      "title": "כותרת הקמפיין",
+      "description": "תיאור",
+      "category": "קטגוריה",
+      "goal": "מטרת הגיוס",
+      "deadline": "תאריך יעד",
+      "location": "מיקום",
+      "coverImage": "תמונת כיסוי",
+      "gallery": "גלריית תמונות",
+      "story": "סיפור הקמפיין",
+      "updates": "עדכונים",
+      "risks": "סיכונים ואתגרים",
+      "rewards": "תגמולים",
+      "visibility": "נראות",
+      "featured": "מומלץ",
+      "urgent": "דחוף",
+      "anonymous": "אפשר תרומות אנונימיות"
+    },
+    "actions": {
+      "donate": "תרומה",
+      "share": "שיתוף",
+      "follow": "מעקב",
+      "report": "דיווח",
+      "support": "תמיכה",
+      "viewAll": "צפייה בכל הקמפיינים"
+    },
+    "donation": {
+      "title": "ביצוע תרומה",
+      "amount": "סכום",
+      "suggestedAmounts": "סכומים מוצעים",
+      "customAmount": "סכום מותאם אישית",
+      "currency": "מטבע",
+      "anonymous": "תרומה אנונימית",
+      "message": "הודעה (אופציונלי)",
+      "paymentMethod": "אמצעי תשלום",
+      "recurring": "תרומה חוזרת",
+      "frequency": {
+        "monthly": "חודשי",
+        "quarterly": "רבעוני",
+        "yearly": "שנתי"
+      }
+    },
+    "progress": {
+      "funded": "{percent}% מומן",
+      "raised": "{amount} נגבו",
+      "backers": "{count} תורמים",
+      "daysLeft": "{days} ימים נותרו",
+      "hoursLeft": "{hours} שעות נותרו",
+      "completed": "המטרה הושגה!",
+      "exceeded": "המטרה עברה ב-{percent}%"
+    },
+    "messages": {
+      "createSuccess": "הקמפיין נוצר בהצלחה",
+      "updateSuccess": "הקמפיין עודכן בהצלחה",
+      "deleteSuccess": "הקמפיין נמחק בהצלחה",
+      "donationSuccess": "התרומה בוצעה בהצלחה",
+      "shareSuccess": "הקישור הועתק ללוח",
+      "createError": "שגיאה ביצירת הקמפיין",
+      "updateError": "שגיאה בעדכון הקמפיין",
+      "deleteError": "שגיאה במחיקת הקמפיין",
+      "donationError": "שגיאה בביצוע התרומה"
+    }
+  },
+  "donations": {
+    "title": "תרומות",
+    "singleTitle": "תרומה",
+    "make": "ביצוע תרומה",
+    "history": {
+      "title": "היסטוריית תרומות",
+      "empty": "לא בוצעו תרומות",
+      "total": "סה\"כ תרומות",
+      "thisYear": "השנה",
+      "lastYear": "השנה שעברה",
+      "allTime": "מתחילת הפעילות",
+      "filterBy": "סינון לפי",
+      "sortBy": "מיון לפי",
+      "exportData": "ייצוא נתונים"
+    },
+    "receipt": "קבלה",
+    "form": {
+      "amount": "סכום",
+      "currency": "מטבע",
+      "suggestedAmounts": "סכומים מוצעים",
+      "customAmount": "סכום מותאם אישית",
+      "recipient": "מקבל",
+      "campaign": "קמפיין",
+      "association": "עמותה",
+      "anonymous": "תרומה אנונימית",
+      "message": "הודעה למקבל",
+      "dedication": "הקדשה",
+      "recurring": "תרומה חוזרת",
+      "frequency": "תדירות",
+      "frequencies": {
+        "once": "פעם אחת",
+        "monthly": "חודשי",
+        "quarterly": "רבעוני",
+        "yearly": "שנתי"
+      },
+      "paymentMethod": "אמצעי תשלום",
+      "paymentMethods": {
+        "card": "כרטיס אשראי",
+        "paypal": "PayPal",
+        "transfer": "העברה בנקאית",
+        "check": "שיק"
+      },
+      "fiscalReceipt": "קבלה לצרכי מס",
+      "taxDeduction": "זיכוי מס זמין"
+    },
+    "confirmation": {
+      "title": "אישור תרומה",
+      "amount": "סכום התרומה",
+      "recipient": "מקבל",
+      "date": "תאריך",
+      "reference": "מספר עסקה",
+      "paymentMethod": "אמצעי תשלום",
+      "status": "סטטוס",
+      "receipt": "קבלה",
+      "thankYou": "תודה על הנדיבות שלך!",
+      "impact": "התרומה שלך תעשה שינוי"
+    },
+    "status": {
+      "pending": "ממתין",
+      "processing": "בעיבוד",
+      "completed": "הושלם",
+      "failed": "נכשל",
+      "cancelled": "בוטל",
+      "refunded": "הוחזר"
+    },
+    "recurring": {
+      "title": "תרומות חוזרות",
+      "manage": "ניהול תרומות חוזרות",
+      "cancel": "ביטול תרומה חוזרת",
+      "modify": "שינוי תרומה חוזרת",
+      "nextPayment": "התשלום הבא",
+      "totalDonated": "סה\"כ נתרם",
+      "since": "מאז",
+      "pause": "השהיה",
+      "resume": "חידוש"
+    },
+    "tax": {
+      "deduction": "זיכוי מס",
+      "rate": "שיעור זיכוי",
+      "eligible": "זכאי לזיכוי מס",
+      "receiptNumber": "מספר קבלה",
+      "downloadReceipt": "הורדת קבלה",
+      "taxSavings": "חיסכון מס משוער"
+    },
+    "messages": {
+      "success": "התרומה בוצעה בהצלחה",
+      "pending": "התרומה בעיבוד",
+      "failed": "כישלון בביצוע התרומה",
+      "cancelled": "התרומה בוטלה",
+      "refunded": "התרומה הוחזרה",
+      "receiptSent": "קבלה נשלחה באימייל",
+      "recurringCancelled": "תרומה חוזרת בוטלה",
+      "recurringModified": "תרומה חוזרת שונתה",
+      "thankYou": "תודה על הנדיבות שלך!",
+      "impact": "התרומה שלך עושה שינוי"
+    },
+    "amounts": {
+      "suggested": {
+        "small": "₪100",
+        "medium": "₪250",
+        "large": "₪500",
+        "xlarge": "₪1000"
+      },
+      "minAmount": "סכום מינימלי: {amount}",
+      "maxAmount": "סכום מקסימלי: {amount}"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "התחברות",
+      "subtitle": "התחבר לחשבון שלך",
+      "email": "כתובת אימייל",
+      "password": "סיסמה",
+      "rememberMe": "זכור אותי",
+      "forgotPassword": "שכחת סיסמה?",
+      "loginButton": "התחברות",
+      "noAccount": "אין לך חשבון?",
+      "signupLink": "יצירת חשבון",
+      "socialLogin": "התחברות עם",
+      "orDivider": "או"
+    },
+    "signup": {
+      "title": "הרשמה",
+      "subtitle": "צור חשבון חדש",
+      "firstName": "שם פרטי",
+      "lastName": "שם משפחה",
+      "email": "כתובת אימייל",
+      "password": "סיסמה",
+      "confirmPassword": "אישור סיסמה",
+      "acceptTerms": "אני מקבל את תנאי השימוש",
+      "newsletter": "קבלת ניוזלטר",
+      "signupButton": "יצירת חשבון",
+      "hasAccount": "יש לך כבר חשבון?",
+      "loginLink": "התחברות",
+      "socialSignup": "הרשמה עם"
+    },
+    "forgotPassword": {
+      "title": "שכחת סיסמה",
+      "subtitle": "הזן אימייל לאיפוס סיסמה",
+      "email": "כתובת אימייל",
+      "sendButton": "שליחת קישור",
+      "backToLogin": "חזרה להתחברות",
+      "emailSent": "אימייל איפוס נשלח",
+      "checkEmail": "בדוק את תיבת האימייל"
+    },
+    "resetPassword": {
+      "title": "איפוס סיסמה",
+      "subtitle": "הזן סיסמה חדשה",
+      "newPassword": "סיסמה חדשה",
+      "confirmPassword": "אישור סיסמה",
+      "resetButton": "איפוס",
+      "success": "הסיסמה אופסה בהצלחה"
+    },
+    "profile": {
+      "title": "הפרופיל שלי",
+      "personalInfo": "פרטים אישיים",
+      "accountSettings": "הגדרות חשבון",
+      "security": "אבטחה",
+      "notifications": "התראות",
+      "privacy": "פרטיות",
+      "changePassword": "שינוי סיסמה",
+      "deleteAccount": "מחיקת חשבון",
+      "twoFactor": "אימות דו-שלבי"
+    },
+    "logout": {
+      "title": "התנתקות",
+      "confirm": "האם אתה בטוח שברצונך להתנתק?",
+      "logoutButton": "התנתקות",
+      "cancel": "ביטול"
+    },
+    "verification": {
+      "title": "אימות אימייל",
+      "subtitle": "אמת את כתובת האימייל שלך",
+      "code": "קוד אימות",
+      "verifyButton": "אימות",
+      "resendCode": "שליחה מחדש של הקוד",
+      "emailSent": "קוד נשלח באימייל",
+      "verified": "האימייל אומת בהצלחה"
+    },
+    "errors": {
+      "invalidCredentials": "אימייל או סיסמה שגויים",
+      "emailNotFound": "כתובת אימייל לא נמצאה",
+      "emailAlreadyExists": "כתובת אימייל כבר קיימת",
+      "passwordTooWeak": "הסיסמה חלשה מדי",
+      "passwordMismatch": "הסיסמאות אינן תואמות",
+      "invalidToken": "טוקן לא תקין או פג תוקף",
+      "accountLocked": "החשבון נעול זמנית",
+      "tooManyAttempts": "יותר מדי ניסיונות, נסה שוב מאוחר יותר",
+      "networkError": "שגיאת חיבור",
+      "serverError": "שגיאת שרת, אנא נסה שוב"
+    },
+    "success": {
+      "accountCreated": "החשבון נוצר בהצלחה",
+      "loginSuccess": "התחברות הצליחה",
+      "passwordChanged": "הסיסמה שונתה בהצלחה",
+      "emailVerified": "האימייל אומת בהצלחה",
+      "profileUpdated": "הפרופיל עודכן בהצלחה",
+      "passwordResetSent": "קישור איפוס נשלח"
+    },
+    "validation": {
+      "emailRequired": "נדרשת כתובת אימייל",
+      "emailInvalid": "פורמט אימייל לא תקין",
+      "passwordRequired": "נדרשת סיסמה",
+      "passwordMinLength": "הסיסמה חייבת להכיל לפחות 8 תווים",
+      "firstNameRequired": "נדרש שם פרטי",
+      "lastNameRequired": "נדרש שם משפחה",
+      "termsRequired": "עליך לקבל את תנאי השימוש"
+    }
+  },
+  "dashboard": {
+    "title": "לוח בקרה",
+    "welcome": "ברוך הבא, {name}",
+    "overview": "סקירה כללית",
+    "statistics": "סטטיסטיקות",
+    "navigation": {
+      "overview": "סקירה כללית",
+      "associations": "העמותות שלי",
+      "campaigns": "הקמפיינים שלי",
+      "donations": "התרומות שלי",
+      "profile": "הפרופיל שלי",
+      "settings": "הגדרות",
+      "help": "עזרה"
+    },
+    "stats": {
+      "totalDonations": "סה\"כ תרומות",
+      "totalRaised": "סה\"כ נגבה",
+      "activeCampaigns": "קמפיינים פעילים",
+      "supporters": "תומכים",
+      "associations": "עמותות",
+      "campaigns": "קמפיינים",
+      "thisMonth": "החודש",
+      "thisYear": "השנה",
+      "allTime": "מתחילת הפעילות",
+      "growth": "צמיחה",
+      "average": "ממוצע"
+    },
+    "quickActions": {
+      "createAssociation": "יצירת עמותה",
+      "createCampaign": "יצירת קמפיין",
+      "makeDonation": "ביצוע תרומה",
+      "viewReports": "צפייה בדוחות",
+      "manageProfile": "ניהול פרופיל",
+      "inviteMembers": "הזמנת חברים"
+    },
+    "recent": {
+      "activity": "פעילות אחרונה",
+      "donations": "תרומות אחרונות",
+      "campaigns": "קמפיינים אחרונים",
+      "notifications": "התראות אחרונות",
+      "empty": "אין פעילות אחרונה"
+    },
+    "association": {
+      "manage": "ניהול העמותה",
+      "members": "חברים",
+      "campaigns": "קמפיינים",
+      "donations": "תרומות שהתקבלו",
+      "reports": "דוחות",
+      "settings": "הגדרות",
+      "completion": "השלמת פרופיל",
+      "verification": "אימות",
+      "documents": "מסמכים",
+      "bankAccount": "חשבון בנק"
+    },
+    "campaign": {
+      "manage": "ניהול הקמפיין",
+      "edit": "עריכה",
+      "publish": "פרסום",
+      "pause": "השהיה",
+      "resume": "חידוש",
+      "complete": "סיום",
+      "analytics": "אנליטיקס",
+      "backers": "תומכים",
+      "updates": "עדכונים",
+      "share": "שיתוף"
+    },
+    "user": {
+      "role": "תפקיד",
+      "permissions": "הרשאות",
+      "lastActive": "פעיל לאחרונה",
+      "memberSince": "חבר מאז",
+      "totalContributions": "סה\"כ תרומות"
+    },
+    "notifications": {
+      "title": "התראות",
+      "markAllRead": "סמן הכל כנקרא",
+      "settings": "הגדרות התראות",
+      "types": {
+        "donation": "תרומה חדשה",
+        "campaign": "עדכון קמפיין",
+        "system": "התראת מערכת",
+        "reminder": "תזכורת"
+      }
+    },
+    "reports": {
+      "title": "דוחות",
+      "generate": "יצירת דוח",
+      "download": "הורדה",
+      "dateRange": "טווח תאריכים",
+      "type": "סוג דוח",
+      "types": {
+        "donations": "דוח תרומות",
+        "campaigns": "דוח קמפיינים",
+        "fiscal": "דוח פיסקלי",
+        "activity": "דוח פעילות"
+      }
+    },
+    "settings": {
+      "title": "הגדרות",
+      "account": "חשבון",
+      "privacy": "פרטיות",
+      "notifications": "התראות",
+      "payment": "תשלום",
+      "security": "אבטחה",
+      "preferences": "העדפות",
+      "language": "שפה",
+      "timezone": "אזור זמן",
+      "currency": "מטבע"
+    }
+  },
+  "errors": {
+    "401": {
+      "title": "לא מורשה",
+      "message": "עליך להיות מחובר כדי לגשת לעמוד זה.",
+      "login": "התחברות"
+    },
+    "403": {
+      "title": "גישה נאסרה",
+      "message": "אין לך הרשאות לגשת לעמוד זה.",
+      "suggestion": "התחבר או בקש גישה."
+    },
+    "404": {
+      "title": "העמוד לא נמצא",
+      "message": "העמוד שאתה מחפש לא קיים.",
+      "suggestion": "בדוק את הכתובת או חזור לעמוד הראשי."
+    },
+    "500": {
+      "title": "שגיאת שרת",
+      "message": "השרת נתקל בבעיות.",
+      "suggestion": "אנא נסה שוב בעוד כמה רגעים."
+    },
+    "generic": {
+      "title": "אירעה שגיאה",
+      "message": "משהו השתבש. אנא נסה שוב.",
+      "retry": "נסה שוב",
+      "goHome": "חזרה לעמוד הראשי",
+      "contactSupport": "יצירת קשר עם התמיכה"
+    },
+    "network": {
+      "title": "שגיאת חיבור",
+      "message": "לא ניתן להתחבר לשרת.",
+      "suggestion": "בדוק את החיבור לאינטרנט ונסה שוב."
+    },
+    "validation": {
+      "title": "שגיאת אימות",
+      "message": "הנתונים שהוזנו אינם תקינים.",
+      "suggestion": "בדוק את השדות ותקן את השגיאות."
+    },
+    "payment": {
+      "title": "שגיאת תשלום",
+      "message": "התשלום לא יכול היה להתבצע.",
+      "suggestion": "בדוק את פרטי התשלום ונסה שוב."
+    },
+    "upload": {
+      "title": "שגיאת העלאה",
+      "message": "הקובץ לא יכול היה להיות מועלה.",
+      "suggestion": "בדוק את הפורמט וגודל הקובץ."
+    },
+    "timeout": {
+      "title": "חרגת מזמן הקצוב",
+      "message": "הפעולה לקחה יותר מדי זמן.",
+      "suggestion": "אנא נסה שוב."
+    },
+    "maintenance": {
+      "title": "תחזוקה מתבצעת",
+      "message": "האתר זמנית לא זמין עקב תחזוקה.",
+      "suggestion": "נחזור בקרוב. תודה על הסבלנות."
+    },
+    "form": {
+      "required": "שדה זה הוא חובה",
+      "email": "פורמט אימייל לא תקין",
+      "url": "פורמט URL לא תקין",
+      "phone": "פורמט טלפון לא תקין",
+      "minLength": "נדרשים לפחות {min} תווים",
+      "maxLength": "מותרים לכל היותר {max} תווים",
+      "min": "ערך מינימלי: {min}",
+      "max": "ערך מקסימלי: {max}",
+      "pattern": "פורמט לא תקין",
+      "fileSize": "הקובץ גדול מדי (מקסימום: {max})",
+      "fileType": "סוג קובץ לא מותר"
+    },
+    "api": {
+      "connectionFailed": "כישלון בחיבור ל-API",
+      "invalidResponse": "תגובה לא תקינה מהשרת",
+      "rateLimited": "יותר מדי בקשות, אנא המתן",
+      "unauthorized": "הסשן פג, אנא התחבר מחדש",
+      "forbidden": "גישה אסורה למשאב זה",
+      "notFound": "המשאב לא נמצא",
+      "conflict": "התנגשות עם הנתונים הקיימים",
+      "serverError": "שגיאה פנימית בשרת"
+    }
+  }
+}

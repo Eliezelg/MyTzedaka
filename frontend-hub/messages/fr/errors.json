@@ -1,0 +1,85 @@
+{
+  "generic": {
+    "title": "Une erreur s'est produite",
+    "message": "Quelque chose s'est mal passé. Veuillez réessayer.",
+    "retry": "Réessayer",
+    "goHome": "Retour à l'accueil",
+    "contactSupport": "Contacter le support"
+  },
+  "404": {
+    "title": "Page non trouvée",
+    "message": "La page que vous recherchez n'existe pas.",
+    "suggestion": "Vérifiez l'URL ou retournez à l'accueil."
+  },
+  "pageNotFound": "Page non trouvée",
+  "pageNotFoundDescription": "La page que vous recherchez n'existe pas ou a été déplacée.",
+  "backToHome": "Retour à l'accueil",
+  "500": {
+    "title": "Erreur serveur",
+    "message": "Le serveur rencontre des difficultés.",
+    "suggestion": "Veuillez réessayer dans quelques instants."
+  },
+  "403": {
+    "title": "Accès interdit",
+    "message": "Vous n'avez pas les permissions pour accéder à cette page.",
+    "suggestion": "Connectez-vous ou demandez l'accès."
+  },
+  "401": {
+    "title": "Non autorisé",
+    "message": "Vous devez être connecté pour accéder à cette page.",
+    "login": "Se connecter"
+  },
+  "network": {
+    "title": "Erreur de connexion",
+    "message": "Impossible de se connecter au serveur.",
+    "suggestion": "Vérifiez votre connexion internet et réessayez."
+  },
+  "validation": {
+    "title": "Erreur de validation",
+    "message": "Les données saisies ne sont pas valides.",
+    "suggestion": "Vérifiez les champs et corrigez les erreurs."
+  },
+  "payment": {
+    "title": "Erreur de paiement",
+    "message": "Le paiement n'a pas pu être traité.",
+    "suggestion": "Vérifiez vos informations de paiement et réessayez."
+  },
+  "upload": {
+    "title": "Erreur de téléversement",
+    "message": "Le fichier n'a pas pu être téléversé.",
+    "suggestion": "Vérifiez le format et la taille du fichier."
+  },
+  "timeout": {
+    "title": "Délai d'attente dépassé",
+    "message": "L'opération a pris trop de temps.",
+    "suggestion": "Veuillez réessayer."
+  },
+  "maintenance": {
+    "title": "Maintenance en cours",
+    "message": "Le site est temporairement indisponible pour maintenance.",
+    "suggestion": "Nous reviendrons bientôt. Merci de votre patience."
+  },
+  "form": {
+    "required": "Ce champ est obligatoire",
+    "email": "Format d'email invalide",
+    "url": "Format d'URL invalide",
+    "phone": "Format de téléphone invalide",
+    "minLength": "Au moins {min} caractères requis",
+    "maxLength": "Maximum {max} caractères autorisés",
+    "min": "Valeur minimale : {min}",
+    "max": "Valeur maximale : {max}",
+    "pattern": "Format invalide",
+    "fileSize": "Fichier trop volumineux (max : {max})",
+    "fileType": "Type de fichier non autorisé"
+  },
+  "api": {
+    "connectionFailed": "Échec de la connexion à l'API",
+    "invalidResponse": "Réponse invalide du serveur",
+    "rateLimited": "Trop de requêtes, veuillez patienter",
+    "unauthorized": "Session expirée, veuillez vous reconnecter",
+    "forbidden": "Accès interdit à cette ressource",
+    "notFound": "Ressource non trouvée",
+    "conflict": "Conflit avec les données existantes",
+    "serverError": "Erreur interne du serveur"
+  }
+}

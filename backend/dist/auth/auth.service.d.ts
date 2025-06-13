@@ -70,6 +70,16 @@ export declare class AuthService {
         isActive: boolean;
         lastLoginAt: Date | null;
     }>;
+    validateHubUser(payload: any): Promise<{
+        id: string;
+        email: string;
+        firstName: string;
+        lastName: string;
+        tenantId: string;
+        cognitoId: string;
+        role: import(".prisma/client").$Enums.UserRole;
+        permissions: import("@prisma/client/runtime/library").JsonValue;
+    }>;
     getUserProfile(userId: string): Promise<{
         id: string;
         createdAt: Date;

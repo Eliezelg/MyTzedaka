@@ -1,0 +1,56 @@
+{
+  "validation": {
+    "required": "שדה זה הוא חובה",
+    "email": "אנא הזן כתובת אימייל תקינה",
+    "phone": "אנא הזן מספר טלפון תקין",
+    "url": "אנא הזן כתובת URL תקינה",
+    "minLength": "נדרשים לפחות {min} תווים",
+    "maxLength": "מותרים לכל היותר {max} תווים",
+    "min": "הערך חייב להיות גדול מ-{min}",
+    "max": "הערך חייב להיות קטן מ-{max}",
+    "pattern": "הפורמט אינו תקין",
+    "passwordMatch": "הסיסמאות אינן תואמות",
+    "acceptTerms": "עליך לקבל את תנאי השימוש"
+  },
+  "labels": {
+    "name": "שם",
+    "firstName": "שם פרטי",
+    "lastName": "שם משפחה",
+    "email": "אימייל",
+    "phone": "טלפון",
+    "address": "כתובת",
+    "city": "עיר",
+    "country": "מדינה",
+    "website": "אתר אינטרנט",
+    "description": "תיאור",
+    "category": "קטגוריה",
+    "title": "כותרת",
+    "message": "הודעה",
+    "password": "סיסמה",
+    "confirmPassword": "אישור סיסמה",
+    "currentPassword": "סיסמה נוכחית",
+    "newPassword": "סיסמה חדשה",
+    "rememberMe": "זכור אותי",
+    "acceptTerms": "אני מקבל את תנאי השימוש",
+    "newsletter": "הרשמה לניוזלטר"
+  },
+  "placeholders": {
+    "enterName": "הזן שם",
+    "enterEmail": "הזן אימייל",
+    "enterPhone": "הזן טלפון",
+    "enterDescription": "הזן תיאור",
+    "searchPlaceholder": "חיפוש...",
+    "selectOption": "בחר אפשרות"
+  },
+  "buttons": {
+    "submit": "שליחה",
+    "save": "שמירה",
+    "cancel": "ביטול",
+    "reset": "איפוס",
+    "clear": "ניקוי",
+    "add": "הוספה",
+    "remove": "הסרה",
+    "upload": "העלאה",
+    "browse": "עיון"
+  }
+}

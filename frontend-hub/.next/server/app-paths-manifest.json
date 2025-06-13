@@ -1,4 +1,22 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
-  "/dashboard/page": "app/dashboard/page.js"
+  "/page": "app/page.js",
+  "/[locale]/associations/[slug]/dashboard/page": "app/[locale]/associations/[slug]/dashboard/page.js",
+  "/[locale]/associations/create/page": "app/[locale]/associations/create/page.js",
+  "/[locale]/associations/page": "app/[locale]/associations/page.js",
+  "/[locale]/campaigns/[id]/page": "app/[locale]/campaigns/[id]/page.js",
+  "/[locale]/associations/[slug]/page": "app/[locale]/associations/[slug]/page.js",
+  "/[locale]/page": "app/[locale]/page.js",
+  "/[locale]/campaigns/page": "app/[locale]/campaigns/page.js",
+  "/[locale]/login/page": "app/[locale]/login/page.js",
+  "/[locale]/dashboard/page": "app/[locale]/dashboard/page.js",
+  "/[locale]/search/page": "app/[locale]/search/page.js",
+  "/[locale]/test-api/page": "app/[locale]/test-api/page.js",
+  "/[locale]/signup/page": "app/[locale]/signup/page.js",
+  "/[locale]/test-debug/page": "app/[locale]/test-debug/page.js",
+  "/[locale]/test-donation/page": "app/[locale]/test-donation/page.js",
+  "/[locale]/donor-portal/dashboard/page": "app/[locale]/donor-portal/dashboard/page.js",
+  "/[locale]/donor-portal/directory/page": "app/[locale]/donor-portal/directory/page.js",
+  "/[locale]/donor-portal/history/page": "app/[locale]/donor-portal/history/page.js",
+  "/[locale]/donor-portal/profile/page": "app/[locale]/donor-portal/profile/page.js"
 }

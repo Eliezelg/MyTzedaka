@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useLocale } from 'next-intl'
 import { motion } from 'framer-motion'
 import { 
   Search,
@@ -25,7 +26,9 @@ import {
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { SearchBar } from '@/components/hub/search-bar'
+import { LanguageSelector } from '@/components/ui/language-selector'
 import { useAuth } from '@/contexts/AuthContext'
+import { useNavigationTranslations, useCommonTranslations } from '@/lib/translations'
 
 interface NavigationItem {
   label: string
@@ -151,7 +154,10 @@ export function HubHeader() {
               <Search className="h-4 w-4" />
             </Button>
 
-            {/* Menu utilisateur ou boutons de connexion */}
+            {/* Sélecteur de langue */}
+            <LanguageSelector />
+
+            {/* Authentification */}
             {user ? (
               <>
                 {/* Notifications */}

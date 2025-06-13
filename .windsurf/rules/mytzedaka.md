@@ -8,7 +8,7 @@ Vérification après chaque phase
 Mise à jour du README
 Une fois la vérification terminée, mets à jour le fichier README.md avec un résumé clair de ce qui a été développé dans la phase.
 
-ensuite fait un commit sur git hub
+ensuite fait un commit sur git hub avec push
 
 Préparation de la phase suivante
 Ensuite, crée un nouveau fichier dédié à la phase suivante, en définissant les objectifs et les tâches à réaliser.
