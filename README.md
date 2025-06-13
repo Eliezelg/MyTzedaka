@@ -56,6 +56,21 @@
 - ✅ Système de recherche global avec filtres avancés
 - ✅ Navigation intuitive et breadcrumbs
 
+### ✅ Internationalisation i18n (13 juin 2025)
+
+**Problèmes résolus** :
+- ✅ Erreur 404 sur route racine `/` corrigée
+- ✅ Configuration next-intl avec `localePrefix: 'as-needed'`
+- ✅ Support bilingue français/hébreu avec RTL automatique
+- ✅ Middleware simplifié sans conflits de routing
+- ✅ Page d'accueil fonctionnelle avec liens vers versions localisées
+
+**Architecture i18n** :
+- ✅ Structure `app/[locale]` pour pages localisées
+- ✅ Fichiers de traduction `messages/fr` et `messages/he`
+- ✅ Hooks personnalisés pour chaque namespace
+- ✅ Composants de traduction réutilisables
+
 ### ✅ CORRECTION CRITIQUE : API Création Association (RÉSOLUE)
 **Statut** : ✅ **PROBLÈME RÉSOLU AVEC SUCCÈS**
 **Date** : 10 juin 2025
