@@ -1,0 +1,1175 @@
+{
+  "summary": {
+    "totalKeys": 147,
+    "foundKeys": 41,
+    "missingKeys": 75,
+    "ambiguousKeys": 31,
+    "verificationDate": "2025-06-16T18:45:28.700Z"
+  },
+  "foundKeys": [
+    {
+      "key": "associations",
+      "namespace": "navigation",
+      "status": "inferred"
+    },
+    {
+      "key": "empty.action",
+      "namespace": "empty",
+      "keyPath": "action",
+      "status": "found"
+    },
+    {
+      "key": "directory.title",
+      "namespace": "directory",
+      "keyPath": "title",
+      "status": "found"
+    },
+    {
+      "key": "directory.description",
+      "namespace": "directory",
+      "keyPath": "description",
+      "status": "found"
+    },
+    {
+      "key": "search.placeholder",
+      "namespace": "search",
+      "keyPath": "placeholder",
+      "status": "found"
+    },
+    {
+      "key": "empty.title",
+      "namespace": "empty",
+      "keyPath": "title",
+      "status": "found"
+    },
+    {
+      "key": "empty.description",
+      "namespace": "empty",
+      "keyPath": "description",
+      "status": "found"
+    },
+    {
+      "key": "campaigns",
+      "namespace": "navigation",
+      "status": "inferred"
+    },
+    {
+      "key": "filters.completed",
+      "namespace": "filters",
+      "keyPath": "completed",
+      "status": "found"
+    },
+    {
+      "key": "filters.active",
+      "namespace": "filters",
+      "keyPath": "active",
+      "status": "found"
+    },
+    {
+      "key": "filters.inactive",
+      "namespace": "filters",
+      "keyPath": "inactive",
+      "status": "found"
+    },
+    {
+      "key": "progress.expired",
+      "namespace": "progress",
+      "keyPath": "expired",
+      "status": "found"
+    },
+    {
+      "key": "progress.lastDay",
+      "namespace": "progress",
+      "keyPath": "lastDay",
+      "status": "found"
+    },
+    {
+      "key": "progress.oneDay",
+      "namespace": "progress",
+      "keyPath": "oneDay",
+      "status": "found"
+    },
+    {
+      "key": "page.title",
+      "namespace": "page",
+      "keyPath": "title",
+      "status": "found"
+    },
+    {
+      "key": "page.description",
+      "namespace": "page",
+      "keyPath": "description",
+      "status": "found"
+    },
+    {
+      "key": "filters.all",
+      "namespace": "filters",
+      "keyPath": "all",
+      "status": "found"
+    },
+    {
+      "key": "stats.total",
+      "namespace": "stats",
+      "keyPath": "total",
+      "status": "found"
+    },
+    {
+      "key": "stats.active",
+      "namespace": "stats",
+      "keyPath": "active",
+      "status": "found"
+    },
+    {
+      "key": "stats.endingSoon",
+      "namespace": "stats",
+      "keyPath": "endingSoon",
+      "status": "found"
+    },
+    {
+      "key": "dashboard.title",
+      "namespace": "dashboard",
+      "keyPath": "title",
+      "status": "found"
+    },
+    {
+      "key": "pageNotFound",
+      "namespace": "errors",
+      "status": "inferred"
+    },
+    {
+      "key": "pageNotFoundDescription",
+      "namespace": "errors",
+      "status": "inferred"
+    },
+    {
+      "key": "backToHome",
+      "namespace": "errors",
+      "status": "inferred"
+    },
+    {
+      "key": "searchPlaceholder",
+      "namespace": "common",
+      "status": "inferred"
+    },
+    {
+      "key": "verified",
+      "namespace": "associations",
+      "status": "inferred"
+    },
+    {
+      "key": "actions.discover",
+      "namespace": "actions",
+      "keyPath": "discover",
+      "status": "found"
+    },
+    {
+      "key": "progress.goal",
+      "namespace": "progress",
+      "keyPath": "goal",
+      "status": "found"
+    },
+    {
+      "key": "actions.donate",
+      "namespace": "actions",
+      "keyPath": "donate",
+      "status": "found"
+    },
+    {
+      "key": "actions.viewDetails",
+      "namespace": "actions",
+      "keyPath": "viewDetails",
+      "status": "found"
+    },
+    {
+      "key": "donations",
+      "namespace": "navigation",
+      "status": "inferred"
+    },
+    {
+      "key": "hero.badge",
+      "namespace": "hero",
+      "keyPath": "badge",
+      "status": "found"
+    },
+    {
+      "key": "hero.title",
+      "namespace": "hero",
+      "keyPath": "title",
+      "status": "found"
+    },
+    {
+      "key": "hero.subtitle",
+      "namespace": "hero",
+      "keyPath": "subtitle",
+      "status": "found"
+    },
+    {
+      "key": "hero.searchButton",
+      "namespace": "hero",
+      "keyPath": "searchButton",
+      "status": "found"
+    },
+    {
+      "key": "hero.exploreButton",
+      "namespace": "hero",
+      "keyPath": "exploreButton",
+      "status": "found"
+    },
+    {
+      "key": "suggestions",
+      "namespace": "common",
+      "status": "inferred"
+    },
+    {
+      "key": "share",
+      "namespace": "common",
+      "status": "inferred"
+    },
+    {
+      "key": "home",
+      "namespace": "navigation",
+      "status": "inferred"
+    },
+    {
+      "key": "login",
+      "namespace": "navigation",
+      "status": "inferred"
+    },
+    {
+      "key": "signup",
+      "namespace": "navigation",
+      "status": "inferred"
+    }
+  ],
+  "missingKeys": [
+    {
+      "key": "search.loading",
+      "namespace": "search",
+      "keyPath": "loading",
+      "status": "missing",
+      "reason": "Clé non trouvée",
+      "usages": 1
+    },
+    {
+      "key": "search.error",
+      "namespace": "search",
+      "keyPath": "error",
+      "status": "missing",
+      "reason": "Clé non trouvée",
+      "usages": 1
+    },
+    {
+      "key": "search.retry",
+      "namespace": "search",
+      "keyPath": "retry",
+      "status": "missing",
+      "reason": "Clé non trouvée",
+      "usages": 1
+    },
+    {
+      "key": "dashboard.description",
+      "namespace": "dashboard",
+      "keyPath": "description",
+      "status": "missing",
+      "reason": "Clé non trouvée",
+      "usages": 1
+    },
+    {
+      "key": "history.title",
+      "namespace": "history",
+      "keyPath": "title",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "history.description",
+      "namespace": "history",
+      "keyPath": "description",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "profile.title",
+      "namespace": "profile",
+      "keyPath": "title",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "profile.description",
+      "namespace": "profile",
+      "keyPath": "description",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "login.title",
+      "namespace": "login",
+      "keyPath": "title",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "login.subtitle",
+      "namespace": "login",
+      "keyPath": "subtitle",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "login.email",
+      "namespace": "login",
+      "keyPath": "email",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "login.password",
+      "namespace": "login",
+      "keyPath": "password",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "login.forgotPassword",
+      "namespace": "login",
+      "keyPath": "forgotPassword",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "login.loginButton",
+      "namespace": "login",
+      "keyPath": "loginButton",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 2
+    },
+    {
+      "key": "login.noAccount",
+      "namespace": "login",
+      "keyPath": "noAccount",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "login.signupLink",
+      "namespace": "login",
+      "keyPath": "signupLink",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "signup.title",
+      "namespace": "signup",
+      "keyPath": "title",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "signup.email",
+      "namespace": "signup",
+      "keyPath": "email",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "signup.password",
+      "namespace": "signup",
+      "keyPath": "password",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "validation.passwordMinLength",
+      "namespace": "validation",
+      "keyPath": "passwordMinLength",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "signup.confirmPassword",
+      "namespace": "signup",
+      "keyPath": "confirmPassword",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "errors.passwordMismatch",
+      "namespace": "errors",
+      "keyPath": "passwordMismatch",
+      "status": "missing",
+      "reason": "Clé non trouvée",
+      "usages": 1
+    },
+    {
+      "key": "signup.firstName",
+      "namespace": "signup",
+      "keyPath": "firstName",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 2
+    },
+    {
+      "key": "signup.lastName",
+      "namespace": "signup",
+      "keyPath": "lastName",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 2
+    },
+    {
+      "key": "signup.signupButton",
+      "namespace": "signup",
+      "keyPath": "signupButton",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 2
+    },
+    {
+      "key": "signup.hasAccount",
+      "namespace": "signup",
+      "keyPath": "hasAccount",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "signup.loginLink",
+      "namespace": "signup",
+      "keyPath": "loginLink",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "campaign.active",
+      "namespace": "campaign",
+      "keyPath": "active",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "campaign.total",
+      "namespace": "campaign",
+      "keyPath": "total",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "status.draft",
+      "namespace": "status",
+      "keyPath": "draft",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "status.active",
+      "namespace": "status",
+      "keyPath": "active",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "status.paused",
+      "namespace": "status",
+      "keyPath": "paused",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "status.completed",
+      "namespace": "status",
+      "keyPath": "completed",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "status.cancelled",
+      "namespace": "status",
+      "keyPath": "cancelled",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "progress.collected",
+      "namespace": "progress",
+      "keyPath": "collected",
+      "status": "missing",
+      "reason": "Clé non trouvée",
+      "usages": 1
+    },
+    {
+      "key": "progress.donorCount",
+      "namespace": "progress",
+      "keyPath": "donorCount",
+      "status": "missing",
+      "reason": "Clé non trouvée",
+      "usages": 1
+    },
+    {
+      "key": "progress.deadline",
+      "namespace": "progress",
+      "keyPath": "deadline",
+      "status": "missing",
+      "reason": "Clé non trouvée",
+      "usages": 1
+    },
+    {
+      "key": "components.comments",
+      "namespace": "components",
+      "keyPath": "comments",
+      "status": "missing",
+      "reason": "Clé non trouvée",
+      "usages": 1
+    },
+    {
+      "key": "widget.support",
+      "namespace": "widget",
+      "keyPath": "support",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "widget.donate",
+      "namespace": "widget",
+      "keyPath": "donate",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "widget.makeDifference",
+      "namespace": "widget",
+      "keyPath": "makeDifference",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "widget.chooseAmount",
+      "namespace": "widget",
+      "keyPath": "chooseAmount",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "widget.taxReceipt",
+      "namespace": "widget",
+      "keyPath": "taxReceipt",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "widget.otherAmount",
+      "namespace": "widget",
+      "keyPath": "otherAmount",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "widget.taxBenefit",
+      "namespace": "widget",
+      "keyPath": "taxBenefit",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "widget.continue",
+      "namespace": "widget",
+      "keyPath": "continue",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "widget.yourInfo",
+      "namespace": "widget",
+      "keyPath": "yourInfo",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "widget.anonymousDonation",
+      "namespace": "widget",
+      "keyPath": "anonymousDonation",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "widget.yourName",
+      "namespace": "widget",
+      "keyPath": "yourName",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "widget.yourEmail",
+      "namespace": "widget",
+      "keyPath": "yourEmail",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "widget.supportMessage",
+      "namespace": "widget",
+      "keyPath": "supportMessage",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "widget.back",
+      "namespace": "widget",
+      "keyPath": "back",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "widget.payment",
+      "namespace": "widget",
+      "keyPath": "payment",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "widget.securePayment",
+      "namespace": "widget",
+      "keyPath": "securePayment",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "widget.securedByStripe",
+      "namespace": "widget",
+      "keyPath": "securedByStripe",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "widget.payByCard",
+      "namespace": "widget",
+      "keyPath": "payByCard",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "widget.modifyInfo",
+      "namespace": "widget",
+      "keyPath": "modifyInfo",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "filters.allCategories",
+      "namespace": "filters",
+      "keyPath": "allCategories",
+      "status": "missing",
+      "reason": "Clé non trouvée",
+      "usages": 3
+    },
+    {
+      "key": "filters.title",
+      "namespace": "filters",
+      "keyPath": "title",
+      "status": "missing",
+      "reason": "Clé non trouvée",
+      "usages": 1
+    },
+    {
+      "key": "filters.clear",
+      "namespace": "filters",
+      "keyPath": "clear",
+      "status": "missing",
+      "reason": "Clé non trouvée",
+      "usages": 1
+    },
+    {
+      "key": "filters.category",
+      "namespace": "filters",
+      "keyPath": "category",
+      "status": "missing",
+      "reason": "Clé non trouvée",
+      "usages": 1
+    },
+    {
+      "key": "filters.location",
+      "namespace": "filters",
+      "keyPath": "location",
+      "status": "missing",
+      "reason": "Clé non trouvée",
+      "usages": 1
+    },
+    {
+      "key": "stats.associationsVerified",
+      "namespace": "stats",
+      "keyPath": "associationsVerified",
+      "status": "missing",
+      "reason": "Clé non trouvée",
+      "usages": 1
+    },
+    {
+      "key": "stats.raisedThisMonth",
+      "namespace": "stats",
+      "keyPath": "raisedThisMonth",
+      "status": "missing",
+      "reason": "Clé non trouvée",
+      "usages": 1
+    },
+    {
+      "key": "stats.activeDonors",
+      "namespace": "stats",
+      "keyPath": "activeDonors",
+      "status": "missing",
+      "reason": "Clé non trouvée",
+      "usages": 1
+    },
+    {
+      "key": "metrics.title",
+      "namespace": "metrics",
+      "keyPath": "title",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "socialImpact.title",
+      "namespace": "socialImpact",
+      "keyPath": "title",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "socialImpact.projects",
+      "namespace": "socialImpact",
+      "keyPath": "projects",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "socialImpact.communities",
+      "namespace": "socialImpact",
+      "keyPath": "communities",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "goals.title",
+      "namespace": "goals",
+      "keyPath": "title",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "performance.retention",
+      "namespace": "performance",
+      "keyPath": "retention",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "performance.activeCampaigns",
+      "namespace": "performance",
+      "keyPath": "activeCampaigns",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "performance.completedCampaigns",
+      "namespace": "performance",
+      "keyPath": "completedCampaigns",
+      "status": "missing",
+      "reason": "Namespace non trouvé",
+      "usages": 1
+    },
+    {
+      "key": "components.media",
+      "namespace": "components",
+      "keyPath": "media",
+      "status": "missing",
+      "reason": "Clé non trouvée",
+      "usages": 1
+    },
+    {
+      "key": "components.related",
+      "namespace": "components",
+      "keyPath": "related",
+      "status": "missing",
+      "reason": "Clé non trouvée",
+      "usages": 1
+    }
+  ],
+  "ambiguousKeys": [
+    {
+      "key": "loading",
+      "status": "ambiguous",
+      "possibleNamespaces": [
+        "associations",
+        "common"
+      ],
+      "usages": 1
+    },
+    {
+      "key": "welcome",
+      "status": "ambiguous",
+      "possibleNamespaces": [
+        "common",
+        "dashboard"
+      ],
+      "usages": 4
+    },
+    {
+      "key": "title",
+      "status": "ambiguous",
+      "possibleNamespaces": [
+        "associations",
+        "campaigns",
+        "dashboard",
+        "directory",
+        "donations",
+        "empty",
+        "hero",
+        "page",
+        "search"
+      ],
+      "usages": 3
+    },
+    {
+      "key": "description",
+      "status": "ambiguous",
+      "possibleNamespaces": [
+        "common",
+        "directory",
+        "empty",
+        "page"
+      ],
+      "usages": 1
+    },
+    {
+      "key": "auth",
+      "status": "not_found",
+      "usages": 4
+    },
+    {
+      "key": "common",
+      "status": "not_found",
+      "usages": 7
+    },
+    {
+      "key": "errors",
+      "status": "not_found",
+      "usages": 3
+    },
+    {
+      "key": "index",
+      "status": "not_found",
+      "usages": 2
+    },
+    {
+      "key": "search",
+      "status": "ambiguous",
+      "possibleNamespaces": [
+        "common",
+        "navigation"
+      ],
+      "usages": 5
+    },
+    {
+      "key": "connectedUser",
+      "status": "not_found",
+      "usages": 2
+    },
+    {
+      "key": "cancel",
+      "status": "ambiguous",
+      "possibleNamespaces": [
+        "actions",
+        "common"
+      ],
+      "usages": 2
+    },
+    {
+      "key": "impact",
+      "status": "not_found",
+      "usages": 2
+    },
+    {
+      "key": "empty",
+      "status": "not_found",
+      "usages": 1
+    },
+    {
+      "key": "videos",
+      "status": "not_found",
+      "usages": 1
+    },
+    {
+      "key": "explore",
+      "status": "not_found",
+      "usages": 1
+    },
+    {
+      "key": "popular",
+      "status": "not_found",
+      "usages": 1
+    },
+    {
+      "key": "recent",
+      "status": "not_found",
+      "usages": 1
+    },
+    {
+      "key": "otherCampaigns",
+      "status": "not_found",
+      "usages": 1
+    },
+    {
+      "key": "relatedContent",
+      "status": "not_found",
+      "usages": 1
+    },
+    {
+      "key": "all",
+      "status": "ambiguous",
+      "possibleNamespaces": [
+        "common",
+        "filters"
+      ],
+      "usages": 1
+    },
+    {
+      "key": "viewMore",
+      "status": "not_found",
+      "usages": 1
+    },
+    {
+      "key": "searchButton",
+      "status": "ambiguous",
+      "possibleNamespaces": [
+        "common",
+        "hero"
+      ],
+      "usages": 1
+    },
+    {
+      "key": "recentSearches",
+      "status": "not_found",
+      "usages": 1
+    },
+    {
+      "key": "trending",
+      "status": "ambiguous",
+      "possibleNamespaces": [
+        "navigation",
+        "stats"
+      ],
+      "usages": 1
+    },
+    {
+      "key": "dashboard",
+      "status": "ambiguous",
+      "possibleNamespaces": [
+        "connectedUser",
+        "navigation"
+      ],
+      "usages": 2
+    },
+    {
+      "key": "profile",
+      "status": "ambiguous",
+      "possibleNamespaces": [
+        "connectedUser",
+        "navigation"
+      ],
+      "usages": 1
+    },
+    {
+      "key": "settings",
+      "status": "ambiguous",
+      "possibleNamespaces": [
+        "connectedUser",
+        "navigation"
+      ],
+      "usages": 1
+    },
+    {
+      "key": "help",
+      "status": "ambiguous",
+      "possibleNamespaces": [
+        "common",
+        "navigation"
+      ],
+      "usages": 1
+    },
+    {
+      "key": "logout",
+      "status": "ambiguous",
+      "possibleNamespaces": [
+        "connectedUser",
+        "navigation"
+      ],
+      "usages": 1
+    },
+    {
+      "key": "navigation",
+      "status": "not_found",
+      "usages": 2
+    },
+    {
+      "key": "forms",
+      "status": "not_found",
+      "usages": 2
+    }
+  ],
+  "namespaceStats": {
+    "actions": {
+      "frCount": 12,
+      "heCount": 12,
+      "usedCount": 3
+    },
+    "associations": {
+      "frCount": 89,
+      "heCount": 89,
+      "usedCount": 1
+    },
+    "auth": {
+      "frCount": 80,
+      "heCount": 80,
+      "usedCount": 0
+    },
+    "campaigns": {
+      "frCount": 110,
+      "heCount": 110,
+      "usedCount": 0
+    },
+    "common": {
+      "frCount": 76,
+      "heCount": 76,
+      "usedCount": 3
+    },
+    "components": {
+      "frCount": 103,
+      "heCount": 96,
+      "usedCount": 0
+    },
+    "connectedUser": {
+      "frCount": 6,
+      "heCount": 6,
+      "usedCount": 0
+    },
+    "dashboard": {
+      "frCount": 84,
+      "heCount": 84,
+      "usedCount": 1
+    },
+    "directory": {
+      "frCount": 6,
+      "heCount": 6,
+      "usedCount": 2
+    },
+    "donations": {
+      "frCount": 110,
+      "heCount": 110,
+      "usedCount": 0
+    },
+    "empty": {
+      "frCount": 3,
+      "heCount": 3,
+      "usedCount": 3
+    },
+    "errors": {
+      "frCount": 57,
+      "heCount": 57,
+      "usedCount": 3
+    },
+    "filters": {
+      "frCount": 6,
+      "heCount": 6,
+      "usedCount": 4
+    },
+    "forms": {
+      "frCount": 46,
+      "heCount": 46,
+      "usedCount": 0
+    },
+    "hero": {
+      "frCount": 5,
+      "heCount": 5,
+      "usedCount": 5
+    },
+    "index": {
+      "frCount": 675,
+      "heCount": 665,
+      "usedCount": 0
+    },
+    "navigation": {
+      "frCount": 27,
+      "heCount": 27,
+      "usedCount": 6
+    },
+    "page": {
+      "frCount": 4,
+      "heCount": 4,
+      "usedCount": 2
+    },
+    "progress": {
+      "frCount": 8,
+      "heCount": 8,
+      "usedCount": 4
+    },
+    "search": {
+      "frCount": 36,
+      "heCount": 36,
+      "usedCount": 1
+    },
+    "stats": {
+      "frCount": 10,
+      "heCount": 10,
+      "usedCount": 3
+    }
+  }
+}

@@ -10,21 +10,23 @@ import {
   HttpCode,
   HttpStatus,
   Logger,
+  BadRequestException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { PublicHub } from '../common/decorators/public-hub.decorator';
 import { DonationService, CreateDonationDto } from './donation.service';
 
 @ApiTags('Donations')
 @Controller('donations')
-@UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
 export class DonationController {
   private readonly logger = new Logger(DonationController.name);
 
   constructor(private readonly donationService: DonationService) {}
 
   @Post('create')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Créer une donation avec PaymentIntent' })
   @ApiResponse({ status: 201, description: 'Donation créée avec succès' })
@@ -58,7 +60,47 @@ export class DonationController {
     };
   }
 
+  @PublicHub()
+  @Post('create-public')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Créer une donation publique depuis le hub (sans authentification)' })
+  @ApiResponse({ status: 201, description: 'Donation créée avec succès' })
+  @ApiResponse({ status: 400, description: 'Données invalides' })
+  @ApiResponse({ status: 404, description: 'Campagne non trouvée' })
+  async createPublicDonation(
+    @Body() createDonationDto: CreateDonationDto & { tenantId: string },
+  ) {
+    const { tenantId, ...donationData } = createDonationDto;
+
+    if (!tenantId) {
+      throw new BadRequestException('tenantId est requis pour une donation publique');
+    }
+
+    this.logger.log(
+      `Creating public donation: ${donationData.amount}€ for tenant ${tenantId}`
+    );
+
+    // Pour les donations publiques, on utilise un userId temporaire ou null
+    const result = await this.donationService.createDonation(
+      tenantId,
+      null, // Pas d'utilisateur connecté pour les donations publiques
+      donationData,
+    );
+
+    return {
+      success: true,
+      data: {
+        donationId: result.donation.id,
+        clientSecret: result.clientSecret,
+        amount: result.donation.amount,
+        currency: result.donation.currency,
+      },
+    };
+  }
+
   @Post('confirm/:paymentIntentId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Confirmer une donation après paiement réussi' })
   @ApiResponse({ status: 200, description: 'Donation confirmée' })
@@ -83,7 +125,34 @@ export class DonationController {
     };
   }
 
+  @PublicHub()
+  @Post('confirm-public/:paymentIntentId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Confirmer une donation publique après paiement réussi' })
+  @ApiResponse({ status: 200, description: 'Donation confirmée' })
+  @ApiResponse({ status: 400, description: 'Paiement non confirmé' })
+  @ApiResponse({ status: 404, description: 'Donation non trouvée' })
+  async confirmPublicDonation(
+    @Param('paymentIntentId') paymentIntentId: string,
+  ) {
+    this.logger.log(`Confirming public donation for PaymentIntent: ${paymentIntentId}`);
+
+    const donation = await this.donationService.confirmDonation(paymentIntentId);
+
+    return {
+      success: true,
+      data: {
+        donationId: donation.id,
+        amount: donation.amount,
+        currency: donation.currency,
+        status: donation.status,
+      },
+    };
+  }
+
   @Get('history')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Récupérer l\'historique des donations de l\'utilisateur' })
   @ApiResponse({ status: 200, description: 'Historique récupéré' })
   async getDonationHistory(
@@ -118,6 +187,8 @@ export class DonationController {
   }
 
   @Get('campaign/:campaignId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Récupérer les donations d\'une campagne' })
   @ApiResponse({ status: 200, description: 'Donations de la campagne' })
   async getCampaignDonations(
@@ -143,6 +214,8 @@ export class DonationController {
   }
 
   @Get('campaign/:campaignId/stats')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Statistiques des donations d\'une campagne' })
   @ApiResponse({ status: 200, description: 'Statistiques de la campagne' })
   async getCampaignDonationStats(

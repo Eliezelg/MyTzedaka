@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useTranslations } from 'next-intl'
 import { 
   TrendingUp, 
   Users, 
@@ -77,6 +78,7 @@ export function ImpactMetrics({
   showGoals = true,
   showAchievements = true
 }: ImpactMetricsProps) {
+  const t = useTranslations('impact')
   const [impactData, setImpactData] = useState<ImpactData | null>(data || null)
   const [isLoading, setIsLoading] = useState(!data)
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null)
@@ -164,7 +166,7 @@ export function ImpactMetrics({
       <Card className={`p-4 ${className}`}>
         <h3 className="font-semibold mb-4 flex items-center gap-2">
           <BarChart3 className="w-5 h-5" />
-          Impact
+          {t('impact')}
         </h3>
         <div className="grid grid-cols-2 gap-4">
           {primaryMetrics.slice(0, 2).map((metric) => {
@@ -212,7 +214,7 @@ export function ImpactMetrics({
       <Card className="p-6">
         <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
           <BarChart3 className="w-6 h-6 text-blue-600" />
-          Métriques d'impact
+          {t('metrics.title')}
         </h3>
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -253,7 +255,7 @@ export function ImpactMetrics({
       <Card className="p-6">
         <h4 className="text-lg font-semibold mb-4 flex items-center gap-2">
           <Heart className="w-5 h-5 text-red-500" />
-          Impact social
+          {t('socialImpact.title')}
         </h4>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -274,7 +276,7 @@ export function ImpactMetrics({
             <div className="font-bold text-xl text-green-600">
               {formatNumber(impactData.socialImpact.projects)}
             </div>
-            <div className="text-sm text-gray-600">Projets réalisés</div>
+            <div className="text-sm text-gray-600">{t('socialImpact.projects')}</div>
           </div>
           
           <div className="text-center">
@@ -284,7 +286,7 @@ export function ImpactMetrics({
             <div className="font-bold text-xl text-purple-600">
               {formatNumber(impactData.socialImpact.communities)}
             </div>
-            <div className="text-sm text-gray-600">Communautés touchées</div>
+            <div className="text-sm text-gray-600">{t('socialImpact.communities')}</div>
           </div>
         </div>
       </Card>
@@ -294,7 +296,7 @@ export function ImpactMetrics({
         <Card className="p-6">
           <h4 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Target className="w-5 h-5 text-blue-500" />
-            Objectifs en cours
+            {t('goals.title')}
           </h4>
           
           <div className="space-y-4">
@@ -312,7 +314,7 @@ export function ImpactMetrics({
                   <Progress value={progress} className="h-2" />
                   
                   <div className="flex justify-between items-center text-xs text-gray-500">
-                    <span>{progress.toFixed(1)}% atteint</span>
+                    <span>{t('goals.progress', { percent: progress.toFixed(1) })}</span>
                     {goal.deadline && (
                       <span>Échéance: {new Date(goal.deadline).toLocaleDateString()}</span>
                     )}
@@ -391,17 +393,17 @@ export function ImpactMetrics({
           
           <div className="text-center p-3 bg-gray-50 rounded-lg">
             <div className="font-semibold text-lg">{impactData.retention}%</div>
-            <div className="text-sm text-gray-600">Fidélisation</div>
+            <div className="text-sm text-gray-600">{t('performance.retention')}</div>
           </div>
           
           <div className="text-center p-3 bg-gray-50 rounded-lg">
             <div className="font-semibold text-lg">{impactData.activeCampaigns}</div>
-            <div className="text-sm text-gray-600">Campagnes actives</div>
+            <div className="text-sm text-gray-600">{t('performance.activeCampaigns')}</div>
           </div>
           
           <div className="text-center p-3 bg-gray-50 rounded-lg">
             <div className="font-semibold text-lg">{impactData.completedCampaigns}</div>
-            <div className="text-sm text-gray-600">Campagnes terminées</div>
+            <div className="text-sm text-gray-600">{t('performance.completedCampaigns')}</div>
           </div>
         </div>
       </Card>

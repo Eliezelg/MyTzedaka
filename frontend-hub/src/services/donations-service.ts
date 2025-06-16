@@ -11,36 +11,17 @@ export interface CreateDonationRequest {
 }
 
 export interface CreateDonationResponse {
-  donation: {
-    id: string;
-    amount: number;
-    currency: string;
-    status: string;
-    paymentIntentId: string;
-    campaignId?: string;
-    tenantId: string;
-    createdAt: string;
-  };
-  paymentIntent: {
-    id: string;
-    client_secret: string;
-    amount: number;
-    currency: string;
-    status: string;
-  };
+  donationId: string;
+  clientSecret: string;
+  amount: number;
+  currency: string;
 }
 
 export interface ConfirmDonationResponse {
-  donation: {
-    id: string;
-    amount: number;
-    currency: string;
-    status: string;
-    paymentIntentId: string;
-    confirmedAt?: string;
-  };
-  success: boolean;
-  message: string;
+  donationId: string;
+  amount: number;
+  currency: string;
+  status: string;
 }
 
 export interface DonationHistoryItem {
@@ -80,18 +61,18 @@ export interface CampaignDonationStats {
 
 class DonationsService {
   /**
-   * Crée une nouvelle donation avec PaymentIntent
+   * Crée une nouvelle donation avec PaymentIntent (publique depuis le hub)
    */
-  async createDonation(request: CreateDonationRequest): Promise<CreateDonationResponse> {
-    const response = await apiClient.post<CreateDonationResponse>('/donations/create', request as any);
+  async createDonation(request: CreateDonationRequest & { tenantId: string }): Promise<CreateDonationResponse> {
+    const response = await apiClient.post<CreateDonationResponse>('/donations/create-public', request as any);
     return response.data;
   }
 
   /**
-   * Confirme une donation existante
+   * Confirme une donation existante (version publique pour donations du hub)
    */
   async confirmDonation(paymentIntentId: string): Promise<ConfirmDonationResponse> {
-    const response = await apiClient.post<ConfirmDonationResponse>(`/donations/confirm/${paymentIntentId}`);
+    const response = await apiClient.post<ConfirmDonationResponse>(`/donations/confirm-public/${paymentIntentId}`);
     return response.data;
   }
 

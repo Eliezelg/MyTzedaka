@@ -90,11 +90,43 @@
   "progress": {
     "funded": "{percent}% מומן",
     "raised": "{amount} נגבו",
-    "backers": "{count} תורמים",
+    "backers": "{count} תורמים", 
     "daysLeft": "{days} ימים נותרו",
     "hoursLeft": "{hours} שעות נותרו",
     "completed": "המטרה הושגה!",
-    "exceeded": "המטרה עברה ב-{percent}%"
+    "exceeded": "המטרה עברה ב-{percent}%",
+    "collected": "נגבה",
+    "donorCount": "תורמים",
+    "deadline": "סיום",
+    "expired": "פג תוקף",
+    "goal": "מטרה:",
+    "lastDay": "יום אחרון",
+    "oneDay": "יום אחד נותר"
+  },
+  "page": {
+    "title": "כל הקמפיינים",
+    "description": "גלו ותמכו בקמפיינים לגיוס כספים"
+  },
+  "search": {
+    "placeholder": "חיפוש קמפיין...",
+    "loading": "טוען קמפיינים...", 
+    "error": "שגיאה בטעינה",
+    "retry": "נסה שוב"
+  },
+  "filters": {
+    "all": "הכל",
+    "active": "פעילים",
+    "completed": "הושלמו", 
+    "inactive": "לא פעילים"
+  },
+  "stats": {
+    "total": "סה\"כ קמפיינים",
+    "active": "קמפיינים פעילים",
+    "endingSoon": "מסתיימים בקרוב"
+  },
+  "empty": {
+    "title": "לא נמצאו קמפיינים",
+    "action": "איפוס החיפוש"
   },
   "messages": {
     "createSuccess": "הקמפיין נוצר בהצלחה",

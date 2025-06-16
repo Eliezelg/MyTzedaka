@@ -12,7 +12,7 @@ export type AssociationCategory =
   | 'RELIGIEUX'
   | 'AUTRE'
 
-export type CompletionLevel = 1 | 2 | 3 | 4 | 5
+export type CompletionLevel = 1 | 2 | 3 | 4 | 5 | 6 | 7
 
 export interface MinimalAssociationInfo {
   // Identité de base (obligatoire)
@@ -23,6 +23,14 @@ export interface MinimalAssociationInfo {
   // Mission courte (obligatoire)
   shortDescription: string
   category: AssociationCategory
+  
+  // Objet de l'association (obligatoire selon pays)
+  associationPurpose?: string // Objet pour associations françaises et équivalents
+  
+  // Configuration Stripe (obligatoire)
+  stripeMode: 'PLATFORM' | 'CUSTOM'
+  stripeSecretKey?: string // Si mode CUSTOM - clé secrète (sk_live_xxx)
+  stripePublishableKey?: string // Si mode CUSTOM - clé publique (pk_live_xxx)
   
   // Responsable créateur (obligatoire)
   creatorInfo: {
@@ -104,6 +112,7 @@ export interface FullProfileInfo {
 // Types spécifiques par pays
 export interface FranceLegalInfo {
   associationType: 'LOI_1901' | 'ALSACE_MOSELLE' | 'CULTUELLE'
+  objet: string // Objet de l'association (obligatoire)
   rnaNumber?: string
   siretNumber?: string
   prefecture: string
@@ -116,6 +125,7 @@ export interface FranceLegalInfo {
 
 export interface BelgiumLegalInfo {
   associationType: 'ASBL' | 'FONDATION' | 'ASSOCIATION_FAIT'
+  objetSocial: string // Objet social (obligatoire)
   enterpriseNumber?: string
   tribunal: string
   monitorBelgeReference?: string
@@ -127,6 +137,7 @@ export interface BelgiumLegalInfo {
 
 export interface SwitzerlandLegalInfo {
   associationType: 'ASSOCIATION_SIMPLE' | 'ASSOCIATION_BUT_IDEAL'
+  but: string // But de l'association (obligatoire)
   canton: string
   ideNumber?: string
   registreCommerce?: boolean
@@ -136,6 +147,7 @@ export interface SwitzerlandLegalInfo {
 
 export interface CanadaLegalInfo {
   incorporationType: 'FEDERAL' | 'PROVINCIAL'
+  corporateObjects: string // Objets de la corporation (obligatoire)
   province?: string
   businessNumber?: string
   charityNumber?: string

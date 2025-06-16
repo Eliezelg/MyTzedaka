@@ -1,6 +1,9 @@
+'use client'
+
 import { motion } from 'framer-motion'
 import { Search, ArrowRight, Heart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useTranslations } from 'next-intl'
 
 interface HeroSectionProps {
   onSearchClick?: () => void
@@ -8,6 +11,8 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ onSearchClick, onExploreClick }: HeroSectionProps) {
+  const t = useTranslations('index')
+  
   return (
     <section className="relative bg-gradient-to-br from-primary-50 via-white to-secondary-50 py-20">
       {/* Éléments décoratifs */}
@@ -27,7 +32,7 @@ export function HeroSection({ onSearchClick, onExploreClick }: HeroSectionProps)
           >
             <Heart className="w-4 h-4 text-accent-500" />
             <span className="text-sm font-medium text-gray-700">
-              Plateforme de dons solidaires
+              {t('hero.badge')}
             </span>
           </motion.div>
 
@@ -38,11 +43,7 @@ export function HeroSection({ onSearchClick, onExploreClick }: HeroSectionProps)
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight"
           >
-            Découvrez et soutenez les{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-accent-600">
-              associations
-            </span>{' '}
-            qui vous tiennent à cœur
+            {t('hero.title')}
           </motion.h1>
 
           {/* Sous-titre */}
@@ -52,8 +53,7 @@ export function HeroSection({ onSearchClick, onExploreClick }: HeroSectionProps)
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed"
           >
-            Explorez une communauté d'associations vérifiées, découvrez leurs campagnes de financement 
-            et contribuez à des causes qui transforment le monde.
+            {t('hero.subtitle')}
           </motion.p>
 
           {/* Boutons d'action */}
@@ -69,7 +69,7 @@ export function HeroSection({ onSearchClick, onExploreClick }: HeroSectionProps)
               onClick={onSearchClick}
             >
               <Search className="w-5 h-5 mr-2" />
-              Rechercher une cause
+              {t('hero.searchButton')}
               <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
             
@@ -79,7 +79,7 @@ export function HeroSection({ onSearchClick, onExploreClick }: HeroSectionProps)
               className="group min-w-[200px] bg-white/80 backdrop-blur-sm border-gray-300 hover:bg-white"
               onClick={onExploreClick}
             >
-              Explorer les associations
+              {t('hero.exploreButton')}
               <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </motion.div>
@@ -93,15 +93,15 @@ export function HeroSection({ onSearchClick, onExploreClick }: HeroSectionProps)
           >
             <div className="text-center">
               <div className="text-3xl font-bold text-primary-600 mb-1">100+</div>
-              <div className="text-sm text-gray-600">Associations vérifiées</div>
+              <div className="text-sm text-gray-600">{t('stats.associationsVerified')}</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-accent-600 mb-1">50k€</div>
-              <div className="text-sm text-gray-600">Collectés ce mois</div>
+              <div className="text-sm text-gray-600">{t('stats.raisedThisMonth')}</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-secondary-600 mb-1">1000+</div>
-              <div className="text-sm text-gray-600">Donateurs actifs</div>
+              <div className="text-sm text-gray-600">{t('stats.activeDonors')}</div>
             </div>
           </motion.div>
         </div>

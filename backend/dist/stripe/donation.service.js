@@ -12,6 +12,7 @@ var DonationService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DonationService = void 0;
 const common_1 = require("@nestjs/common");
+const uuid_1 = require("uuid");
 const prisma_service_1 = require("../prisma/prisma.service");
 const multi_tenant_stripe_service_1 = require("./multi-tenant-stripe.service");
 const client_1 = require("@prisma/client");
@@ -23,6 +24,39 @@ let DonationService = DonationService_1 = class DonationService {
     }
     async createDonation(tenantId, userId, createDonationDto) {
         const { amount, currency = 'EUR', campaignId, donorEmail, donorName, isAnonymous = false, purpose, source = client_1.DonationSource.PLATFORM, sourceUrl, } = createDonationDto;
+        let resolvedUserId = userId;
+        if (!resolvedUserId) {
+            if (!donorEmail) {
+                throw new common_1.BadRequestException('donorEmail est requis pour un don public');
+            }
+            const existingUser = await this.prisma.user.findFirst({
+                where: {
+                    email: donorEmail,
+                    tenantId: null,
+                },
+            });
+            if (existingUser) {
+                resolvedUserId = existingUser.id;
+            }
+            else {
+                const names = (donorName || '').split(' ');
+                const firstName = names.shift() || 'Donor';
+                const lastName = names.join(' ');
+                const newUser = await this.prisma.user.create({
+                    data: {
+                        id: (0, uuid_1.v4)(),
+                        email: donorEmail,
+                        cognitoId: `anon_${(0, uuid_1.v4)()}`,
+                        firstName,
+                        lastName,
+                        role: client_1.UserRole.MEMBER,
+                        tenantId: null,
+                        isActive: true,
+                    },
+                });
+                resolvedUserId = newUser.id;
+            }
+        }
         if (amount < 0.5) {
             throw new common_1.BadRequestException('Le montant minimum est de 0.50€');
         }
@@ -51,22 +85,29 @@ let DonationService = DonationService_1 = class DonationService {
                     `Donation pour campagne ${campaignId}` :
                     'Donation MyTzedaka',
             });
+            const donationData = {
+                tenantId,
+                amount,
+                currency,
+                type: client_1.DonationType.PUNCTUAL,
+                status: client_1.DonationStatus.PENDING,
+                stripePaymentIntentId: paymentIntent.id,
+                isAnonymous,
+                fiscalReceiptRequested: !isAnonymous,
+                source,
+                sourceUrl,
+            };
+            if (resolvedUserId) {
+                donationData.userId = resolvedUserId;
+            }
+            if (campaignId) {
+                donationData.campaignId = campaignId;
+            }
+            if (purpose) {
+                donationData.purpose = purpose;
+            }
             const donation = await this.prisma.donation.create({
-                data: {
-                    tenantId,
-                    userId,
-                    amount,
-                    currency,
-                    type: client_1.DonationType.PUNCTUAL,
-                    status: client_1.DonationStatus.PENDING,
-                    stripePaymentIntentId: paymentIntent.id,
-                    campaignId,
-                    purpose,
-                    isAnonymous,
-                    fiscalReceiptRequested: !isAnonymous,
-                    source,
-                    sourceUrl,
-                },
+                data: donationData,
                 include: {
                     campaign: {
                         select: {
@@ -106,9 +147,14 @@ let DonationService = DonationService_1 = class DonationService {
             if (!existingDonation) {
                 throw new common_1.NotFoundException('Donation non trouvée');
             }
+            if (existingDonation.status === client_1.DonationStatus.COMPLETED) {
+                this.logger.log(`Donation ${existingDonation.id} already confirmed`);
+                return existingDonation;
+            }
             const paymentIntent = await this.multiTenantStripeService.getPaymentIntent(existingDonation.tenantId, paymentIntentId);
             if (paymentIntent.status !== 'succeeded') {
-                throw new common_1.BadRequestException('Le paiement n\'a pas réussi');
+                this.logger.warn(`PaymentIntent ${paymentIntentId} status: ${paymentIntent.status}`);
+                throw new common_1.BadRequestException(`Le paiement n'a pas réussi. Statut: ${paymentIntent.status}`);
             }
             const donation = await this.prisma.donation.update({
                 where: { id: existingDonation.id },

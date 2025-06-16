@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -14,6 +15,8 @@ import { useAuth } from '@/contexts/AuthContext'
 export default function LoginPage() {
   const { login, isLoading, error } = useAuth()
   const router = useRouter()
+  const t = useTranslations('auth')
+  const tCommon = useTranslations('common')
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
@@ -50,14 +53,14 @@ export default function LoginPage() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-900">MyTzedaka</h1>
-          <p className="mt-2 text-gray-600">Hub central des associations caritatives</p>
+          <p className="mt-2 text-gray-600">{tCommon('header.tagline')}</p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Connexion</CardTitle>
+            <CardTitle>{t('login.title')}</CardTitle>
             <CardDescription>
-              Connectez-vous à votre compte pour accéder au hub
+              {t('login.subtitle')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -69,7 +72,7 @@ export default function LoginPage() {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t('login.email')}</Label>
                 <Input
                   id="email"
                   name="email"
@@ -77,13 +80,13 @@ export default function LoginPage() {
                   value={formData.email}
                   onChange={handleInputChange}
                   required
-                  placeholder="votre@email.com"
+                  placeholder="exemple@email.com"
                   disabled={isLoading}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Mot de passe</Label>
+                <Label htmlFor="password">{t('login.password')}</Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -115,7 +118,7 @@ export default function LoginPage() {
                   href="/forgot-password"
                   className="text-sm text-blue-600 hover:text-blue-500"
                 >
-                  Mot de passe oublié ?
+                  {t('login.forgotPassword')}
                 </Link>
               </div>
 
@@ -127,21 +130,21 @@ export default function LoginPage() {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Connexion en cours...
+                    {t('login.loginButton')}...
                   </>
                 ) : (
-                  'Se connecter'
+                  t('login.loginButton')
                 )}
               </Button>
 
               <div className="text-center">
                 <span className="text-sm text-gray-600">
-                  Pas encore de compte ?{' '}
+                  {t('login.noAccount')}{' '}
                   <Link 
                     href="/signup"
                     className="font-medium text-blue-600 hover:text-blue-500"
                   >
-                    S'inscrire
+                    {t('login.signupLink')}
                   </Link>
                 </span>
               </div>
@@ -150,13 +153,13 @@ export default function LoginPage() {
         </Card>
 
         <div className="text-center text-sm text-gray-500">
-          En vous connectant, vous acceptez nos{' '}
+          {tCommon('legal.bySigningUp')}{' '}
           <Link href="/terms" className="text-blue-600 hover:text-blue-500">
-            conditions d'utilisation
+            {tCommon('legal.termsOfService')}
           </Link>
-          {' '}et notre{' '}
+          {' '}{tCommon('legal.and')}{' '}
           <Link href="/privacy" className="text-blue-600 hover:text-blue-500">
-            politique de confidentialité
+            {tCommon('legal.privacyPolicy')}
           </Link>
         </div>
       </div>

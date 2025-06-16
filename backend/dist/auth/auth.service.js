@@ -281,7 +281,6 @@ let AuthService = class AuthService {
         const user = await this.prisma.user.findFirst({
             where: {
                 id: payload.sub,
-                tenantId: null,
                 isActive: true,
             },
             select: {
@@ -296,7 +295,7 @@ let AuthService = class AuthService {
             },
         });
         if (!user) {
-            throw new common_1.UnauthorizedException('Utilisateur du hub non trouvé ou inactif');
+            throw new common_1.UnauthorizedException('Utilisateur non trouvé ou inactif');
         }
         return user;
     }

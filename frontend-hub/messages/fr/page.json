@@ -1,0 +1,8 @@
+{
+  "title": "Titre de la page",
+  "description": "Description de la page",
+  "error": {
+    "notFound": "Page non trouvée",
+    "goBack": "Retour à l'accueil"
+  }
+}

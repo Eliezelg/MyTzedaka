@@ -23,7 +23,7 @@ export declare class DonationService {
     private multiTenantStripeService;
     private readonly logger;
     constructor(prisma: PrismaService, multiTenantStripeService: MultiTenantStripeService);
-    createDonation(tenantId: string, userId: string, createDonationDto: CreateDonationDto): Promise<DonationWithPaymentIntent>;
+    createDonation(tenantId: string, userId: string | null, createDonationDto: CreateDonationDto): Promise<DonationWithPaymentIntent>;
     confirmDonation(paymentIntentId: string): Promise<any>;
     failDonation(paymentIntentId: string, reason?: string): Promise<any>;
     getDonationHistory(userId: string, tenantId?: string, limit?: number, offset?: number): Promise<{

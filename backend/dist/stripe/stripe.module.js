@@ -12,6 +12,7 @@ const prisma_module_1 = require("../prisma/prisma.module");
 const stripe_service_1 = require("./stripe.service");
 const donation_service_1 = require("./donation.service");
 const donation_controller_1 = require("./donation.controller");
+const stripe_controller_1 = require("./stripe.controller");
 const multi_tenant_stripe_service_1 = require("./multi-tenant-stripe.service");
 const encryption_service_1 = require("./encryption.service");
 const stripe_config_controller_1 = require("./stripe-config.controller");
@@ -28,7 +29,7 @@ exports.StripeModule = StripeModule = __decorate([
             multi_tenant_stripe_service_1.MultiTenantStripeService,
             encryption_service_1.EncryptionService,
         ],
-        controllers: [stripe_config_controller_1.StripeConfigController, donation_controller_1.DonationController, webhook_controller_1.StripeWebhookController],
+        controllers: [stripe_controller_1.StripeController, stripe_config_controller_1.StripeConfigController, donation_controller_1.DonationController, webhook_controller_1.StripeWebhookController],
         exports: [
             stripe_service_1.StripeService,
             donation_service_1.DonationService,

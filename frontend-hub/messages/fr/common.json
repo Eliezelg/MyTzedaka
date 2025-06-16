@@ -12,6 +12,10 @@
   "next": "Suivant",
   "previous": "Précédent",
   "search": "Rechercher",
+  "searchButton": "Rechercher",
+  "appName": "MyTzedaka",
+  "searchPlaceholder": "Rechercher une association, une campagne...",
+  "suggestions": "Suggestions",
   "filter": "Filtrer",
   "sort": "Trier",
   "view": "Voir",
@@ -49,5 +53,38 @@
   "translation": "Traductions",
   "multiLanguage": "Support complet français et hébreu avec navigation fluide",
   "rtlSupport": "Interface RTL native pour les utilisateurs hébraïphones",
-  "comprehensive": "Plus de 2000 traductions organisées par catégories"
+  "comprehensive": "Plus de 2000 traductions organisées par catégories",
+  "header": {
+    "tagline": "Hub central des associations caritatives"
+  },
+  "steps": {
+    "step": "Étape",
+    "of": "sur",
+    "security": "Sécurité",
+    "profile": "Profil"
+  },
+  "actions": {
+    "continue": "Continuer",
+    "back": "Retour"
+  },
+  "fields": {
+    "optional": "optionnel",
+    "required": "obligatoire"
+  },
+  "profile": {
+    "phone": "Téléphone",
+    "accountType": "Type de compte",
+    "chooseAccountType": "Choisissez votre type de compte",
+    "donor": "Donateur",
+    "associationAdmin": "Responsable d'association",
+    "associationName": "Nom de l'association",
+    "description": "Description",
+    "descriptionPlaceholder": "Décrivez brièvement votre association..."
+  },
+  "legal": {
+    "bySigningUp": "En continuant, vous acceptez nos",
+    "termsOfService": "conditions d'utilisation",
+    "privacyPolicy": "politique de confidentialité",
+    "and": "et notre"
+  }
 }

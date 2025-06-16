@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useTranslations } from 'next-intl'
 import { 
   ExternalLink, 
   Heart, 
@@ -85,6 +86,7 @@ export function RelatedContent({
   algorithm = 'similar',
   className = ''
 }: RelatedContentProps) {
+  const t = useTranslations('components.related')
   const [items, setItems] = useState<RelatedItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
@@ -166,10 +168,10 @@ export function RelatedContent({
       <div className={`text-center py-8 ${className}`}>
         <Sparkles className="w-12 h-12 text-gray-400 mx-auto mb-3" />
         <h3 className="text-lg font-medium text-gray-900 mb-2">
-          Aucun contenu similaire
+          {t('title')}
         </h3>
         <p className="text-gray-600">
-          Explorez d'autres {currentType === 'association' ? 'associations' : 'campagnes'} dans nos catégories.
+          {t('explore')} {currentType === 'association' ? t('associations') : t('campaigns')}
         </p>
       </div>
     )
@@ -177,11 +179,11 @@ export function RelatedContent({
 
   const getAlgorithmTitle = () => {
     switch (algorithm) {
-      case 'popular': return 'Contenus populaires'
-      case 'recent': return 'Récemment ajoutés'
-      case 'related': return currentType === 'campaign' ? 'Autres campagnes de cette association' : 'Contenus associés'
+      case 'popular': return t('popular')
+      case 'recent': return t('recent')
+      case 'related': return currentType === 'campaign' ? t('otherCampaigns') : t('relatedContent')
       case 'similar':
-      default: return 'Contenus similaires'
+      default: return t('title')
     }
   }
 
@@ -195,7 +197,7 @@ export function RelatedContent({
             {getAlgorithmTitle()}
           </h3>
           <p className="text-gray-600 text-sm mt-1">
-            {filteredItems.length} {filteredItems.length > 1 ? 'éléments trouvés' : 'élément trouvé'}
+            {filteredItems.length} {t('itemsFound', { count: filteredItems.length })}
           </p>
         </div>
 
@@ -206,7 +208,7 @@ export function RelatedContent({
               size="sm"
               onClick={() => setSelectedCategory(null)}
             >
-              Tous
+              {t('all')}
             </Button>
             {categories.map((category) => (
               <Button
@@ -253,7 +255,7 @@ export function RelatedContent({
             href={`/${showType === 'all' ? 'search' : showType === 'association' ? 'associations' : 'campaigns'}?related=${currentId}`}
             className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
           >
-            Voir plus de contenus similaires
+            {t('viewMore')}
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>

@@ -182,6 +182,12 @@ export interface AssociationListing {
   totalRaised: number
   activeCampaignsCount: number
   createdAt: string
+  // Tenant associé avec slug
+  tenant?: {
+    id: string
+    slug: string
+    name: string
+  }
 }
 
 export interface CampaignListing {

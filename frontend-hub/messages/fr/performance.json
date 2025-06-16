@@ -1,0 +1,20 @@
+{
+  "title": "Performance",
+  "subtitle": "Analyse des résultats",
+  "retention": "Rétention",
+  "retentionDescription": "Pourcentage de donateurs qui reviennent",
+  "activeCampaigns": "Campagnes actives",
+  "activeCampaignsDescription": "Nombre de campagnes en cours",
+  "completedCampaigns": "Campagnes terminées", 
+  "completedCampaignsDescription": "Nombre de campagnes finalisées avec succès",
+  "successRate": "Taux de réussite",
+  "averageAmount": "Montant moyen",
+  "totalRaised": "Total collecté",
+  "growth": "Croissance",
+  "monthly": "Mensuel",
+  "quarterly": "Trimestriel",
+  "annual": "Annuel",
+  "trends": "Tendances",
+  "analytics": "Analyses",
+  "insights": "Perspectives"
+}

@@ -332,10 +332,10 @@ export class AuthService {
   }
 
   async validateHubUser(payload: any) {
+    // Chercher l'utilisateur par ID, qu'il soit global (tenantId: null) ou avec tenant
     const user = await this.prisma.user.findFirst({
       where: {
         id: payload.sub,
-        tenantId: null, // Utilisateurs globaux du hub uniquement
         isActive: true,
       },
       select: {
@@ -351,7 +351,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Utilisateur du hub non trouvé ou inactif');
+      throw new UnauthorizedException('Utilisateur non trouvé ou inactif');
     }
 
     return user;

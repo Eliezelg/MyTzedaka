@@ -14,8 +14,8 @@ import {
 export function useCreateDonation() {
   const queryClient = useQueryClient();
 
-  return useMutation<CreateDonationResponse, Error, CreateDonationRequest>({
-    mutationFn: (donationData: CreateDonationRequest) => donationsService.createDonation(donationData),
+  return useMutation<CreateDonationResponse, Error, CreateDonationRequest & { tenantId: string }>({
+    mutationFn: (donationData: CreateDonationRequest & { tenantId: string }) => donationsService.createDonation(donationData),
     onSuccess: () => {
       // Invalidate queries pour actualiser les données
       queryClient.invalidateQueries({ queryKey: ['donations'] });

@@ -12,15 +12,28 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HubService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const encryption_service_1 = require("../stripe/encryption.service");
+const multi_tenant_stripe_service_1 = require("../stripe/multi-tenant-stripe.service");
 let HubService = class HubService {
-    constructor(prisma) {
+    constructor(prisma, encryptionService, multiTenantStripeService) {
         this.prisma = prisma;
+        this.encryptionService = encryptionService;
+        this.multiTenantStripeService = multiTenantStripeService;
     }
     async getPublicAssociations() {
         try {
             const [data, total] = await Promise.all([
                 this.prisma.associationListing.findMany({
                     where: { isPublic: true },
+                    include: {
+                        tenant: {
+                            select: {
+                                id: true,
+                                slug: true,
+                                name: true,
+                            }
+                        }
+                    },
                     orderBy: [
                         { isVerified: 'desc' },
                         { createdAt: 'desc' }
@@ -244,16 +257,30 @@ let HubService = class HubService {
                     { tags: { has: search } },
                 ];
             }
-            const [campaigns, total] = await Promise.all([
-                this.prisma.campaign.findMany({
-                    where,
-                    skip,
-                    take: limit,
-                    orderBy: [
+            let orderBy = [];
+            switch (query.sortBy) {
+                case 'name':
+                    orderBy = [{ name: 'asc' }];
+                    break;
+                case 'created_at':
+                    orderBy = [{ createdAt: 'desc' }];
+                    break;
+                case 'relevance':
+                default:
+                    orderBy = [
                         { isFeatured: 'desc' },
                         { isUrgent: 'desc' },
                         { createdAt: 'desc' }
-                    ],
+                    ];
+                    break;
+            }
+            const offset = (page - 1) * limit;
+            const [campaigns, total] = await Promise.all([
+                this.prisma.campaign.findMany({
+                    where,
+                    orderBy,
+                    skip,
+                    take: limit,
                     include: {
                         tenant: {
                             select: {
@@ -675,7 +702,12 @@ let HubService = class HubService {
                 data: {
                     slug: slug,
                     name: associationData.name,
-                    status: 'ACTIVE'
+                    status: 'ACTIVE',
+                    stripeMode: associationData.stripeMode || 'PLATFORM',
+                    settings: {
+                        associationPurpose: associationData.associationPurpose,
+                        ...associationData.additionalInfo
+                    }
                 }
             });
             const newAssociation = await this.prisma.associationListing.create({
@@ -694,6 +726,39 @@ let HubService = class HubService {
                     tenantId: tenant.id,
                 }
             });
+            if (associationData.stripeMode === 'PLATFORM') {
+                try {
+                    console.log('🚀 Création automatique du compte Stripe Connect pour:', associationData.name);
+                    const stripeAccount = await this.multiTenantStripeService.createConnectAccount(tenant.id, associationData.email, associationData.name);
+                    console.log('✅ Compte Stripe Connect créé avec succès:', stripeAccount.id);
+                }
+                catch (stripeError) {
+                    console.error('⚠️ Erreur lors de la création du compte Stripe Connect:', stripeError);
+                    console.error('⚠️ Stack trace:', stripeError.stack);
+                }
+            }
+            else if (associationData.stripeMode === 'CUSTOM' && associationData.stripeSecretKey && associationData.stripePublishableKey) {
+                try {
+                    const encryptedPublishableKey = await this.encryptionService.encrypt(associationData.stripePublishableKey);
+                    const encryptedSecretKey = await this.encryptionService.encrypt(associationData.stripeSecretKey);
+                    await this.prisma.stripeAccount.create({
+                        data: {
+                            tenantId: tenant.id,
+                            stripePublishableKey: encryptedPublishableKey,
+                            stripeSecretKey: encryptedSecretKey,
+                            stripeAccountEmail: associationData.email,
+                            isActive: true
+                        }
+                    });
+                    console.log('✅ Clés Stripe CUSTOM sauvegardées pour:', associationData.name);
+                }
+                catch (customStripeError) {
+                    console.error('⚠️ Erreur lors de la sauvegarde des clés Stripe CUSTOM:', customStripeError);
+                }
+            }
+            else {
+                console.log('ℹ️ Aucune configuration Stripe pour:', associationData.name, '- Mode:', associationData.stripeMode);
+            }
             const existingUser = await this.prisma.user.findUnique({
                 where: { id: associationData.userId }
             });
@@ -984,10 +1049,87 @@ let HubService = class HubService {
             throw error;
         }
     }
+    async getUserDefaultTenantId(userId) {
+        try {
+            const membership = await this.prisma.userTenantMembership.findFirst({
+                where: {
+                    userId,
+                    isActive: true,
+                    role: {
+                        in: ['ADMIN', 'MANAGER']
+                    }
+                },
+                include: {
+                    tenant: true
+                },
+                orderBy: {
+                    joinedAt: 'asc'
+                }
+            });
+            return membership?.tenant.id || null;
+        }
+        catch (error) {
+            console.error('❌ [HubService] Erreur getUserDefaultTenantId:', error);
+            return null;
+        }
+    }
+    async getUserTenantIds(userId) {
+        try {
+            const memberships = await this.prisma.userTenantMembership.findMany({
+                where: {
+                    userId,
+                    isActive: true,
+                    role: {
+                        in: ['ADMIN', 'MANAGER']
+                    }
+                },
+                include: {
+                    tenant: true
+                }
+            });
+            return memberships.map(m => m.tenant.id);
+        }
+        catch (error) {
+            console.error('❌ [HubService] Erreur getUserTenantIds:', error);
+            return [];
+        }
+    }
+    async getTenantStripePublishableKey(tenantId) {
+        try {
+            const tenant = await this.prisma.tenant.findUnique({
+                where: { id: tenantId },
+                include: { stripeAccount: true },
+            });
+            if (!tenant) {
+                throw new Error('Tenant non trouvé');
+            }
+            if (tenant.stripeMode === 'PLATFORM') {
+                const publishableKey = process.env.STRIPE_PUBLISHABLE_KEY;
+                if (!publishableKey) {
+                    throw new Error('Clé publique Stripe platform non configurée');
+                }
+                return { publishableKey };
+            }
+            if (tenant.stripeMode === 'CUSTOM') {
+                if (!tenant.stripeAccount?.stripePublishableKey) {
+                    throw new Error('Clé publique Stripe non configurée');
+                }
+                const decryptedKey = await this.encryptionService.decrypt(tenant.stripeAccount.stripePublishableKey);
+                return { publishableKey: decryptedKey };
+            }
+            throw new Error('Mode Stripe non valide');
+        }
+        catch (error) {
+            console.error('❌ [HubService] Erreur getTenantStripePublishableKey:', error);
+            throw error;
+        }
+    }
 };
 exports.HubService = HubService;
 exports.HubService = HubService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        encryption_service_1.EncryptionService,
+        multi_tenant_stripe_service_1.MultiTenantStripeService])
 ], HubService);
 //# sourceMappingURL=hub.service.js.map

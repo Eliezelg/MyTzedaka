@@ -13,10 +13,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.StripeService = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
+const prisma_service_1 = require("../prisma/prisma.service");
 const stripe_1 = require("stripe");
 let StripeService = StripeService_1 = class StripeService {
-    constructor(configService) {
+    constructor(configService, prisma) {
         this.configService = configService;
+        this.prisma = prisma;
         this.logger = new common_1.Logger(StripeService_1.name);
         const secretKey = this.configService.get('STRIPE_SECRET_KEY');
         if (!secretKey) {
@@ -132,10 +134,23 @@ let StripeService = StripeService_1 = class StripeService {
     static eurosToCents(euros) {
         return Math.round(euros * 100);
     }
+    async getStripeAccountByTenantId(tenantId) {
+        try {
+            const stripeAccount = await this.prisma.stripeAccount.findUnique({
+                where: { tenantId },
+            });
+            return stripeAccount;
+        }
+        catch (error) {
+            this.logger.error(`Error getting Stripe account for tenant ${tenantId}:`, error);
+            throw error;
+        }
+    }
 };
 exports.StripeService = StripeService;
 exports.StripeService = StripeService = StripeService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [config_1.ConfigService])
+    __metadata("design:paramtypes", [config_1.ConfigService,
+        prisma_service_1.PrismaService])
 ], StripeService);
 //# sourceMappingURL=stripe.service.js.map

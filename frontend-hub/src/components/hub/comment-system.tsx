@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslations } from 'next-intl'
 import { 
   MessageCircle, 
   Heart, 
@@ -79,7 +80,7 @@ export function CommentSystem({
       id: Date.now().toString(),
       author: {
         id: currentUserId || 'anonymous',
-        name: 'Utilisateur Connecté',
+        name: t('connectedUser'),
         avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face',
         isVerified: false
       },
@@ -104,7 +105,7 @@ export function CommentSystem({
       id: Date.now().toString(),
       author: {
         id: currentUserId || 'anonymous',
-        name: 'Utilisateur Connecté',
+        name: t('connectedUser'),
         avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face'
       },
       content: replyContent,
@@ -281,6 +282,7 @@ function CommentItem({
   onSubmitReply,
   onCancelReply
 }: CommentItemProps) {
+  const t = useTranslations('components.comments')
   const [showActions, setShowActions] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editContent, setEditContent] = useState(comment.content)
@@ -351,7 +353,7 @@ function CommentItem({
                     Sauvegarder
                   </Button>
                   <Button size="sm" variant="outline" onClick={() => setIsEditing(false)}>
-                    Annuler
+                    {t('cancel')}
                   </Button>
                 </div>
               </div>
@@ -455,7 +457,7 @@ function CommentItem({
                       Répondre
                     </Button>
                     <Button size="sm" variant="outline" onClick={onCancelReply}>
-                      Annuler
+                      {t('cancel')}
                     </Button>
                   </div>
                 </motion.div>

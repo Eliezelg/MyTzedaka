@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { useTranslations } from 'next-intl'
 import { Heart, CreditCard, Shield, Gift } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -32,6 +33,7 @@ export function DonationWidget({
   currentAmount,
   goalAmount
 }: DonationWidgetProps) {
+  const t = useTranslations('donations')
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null)
   const [customAmount, setCustomAmount] = useState('')
   const [donorInfo, setDonorInfo] = useState({
@@ -85,7 +87,7 @@ export function DonationWidget({
     return (
       <Card className={`p-4 ${className}`}>
         <div className="text-center mb-4">
-          <h3 className="font-semibold">Soutenir</h3>
+          <h3 className="font-semibold">{t('widget.support')}</h3>
           <p className="text-sm text-gray-600">{targetName}</p>
         </div>
         
@@ -104,7 +106,7 @@ export function DonationWidget({
         
         <Button className="w-full" onClick={handleDonate}>
           <Heart className="w-4 h-4 mr-2" />
-          Donner
+          {t('widget.donate')}
         </Button>
       </Card>
     )
@@ -117,16 +119,16 @@ export function DonationWidget({
           <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <Heart className="w-8 h-8 text-white" />
           </div>
-          <h2 className="text-2xl font-bold mb-2">Faites la différence</h2>
-          <p className="text-gray-600">Votre soutien compte pour {targetName}</p>
+          <h2 className="text-2xl font-bold mb-2">{t('widget.makeDifference')}</h2>
+          <p className="text-gray-600">{t('widget.yourSupportMatters', { name: targetName })}</p>
         </div>
       )}
 
       {showProgress && currentAmount && goalAmount && (
         <div className="mb-6">
           <div className="flex justify-between text-sm mb-2">
-            <span className="font-medium">{currentAmount.toLocaleString()}€ collectés</span>
-            <span className="text-gray-600">{goalAmount.toLocaleString()}€ objectif</span>
+            <span className="font-medium">{t('widget.collected', { amount: currentAmount.toLocaleString() + '€' })}</span>
+            <span className="text-gray-600">{t('widget.goal', { amount: goalAmount.toLocaleString() + '€' })}</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-3">
             <motion.div
@@ -137,7 +139,7 @@ export function DonationWidget({
             />
           </div>
           <div className="text-center text-sm text-gray-600 mt-2">
-            {progressPercentage.toFixed(1)}% de l'objectif atteint
+            {t('widget.goalReached', { percentage: progressPercentage.toFixed(1) })}
           </div>
         </div>
       )}
@@ -151,7 +153,7 @@ export function DonationWidget({
         {step === 'amount' && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold mb-4">Choisissez votre montant</h3>
+              <h3 className="text-lg font-semibold mb-4">{t('widget.chooseAmount')}</h3>
               
               {/* Montants suggérés */}
               <div className="grid grid-cols-2 gap-3 mb-4">
@@ -169,7 +171,7 @@ export function DonationWidget({
                   >
                     <div className="text-xl font-bold">{amount}€</div>
                     {amount >= 100 && (
-                      <div className="text-xs text-gray-500">Reçu fiscal</div>
+                      <div className="text-xs text-gray-500">{t('widget.taxReceipt')}</div>
                     )}
                   </motion.button>
                 ))}
@@ -179,7 +181,7 @@ export function DonationWidget({
               <div className="relative">
                 <input
                   type="number"
-                  placeholder="Autre montant"
+                  placeholder={t('widget.otherAmount')}
                   value={customAmount}
                   onChange={(e) => handleCustomAmountChange(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
@@ -197,11 +199,13 @@ export function DonationWidget({
               >
                 <div className="flex items-center gap-2 mb-2">
                   <Gift className="w-5 h-5 text-green-600" />
-                  <span className="font-semibold text-green-800">Avantage fiscal</span>
+                  <span className="font-semibold text-green-800">{t('widget.taxBenefit')}</span>
                 </div>
                 <p className="text-sm text-green-700">
-                  Votre don de {getCurrentAmount()}€ ne vous coûtera que {(getCurrentAmount() * 0.34).toFixed(0)}€ 
-                  après déduction fiscale (66% déductible).
+                  {t('widget.yourDonation', { 
+                    amount: getCurrentAmount(), 
+                    cost: (getCurrentAmount() * 0.34).toFixed(0) 
+                  })}
                 </p>
               </motion.div>
             )}
@@ -212,7 +216,7 @@ export function DonationWidget({
               onClick={handleProceedToInfo}
               disabled={getCurrentAmount() === 0}
             >
-              Continuer
+              {t('widget.continue')}
             </Button>
           </div>
         )}
@@ -220,7 +224,7 @@ export function DonationWidget({
         {step === 'info' && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Vos informations</h3>
+              <h3 className="text-lg font-semibold">{t('widget.yourInfo')}</h3>
               <Badge variant="outline">{getCurrentAmount()}€</Badge>
             </div>
 
@@ -233,21 +237,21 @@ export function DonationWidget({
                   onChange={(e) => setDonorInfo(prev => ({ ...prev, isAnonymous: e.target.checked }))}
                   className="rounded"
                 />
-                <label htmlFor="anonymous" className="text-sm">Don anonyme</label>
+                <label htmlFor="anonymous" className="text-sm">{t('widget.anonymousDonation')}</label>
               </div>
 
               {!donorInfo.isAnonymous && (
                 <>
                   <input
                     type="text"
-                    placeholder="Votre nom"
+                    placeholder={t('widget.yourName')}
                     value={donorInfo.name}
                     onChange={(e) => setDonorInfo(prev => ({ ...prev, name: e.target.value }))}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <input
                     type="email"
-                    placeholder="Votre email"
+                    placeholder={t('widget.yourEmail')}
                     value={donorInfo.email}
                     onChange={(e) => setDonorInfo(prev => ({ ...prev, email: e.target.value }))}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -256,7 +260,7 @@ export function DonationWidget({
               )}
 
               <textarea
-                placeholder="Message de soutien (optionnel)"
+                placeholder={t('widget.supportMessage')}
                 value={donorInfo.message}
                 onChange={(e) => setDonorInfo(prev => ({ ...prev, message: e.target.value }))}
                 rows={3}
@@ -266,10 +270,10 @@ export function DonationWidget({
 
             <div className="flex gap-3">
               <Button variant="outline" onClick={() => setStep('amount')} className="flex-1">
-                Retour
+                {t('widget.back')}
               </Button>
               <Button onClick={handleProceedToPayment} className="flex-1">
-                Paiement
+                {t('widget.payment')}
               </Button>
             </div>
           </div>
@@ -278,24 +282,24 @@ export function DonationWidget({
         {step === 'payment' && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Paiement sécurisé</h3>
+              <h3 className="text-lg font-semibold">{t('widget.securePayment')}</h3>
               <Badge variant="outline">{getCurrentAmount()}€</Badge>
             </div>
 
             {/* Résumé */}
             <div className="bg-gray-50 rounded-lg p-4 space-y-2">
               <div className="flex justify-between">
-                <span>Don pour {targetName}</span>
+                <span>{t('widget.donationFor', { name: targetName })}</span>
                 <span className="font-semibold">{getCurrentAmount()}€</span>
               </div>
               {!donorInfo.isAnonymous && donorInfo.name && (
                 <div className="text-sm text-gray-600">
-                  Donateur : {donorInfo.name}
+                  {t('widget.donor', { name: donorInfo.name })}
                 </div>
               )}
               {donorInfo.message && (
                 <div className="text-sm text-gray-600">
-                  Message : "{donorInfo.message}"
+                  {t('widget.message', { message: donorInfo.message })}
                 </div>
               )}
             </div>
@@ -303,14 +307,14 @@ export function DonationWidget({
             {/* Sécurité */}
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <Shield className="w-4 h-4 text-green-600" />
-              <span>Paiement sécurisé par Stripe</span>
+              <span>{t('widget.securedByStripe')}</span>
             </div>
 
             {/* Boutons de paiement */}
             <div className="space-y-3">
               <Button className="w-full" size="lg" onClick={handleDonate}>
                 <CreditCard className="w-4 h-4 mr-2" />
-                Payer par carte bancaire
+                {t('widget.payByCard')}
               </Button>
               
               <div className="grid grid-cols-2 gap-3">
@@ -324,7 +328,7 @@ export function DonationWidget({
             </div>
 
             <Button variant="ghost" onClick={() => setStep('info')} className="w-full">
-              Modifier les informations
+              {t('widget.modifyInfo')}
             </Button>
           </div>
         )}
@@ -345,6 +349,7 @@ export function QuickDonateButton({
   amount?: number
   className?: string
 }) {
+  const t = useTranslations('donations')
   const handleQuickDonate = () => {
     // TODO: Ouvrir modal de don rapide
     console.log('Don rapide:', { targetId, targetType, amount })

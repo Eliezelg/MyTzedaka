@@ -1,7 +1,8 @@
 import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../prisma/prisma.service';
 import { MultiTenantStripeService } from './multi-tenant-stripe.service';
-import { DonationStatus, DonationType, DonationSource } from '@prisma/client';
+import { DonationStatus, DonationType, DonationSource, UserRole } from '@prisma/client';
 import Stripe from 'stripe';
 
 export interface CreateDonationDto {
@@ -36,7 +37,7 @@ export class DonationService {
    */
   async createDonation(
     tenantId: string,
-    userId: string,
+    userId: string | null,
     createDonationDto: CreateDonationDto
   ): Promise<DonationWithPaymentIntent> {
     const {
@@ -50,6 +51,43 @@ export class DonationService {
       source = DonationSource.PLATFORM,
       sourceUrl,
     } = createDonationDto;
+
+    // Résoudre l'utilisateur
+    let resolvedUserId = userId;
+    if (!resolvedUserId) {
+      if (!donorEmail) {
+        throw new BadRequestException('donorEmail est requis pour un don public');
+      }
+
+      const existingUser = await this.prisma.user.findFirst({
+        where: {
+          email: donorEmail,
+          tenantId: null, // utilisateur global
+        },
+      });
+
+      if (existingUser) {
+        resolvedUserId = existingUser.id;
+      } else {
+        const names = (donorName || '').split(' ');
+        const firstName = names.shift() || 'Donor';
+        const lastName = names.join(' ');
+
+        const newUser = await this.prisma.user.create({
+          data: {
+            id: uuidv4(),
+            email: donorEmail,
+            cognitoId: `anon_${uuidv4()}`,
+            firstName,
+            lastName,
+            role: UserRole.MEMBER,
+            tenantId: null,
+            isActive: true,
+          },
+        });
+        resolvedUserId = newUser.id;
+      }
+    }
 
     // Validation du montant
     if (amount < 0.5) {
@@ -97,22 +135,31 @@ export class DonationService {
       );
 
       // Créer la donation en base
+      const donationData: any = {
+        tenantId,
+        amount,
+        currency,
+        type: DonationType.PUNCTUAL,
+        status: DonationStatus.PENDING,
+        stripePaymentIntentId: paymentIntent.id,
+        isAnonymous,
+        fiscalReceiptRequested: !isAnonymous,
+        source,
+        sourceUrl,
+      };
+
+      if (resolvedUserId) {
+        donationData.userId = resolvedUserId;
+      }
+      if (campaignId) {
+        donationData.campaignId = campaignId;
+      }
+      if (purpose) {
+        donationData.purpose = purpose;
+      }
+
       const donation = await this.prisma.donation.create({
-        data: {
-          tenantId,
-          userId,
-          amount,
-          currency,
-          type: DonationType.PUNCTUAL,
-          status: DonationStatus.PENDING,
-          stripePaymentIntentId: paymentIntent.id,
-          campaignId,
-          purpose,
-          isAnonymous,
-          fiscalReceiptRequested: !isAnonymous,
-          source,
-          sourceUrl,
-        },
+        data: donationData,
         include: {
           campaign: {
             select: {
@@ -162,14 +209,22 @@ export class DonationService {
         throw new NotFoundException('Donation non trouvée');
       }
 
+      // Si la donation est déjà confirmée, retourner directement
+      if (existingDonation.status === DonationStatus.COMPLETED) {
+        this.logger.log(`Donation ${existingDonation.id} already confirmed`);
+        return existingDonation;
+      }
+
       // Récupérer le PaymentIntent depuis Stripe via le service multi-tenant
       const paymentIntent = await this.multiTenantStripeService.getPaymentIntent(
         existingDonation.tenantId,
         paymentIntentId
       );
 
+      // Vérifier que le paiement a réussi
       if (paymentIntent.status !== 'succeeded') {
-        throw new BadRequestException('Le paiement n\'a pas réussi');
+        this.logger.warn(`PaymentIntent ${paymentIntentId} status: ${paymentIntent.status}`);
+        throw new BadRequestException(`Le paiement n'a pas réussi. Statut: ${paymentIntent.status}`);
       }
 
       // Mettre à jour la donation

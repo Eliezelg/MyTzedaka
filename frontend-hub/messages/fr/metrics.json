@@ -1,0 +1,13 @@
+{
+  "title": "Métriques",
+  "totalRaised": "Total collecté",
+  "monthlyDonations": "Dons mensuels",
+  "activeDonors": "Donateurs actifs",
+  "campaignsCount": "Campagnes",
+  "donationGoal": "Objectif de dons",
+  "recurringDonations": "Dons récurrents",
+  "newDonors": "Nouveaux donateurs",
+  "donationFrequency": "Fréquence des dons",
+  "averageDonation": "Don moyen",
+  "conversionRate": "Taux de conversion"
+}

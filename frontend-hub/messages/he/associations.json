@@ -80,7 +80,27 @@
     "share": "שיתוף",
     "contact": "יצירת קשר",
     "viewCampaigns": "צפייה בקמפיינים",
-    "createCampaign": "יצירת קמפיין"
+    "createCampaign": "יצירת קמפיין",
+    "discover": "גילוי"
+  },
+  "directory": {
+    "title": "מדריך העמותות",
+    "description": "גלו ותמכו בעמותות הפועלות למען הקהילה שלנו."
+  },
+  "search": {
+    "placeholder": "חיפוש עמותה לפי שם...",
+    "resultsCount": "{count} עמותות נמצאו"
+  },
+  "verified": "מאומת",
+  "campaign": {
+    "active": "קמפיינים פעילים",
+    "total": "סה\"כ קמפיינים"
+  },
+  "loading": "טוען עמותות...",
+  "empty": {
+    "title": "לא נמצאו עמותות",
+    "description": "נסו לשנות את קריטריוני החיפוש",
+    "action": "רענון הרשימה"
   },
   "messages": {
     "createSuccess": "העמותה נוצרה בהצלחה",

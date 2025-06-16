@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
+import { useTranslations } from 'next-intl'
 import { 
   Search,
   List,
@@ -108,6 +109,7 @@ interface SearchState {
 
 function SearchPageContent() {
   const searchParams = useSearchParams()
+  const t = useTranslations('search')
   const [searchState, setSearchState] = useState<SearchState>({
     query: '',
     filters: { type: 'all' },
@@ -476,7 +478,7 @@ function SearchPageContent() {
 
 export default function SearchPage() {
   return (
-    <Suspense fallback={<div>Chargement...</div>}>
+    <Suspense fallback={<div>Loading...</div>}>
       <SearchPageContent />
     </Suspense>
   )

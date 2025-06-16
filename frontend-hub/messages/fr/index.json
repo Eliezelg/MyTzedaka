@@ -1,143 +1,19 @@
 {
-  "common": {
-    "welcome": "Bienvenue",
-    "loading": "Chargement...",
-    "error": "Erreur",
-    "success": "Succès",
-    "cancel": "Annuler",
-    "save": "Enregistrer",
-    "edit": "Modifier",
-    "delete": "Supprimer",
-    "confirm": "Confirmer",
-    "back": "Retour",
-    "next": "Suivant",
-    "previous": "Précédent",
-    "search": "Rechercher",
-    "filter": "Filtrer",
-    "sort": "Trier",
-    "view": "Voir",
-    "share": "Partager",
-    "copy": "Copier",
-    "download": "Télécharger",
-    "donorPortal": "Portail Donateur",
-    "upload": "Téléverser",
-    "close": "Fermer",
-    "open": "Ouvrir",
-    "yes": "Oui",
-    "no": "Non",
-    "or": "ou",
-    "and": "et",
-    "of": "de",
-    "in": "dans",
-    "at": "à",
-    "by": "par",
-    "for": "pour",
-    "with": "avec",
-    "without": "sans",
-    "about": "À propos",
-    "contact": "Contact",
-    "help": "Aide",
-    "more": "Plus",
-    "less": "Moins",
-    "all": "Tous",
-    "none": "Aucun",
-    "other": "Autre",
-    "optional": "optionnel",
-    "required": "obligatoire",
-    "description": "Plateforme multilingue pour associations caritatives juives",
-    "features": "Fonctionnalités",
-    "support": "Support",
-    "translation": "Traductions",
-    "multiLanguage": "Support complet français et hébreu avec navigation fluide",
-    "rtlSupport": "Interface RTL native pour les utilisateurs hébraïphones",
-    "comprehensive": "Plus de 2000 traductions organisées par catégories"
+  "hero": {
+    "title": "Plateforme de dons pour les associations",
+    "subtitle": "Soutenez les causes qui vous tiennent à cœur",
+    "description": "Trouvez et soutenez des associations de confiance en quelques clics. Votre don fait la différence."
   },
-  "navigation": {
-    "home": "Accueil",
-    "associations": "Associations",
-    "campaigns": "Campagnes",
-    "donations": "Dons",
-    "search": "Recherche",
-    "dashboard": "Tableau de bord",
-    "profile": "Profil",
-    "settings": "Paramètres",
-    "logout": "Déconnexion",
-    "login": "Connexion",
-    "signup": "Inscription",
-    "menu": "Menu",
-    "breadcrumb": {
-      "home": "Accueil",
-      "associations": "Associations",
-      "campaigns": "Campagnes",
-      "dashboard": "Tableau de bord",
-      "create": "Créer",
-      "edit": "Modifier",
-      "view": "Voir"
-    },
-    "footer": {
-      "about": "À propos",
-      "contact": "Contact",
-      "terms": "Conditions d'utilisation",
-      "privacy": "Politique de confidentialité",
-      "help": "Aide",
-      "faq": "FAQ"
-    }
+  "stats": {
+    "associationsCount": "500+",
+    "associationsLabel": "Associations actives",
+    "donationsAmount": "1M€+",
+    "donationsLabel": "Collectés au total",
+    "donorsCount": "10K+",
+    "donorsLabel": "Donateurs actifs"
   },
-  "forms": {
-    "validation": {
-      "required": "Ce champ est obligatoire",
-      "email": "Veuillez saisir une adresse email valide",
-      "phone": "Veuillez saisir un numéro de téléphone valide",
-      "url": "Veuillez saisir une URL valide",
-      "minLength": "Minimum {min} caractères requis",
-      "maxLength": "Maximum {max} caractères autorisés",
-      "min": "La valeur doit être supérieure à {min}",
-      "max": "La valeur doit être inférieure à {max}",
-      "pattern": "Le format n'est pas valide",
-      "passwordMatch": "Les mots de passe ne correspondent pas",
-      "acceptTerms": "Vous devez accepter les conditions d'utilisation"
-    },
-    "labels": {
-      "name": "Nom",
-      "firstName": "Prénom",
-      "lastName": "Nom de famille",
-      "email": "Email",
-      "phone": "Téléphone",
-      "address": "Adresse",
-      "city": "Ville",
-      "country": "Pays",
-      "website": "Site web",
-      "description": "Description",
-      "category": "Catégorie",
-      "title": "Titre",
-      "message": "Message",
-      "password": "Mot de passe",
-      "confirmPassword": "Confirmer le mot de passe",
-      "currentPassword": "Mot de passe actuel",
-      "newPassword": "Nouveau mot de passe",
-      "rememberMe": "Se souvenir de moi",
-      "acceptTerms": "J'accepte les conditions d'utilisation",
-      "newsletter": "S'abonner à la newsletter"
-    },
-    "placeholders": {
-      "enterName": "Saisissez le nom",
-      "enterEmail": "Saisissez votre email",
-      "enterPhone": "Saisissez votre téléphone",
-      "enterDescription": "Saisissez une description",
-      "searchPlaceholder": "Rechercher...",
-      "selectOption": "Sélectionnez une option"
-    },
-    "buttons": {
-      "submit": "Soumettre",
-      "save": "Enregistrer",
-      "cancel": "Annuler",
-      "reset": "Réinitialiser",
-      "clear": "Effacer",
-      "add": "Ajouter",
-      "remove": "Supprimer",
-      "upload": "Téléverser",
-      "browse": "Parcourir"
-    }
+  "featured": {
+    "title": "Associations à la une"
   },
   "associations": {
     "title": "Associations",
@@ -221,7 +97,27 @@
       "share": "Partager",
       "contact": "Contacter",
       "viewCampaigns": "Voir les campagnes",
-      "createCampaign": "Créer une campagne"
+      "createCampaign": "Créer une campagne",
+      "discover": "Découvrir"
+    },
+    "directory": {
+      "title": "Annuaire des Associations",
+      "description": "Découvrez et soutenez les associations qui œuvrent pour notre communauté."
+    },
+    "search": {
+      "placeholder": "Rechercher une association par nom...",
+      "resultsCount": "{count} association(s) trouvée(s)"
+    },
+    "verified": "Vérifiée",
+    "campaign": {
+      "active": "Campagne(s) active(s)",
+      "total": "Total campagnes"
+    },
+    "loading": "Chargement des associations...",
+    "empty": {
+      "title": "Aucune association trouvée",
+      "description": "Essayez de modifier vos critères de recherche",
+      "action": "Actualiser la liste"
     },
     "messages": {
       "createSuccess": "Association créée avec succès",
@@ -230,223 +126,6 @@
       "createError": "Erreur lors de la création de l'association",
       "updateError": "Erreur lors de la mise à jour de l'association",
       "deleteError": "Erreur lors de la suppression de l'association"
-    }
-  },
-  "campaigns": {
-    "title": "Campagnes",
-    "singleTitle": "Campagne",
-    "create": "Créer une campagne",
-    "edit": "Modifier la campagne",
-    "view": "Voir la campagne",
-    "notFound": "Campagne non trouvée",
-    "list": {
-      "title": "Liste des campagnes",
-      "empty": "Aucune campagne trouvée",
-      "searchPlaceholder": "Rechercher une campagne...",
-      "filterByCategory": "Filtrer par catégorie",
-      "filterByStatus": "Filtrer par statut",
-      "sortBy": "Trier par",
-      "sortOptions": {
-        "name": "Nom",
-        "created": "Date de création",
-        "deadline": "Date limite",
-        "raised": "Montant collecté",
-        "progress": "Progression"
-      }
-    },
-    "details": {
-      "description": "Description",
-      "goal": "Objectif",
-      "raised": "Collecté",
-      "progress": "Progression",
-      "backers": "Donateurs",
-      "daysLeft": "Jours restants",
-      "deadline": "Date limite",
-      "created": "Créée le",
-      "status": "Statut",
-      "category": "Catégorie",
-      "organizer": "Organisateur",
-      "location": "Lieu",
-      "updates": "Mises à jour",
-      "donations": "Dons",
-      "share": "Partager"
-    },
-    "status": {
-      "active": "Active",
-      "completed": "Terminée",
-      "paused": "En pause",
-      "cancelled": "Annulée",
-      "draft": "Brouillon"
-    },
-    "form": {
-      "basicInfo": "Informations de base",
-      "title": "Titre de la campagne",
-      "description": "Description",
-      "category": "Catégorie",
-      "goal": "Objectif de collecte",
-      "deadline": "Date limite",
-      "location": "Lieu",
-      "coverImage": "Image de couverture",
-      "gallery": "Galerie d'images",
-      "story": "Histoire de la campagne",
-      "updates": "Mises à jour",
-      "risks": "Risques et défis",
-      "rewards": "Récompenses",
-      "visibility": "Visibilité",
-      "featured": "Mise en avant",
-      "urgent": "Urgente",
-      "anonymous": "Permettre les dons anonymes"
-    },
-    "actions": {
-      "donate": "Faire un don",
-      "share": "Partager",
-      "follow": "Suivre",
-      "report": "Signaler",
-      "support": "Soutenir",
-      "viewAll": "Voir toutes les campagnes"
-    },
-    "donation": {
-      "title": "Faire un don",
-      "amount": "Montant",
-      "suggestedAmounts": "Montants suggérés",
-      "customAmount": "Montant personnalisé",
-      "currency": "Devise",
-      "anonymous": "Don anonyme",
-      "message": "Message (optionnel)",
-      "paymentMethod": "Mode de paiement",
-      "recurring": "Don récurrent",
-      "frequency": {
-        "monthly": "Mensuel",
-        "quarterly": "Trimestriel",
-        "yearly": "Annuel"
-      }
-    },
-    "progress": {
-      "funded": "{percent}% financé",
-      "raised": "{amount} collectés",
-      "backers": "{count} donateurs",
-      "daysLeft": "{days} jours restants",
-      "hoursLeft": "{hours} heures restantes",
-      "completed": "Objectif atteint !",
-      "exceeded": "Objectif dépassé de {percent}%"
-    },
-    "messages": {
-      "createSuccess": "Campagne créée avec succès",
-      "updateSuccess": "Campagne mise à jour avec succès",
-      "deleteSuccess": "Campagne supprimée avec succès",
-      "donationSuccess": "Don effectué avec succès",
-      "shareSuccess": "Lien copié dans le presse-papiers",
-      "createError": "Erreur lors de la création de la campagne",
-      "updateError": "Erreur lors de la mise à jour de la campagne",
-      "deleteError": "Erreur lors de la suppression de la campagne",
-      "donationError": "Erreur lors du don"
-    }
-  },
-  "donations": {
-    "title": "Dons",
-    "singleTitle": "Don",
-    "make": "Faire un don",
-    "history": {
-      "title": "Historique des dons",
-      "empty": "Aucun don effectué",
-      "total": "Total des dons",
-      "thisYear": "Cette année",
-      "lastYear": "L'année dernière",
-      "allTime": "Depuis le début",
-      "filterBy": "Filtrer par",
-      "sortBy": "Trier par",
-      "exportData": "Exporter les données"
-    },
-    "receipt": "Reçu fiscal",
-    "form": {
-      "amount": "Montant",
-      "currency": "Devise",
-      "suggestedAmounts": "Montants suggérés",
-      "customAmount": "Montant personnalisé",
-      "recipient": "Bénéficiaire",
-      "campaign": "Campagne",
-      "association": "Association",
-      "anonymous": "Don anonyme",
-      "message": "Message pour le bénéficiaire",
-      "dedication": "Dédicace",
-      "recurring": "Don récurrent",
-      "frequency": "Fréquence",
-      "frequencies": {
-        "once": "Une fois",
-        "monthly": "Mensuel",
-        "quarterly": "Trimestriel",
-        "yearly": "Annuel"
-      },
-      "paymentMethod": "Mode de paiement",
-      "paymentMethods": {
-        "card": "Carte bancaire",
-        "paypal": "PayPal",
-        "transfer": "Virement bancaire",
-        "check": "Chèque"
-      },
-      "fiscalReceipt": "Reçu fiscal souhaité",
-      "taxDeduction": "Déduction fiscale disponible"
-    },
-    "confirmation": {
-      "title": "Confirmation de don",
-      "amount": "Montant du don",
-      "recipient": "Bénéficiaire",
-      "date": "Date",
-      "reference": "Référence",
-      "paymentMethod": "Mode de paiement",
-      "status": "Statut",
-      "receipt": "Reçu fiscal",
-      "thankYou": "Merci pour votre générosité !",
-      "impact": "Votre don va faire une différence"
-    },
-    "status": {
-      "pending": "En attente",
-      "processing": "En cours de traitement",
-      "completed": "Terminé",
-      "failed": "Échoué",
-      "cancelled": "Annulé",
-      "refunded": "Remboursé"
-    },
-    "recurring": {
-      "title": "Dons récurrents",
-      "manage": "Gérer les dons récurrents",
-      "cancel": "Annuler le don récurrent",
-      "modify": "Modifier le don récurrent",
-      "nextPayment": "Prochain prélèvement",
-      "totalDonated": "Total donné",
-      "since": "Depuis",
-      "pause": "Mettre en pause",
-      "resume": "Reprendre"
-    },
-    "tax": {
-      "deduction": "Déduction fiscale",
-      "rate": "Taux de déduction",
-      "eligible": "Éligible à la déduction fiscale",
-      "receiptNumber": "Numéro de reçu",
-      "downloadReceipt": "Télécharger le reçu",
-      "taxSavings": "Économies fiscales estimées"
-    },
-    "messages": {
-      "success": "Don effectué avec succès",
-      "pending": "Don en cours de traitement",
-      "failed": "Échec du don",
-      "cancelled": "Don annulé",
-      "refunded": "Don remboursé",
-      "receiptSent": "Reçu fiscal envoyé par email",
-      "recurringCancelled": "Don récurrent annulé",
-      "recurringModified": "Don récurrent modifié",
-      "thankYou": "Merci pour votre générosité !",
-      "impact": "Votre don fait une différence"
-    },
-    "amounts": {
-      "suggested": {
-        "small": "25€",
-        "medium": "50€",
-        "large": "100€",
-        "xlarge": "250€"
-      },
-      "minAmount": "Montant minimum : {amount}",
-      "maxAmount": "Montant maximum : {amount}"
     }
   },
   "auth": {
@@ -550,6 +229,203 @@
       "lastNameRequired": "Le nom est requis",
       "termsRequired": "Vous devez accepter les conditions d'utilisation"
     }
+  },
+  "campaigns": {
+    "title": "Campagnes",
+    "singleTitle": "Campagne",
+    "create": "Créer une campagne",
+    "edit": "Modifier la campagne",
+    "view": "Voir la campagne",
+    "notFound": "Campagne non trouvée",
+    "list": {
+      "title": "Liste des campagnes",
+      "empty": "Aucune campagne trouvée",
+      "searchPlaceholder": "Rechercher une campagne...",
+      "filterByCategory": "Filtrer par catégorie",
+      "filterByStatus": "Filtrer par statut",
+      "sortBy": "Trier par",
+      "sortOptions": {
+        "name": "Nom",
+        "created": "Date de création",
+        "deadline": "Date limite",
+        "raised": "Montant collecté",
+        "progress": "Progression"
+      }
+    },
+    "details": {
+      "description": "Description",
+      "goal": "Objectif",
+      "raised": "Collecté",
+      "progress": "Progression",
+      "backers": "Donateurs",
+      "daysLeft": "Jours restants",
+      "deadline": "Date limite",
+      "created": "Créée le",
+      "status": "Statut",
+      "category": "Catégorie",
+      "organizer": "Organisateur",
+      "location": "Lieu",
+      "updates": "Mises à jour",
+      "donations": "Dons",
+      "share": "Partager"
+    },
+    "status": {
+      "active": "Active",
+      "completed": "Terminée",
+      "paused": "En pause",
+      "cancelled": "Annulée",
+      "draft": "Brouillon"
+    },
+    "form": {
+      "basicInfo": "Informations de base",
+      "title": "Titre de la campagne",
+      "description": "Description",
+      "category": "Catégorie",
+      "goal": "Objectif de collecte",
+      "deadline": "Date limite",
+      "location": "Lieu",
+      "coverImage": "Image de couverture",
+      "gallery": "Galerie d'images",
+      "story": "Histoire de la campagne",
+      "updates": "Mises à jour",
+      "risks": "Risques et défis",
+      "rewards": "Récompenses",
+      "visibility": "Visibilité",
+      "featured": "Mise en avant",
+      "urgent": "Urgente",
+      "anonymous": "Permettre les dons anonymes"
+    },
+    "actions": {
+      "donate": "Faire un don",
+      "share": "Partager",
+      "follow": "Suivre",
+      "report": "Signaler",
+      "support": "Soutenir",
+      "viewAll": "Voir toutes les campagnes"
+    },
+    "donation": {
+      "title": "Faire un don",
+      "amount": "Montant",
+      "suggestedAmounts": "Montants suggérés",
+      "customAmount": "Montant personnalisé",
+      "currency": "Devise",
+      "anonymous": "Don anonyme",
+      "message": "Message (optionnel)",
+      "paymentMethod": "Mode de paiement",
+      "recurring": "Don récurrent",
+      "frequency": {
+        "monthly": "Mensuel",
+        "quarterly": "Trimestriel",
+        "yearly": "Annuel"
+      }
+    },
+    "progress": {
+      "funded": "{percent}% financé",
+      "raised": "{amount} collectés",
+      "backers": "{count} donateurs",
+      "daysLeft": "{days} jours restants",
+      "hoursLeft": "{hours} heures restantes",
+      "completed": "Objectif atteint !",
+      "exceeded": "Objectif dépassé de {percent}%",
+      "collected": "collecté",
+      "donorCount": "donateur(s)",
+      "deadline": "Fin",
+      "expired": "Expirée",
+      "goal": "Objectif:",
+      "lastDay": "Dernière jour",
+      "oneDay": "1 jour restant"
+    },
+    "page": {
+      "title": "Toutes les Campagnes",
+      "description": "Découvrez et soutenez les campagnes de collecte"
+    },
+    "search": {
+      "placeholder": "Rechercher une campagne...",
+      "loading": "Chargement des campagnes...",
+      "error": "Erreur lors du chargement",
+      "retry": "Réessayer"
+    },
+    "filters": {
+      "all": "Toutes",
+      "active": "Actives",
+      "completed": "Complétées",
+      "inactive": "Inactives"
+    },
+    "stats": {
+      "total": "Total Campagnes",
+      "active": "Campagnes Actives",
+      "endingSoon": "Se Terminent Bientôt"
+    },
+    "empty": {
+      "title": "Aucune campagne trouvée",
+      "action": "Réinitialiser la recherche"
+    },
+    "messages": {
+      "createSuccess": "Campagne créée avec succès",
+      "updateSuccess": "Campagne mise à jour avec succès",
+      "deleteSuccess": "Campagne supprimée avec succès",
+      "donationSuccess": "Don effectué avec succès",
+      "shareSuccess": "Lien copié dans le presse-papiers",
+      "createError": "Erreur lors de la création de la campagne",
+      "updateError": "Erreur lors de la mise à jour de la campagne",
+      "deleteError": "Erreur lors de la suppression de la campagne",
+      "donationError": "Erreur lors du don"
+    }
+  },
+  "common": {
+    "welcome": "Bienvenue",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "confirm": "Confirmer",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "search": "Rechercher",
+    "searchPlaceholder": "Rechercher une association, une campagne...",
+    "suggestions": "Suggestions",
+    "filter": "Filtrer",
+    "sort": "Trier",
+    "view": "Voir",
+    "share": "Partager",
+    "copy": "Copier",
+    "download": "Télécharger",
+    "donorPortal": "Portail Donateur",
+    "upload": "Téléverser",
+    "close": "Fermer",
+    "open": "Ouvrir",
+    "yes": "Oui",
+    "no": "Non",
+    "or": "ou",
+    "and": "et",
+    "of": "de",
+    "in": "dans",
+    "at": "à",
+    "by": "par",
+    "for": "pour",
+    "with": "avec",
+    "without": "sans",
+    "about": "À propos",
+    "contact": "Contact",
+    "help": "Aide",
+    "more": "Plus",
+    "less": "Moins",
+    "all": "Tous",
+    "none": "Aucun",
+    "other": "Autre",
+    "optional": "optionnel",
+    "required": "obligatoire",
+    "description": "Plateforme multilingue pour associations caritatives juives",
+    "features": "Fonctionnalités",
+    "support": "Support",
+    "translation": "Traductions",
+    "multiLanguage": "Support complet français et hébreu avec navigation fluide",
+    "rtlSupport": "Interface RTL native pour les utilisateurs hébraïphones",
+    "comprehensive": "Plus de 2000 traductions organisées par catégories"
   },
   "dashboard": {
     "title": "Tableau de bord",
@@ -661,6 +537,113 @@
       "currency": "Devise"
     }
   },
+  "donations": {
+    "title": "Dons",
+    "singleTitle": "Don",
+    "make": "Faire un don",
+    "history": {
+      "title": "Historique des dons",
+      "empty": "Aucun don effectué",
+      "total": "Total des dons",
+      "thisYear": "Cette année",
+      "lastYear": "L'année dernière",
+      "allTime": "Depuis le début",
+      "filterBy": "Filtrer par",
+      "sortBy": "Trier par",
+      "exportData": "Exporter les données"
+    },
+    "receipt": "Reçu fiscal",
+    "form": {
+      "amount": "Montant",
+      "currency": "Devise",
+      "suggestedAmounts": "Montants suggérés",
+      "customAmount": "Montant personnalisé",
+      "recipient": "Bénéficiaire",
+      "campaign": "Campagne",
+      "association": "Association",
+      "anonymous": "Don anonyme",
+      "message": "Message pour le bénéficiaire",
+      "dedication": "Dédicace",
+      "recurring": "Don récurrent",
+      "frequency": "Fréquence",
+      "frequencies": {
+        "once": "Une fois",
+        "monthly": "Mensuel",
+        "quarterly": "Trimestriel",
+        "yearly": "Annuel"
+      },
+      "paymentMethod": "Mode de paiement",
+      "paymentMethods": {
+        "card": "Carte bancaire",
+        "paypal": "PayPal",
+        "transfer": "Virement bancaire",
+        "check": "Chèque"
+      },
+      "fiscalReceipt": "Reçu fiscal souhaité",
+      "taxDeduction": "Déduction fiscale disponible"
+    },
+    "confirmation": {
+      "title": "Confirmation de don",
+      "amount": "Montant du don",
+      "recipient": "Bénéficiaire",
+      "date": "Date",
+      "reference": "Référence",
+      "paymentMethod": "Mode de paiement",
+      "status": "Statut",
+      "receipt": "Reçu fiscal",
+      "thankYou": "Merci pour votre générosité !",
+      "impact": "Votre don va faire une différence"
+    },
+    "status": {
+      "pending": "En attente",
+      "processing": "En cours de traitement",
+      "completed": "Terminé",
+      "failed": "Échoué",
+      "cancelled": "Annulé",
+      "refunded": "Remboursé"
+    },
+    "recurring": {
+      "title": "Dons récurrents",
+      "manage": "Gérer les dons récurrents",
+      "cancel": "Annuler le don récurrent",
+      "modify": "Modifier le don récurrent",
+      "nextPayment": "Prochain prélèvement",
+      "totalDonated": "Total donné",
+      "since": "Depuis",
+      "pause": "Mettre en pause",
+      "resume": "Reprendre"
+    },
+    "tax": {
+      "deduction": "Déduction fiscale",
+      "rate": "Taux de déduction",
+      "eligible": "Éligible à la déduction fiscale",
+      "receiptNumber": "Numéro de reçu",
+      "downloadReceipt": "Télécharger le reçu",
+      "taxSavings": "Économies fiscales estimées"
+    },
+    "messages": {
+      "success": "Don effectué avec succès",
+      "pending": "Don en cours de traitement",
+      "failed": "Échec du don",
+      "cancelled": "Don annulé",
+      "refunded": "Don remboursé",
+      "receiptSent": "Reçu fiscal envoyé par email",
+      "recurringCancelled": "Don récurrent annulé",
+      "recurringModified": "Don récurrent modifié",
+      "thankYou": "Merci pour votre générosité !",
+      "impact": "Votre don fait une différence"
+    },
+    "amounts": {
+      "suggested": {
+        "small": "25€",
+        "medium": "50€",
+        "large": "100€",
+        "xlarge": "250€"
+      },
+      "minAmount": "Montant minimum : {amount}",
+      "maxAmount": "Montant maximum : {amount}"
+    }
+  },
   "errors": {
     "401": {
       "title": "Non autorisé",
@@ -689,6 +672,9 @@
       "goHome": "Retour à l'accueil",
       "contactSupport": "Contacter le support"
     },
+    "pageNotFound": "Page non trouvée",
+    "pageNotFoundDescription": "La page que vous recherchez n'existe pas ou a été déplacée.",
+    "backToHome": "Retour à l'accueil",
     "network": {
       "title": "Erreur de connexion",
       "message": "Impossible de se connecter au serveur.",
@@ -741,6 +727,141 @@
       "notFound": "Ressource non trouvée",
       "conflict": "Conflit avec les données existantes",
       "serverError": "Erreur interne du serveur"
+    }
+  },
+  "forms": {
+    "validation": {
+      "required": "Ce champ est obligatoire",
+      "email": "Veuillez saisir une adresse email valide",
+      "phone": "Veuillez saisir un numéro de téléphone valide",
+      "url": "Veuillez saisir une URL valide",
+      "minLength": "Minimum {min} caractères requis",
+      "maxLength": "Maximum {max} caractères autorisés",
+      "min": "La valeur doit être supérieure à {min}",
+      "max": "La valeur doit être inférieure à {max}",
+      "pattern": "Le format n'est pas valide",
+      "passwordMatch": "Les mots de passe ne correspondent pas",
+      "acceptTerms": "Vous devez accepter les conditions d'utilisation"
+    },
+    "labels": {
+      "name": "Nom",
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "email": "Email",
+      "phone": "Téléphone",
+      "address": "Adresse",
+      "city": "Ville",
+      "country": "Pays",
+      "website": "Site web",
+      "description": "Description",
+      "category": "Catégorie",
+      "title": "Titre",
+      "message": "Message",
+      "password": "Mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "currentPassword": "Mot de passe actuel",
+      "newPassword": "Nouveau mot de passe",
+      "rememberMe": "Se souvenir de moi",
+      "acceptTerms": "J'accepte les conditions d'utilisation",
+      "newsletter": "S'abonner à la newsletter"
+    },
+    "placeholders": {
+      "enterName": "Saisissez le nom",
+      "enterEmail": "Saisissez votre email",
+      "enterPhone": "Saisissez votre téléphone",
+      "enterDescription": "Saisissez une description",
+      "searchPlaceholder": "Rechercher...",
+      "selectOption": "Sélectionnez une option"
+    },
+    "buttons": {
+      "submit": "Soumettre",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "reset": "Réinitialiser",
+      "clear": "Effacer",
+      "add": "Ajouter",
+      "remove": "Supprimer",
+      "upload": "Téléverser",
+      "browse": "Parcourir"
+    }
+  },
+  "navigation": {
+    "home": "Accueil",
+    "associations": "Associations",
+    "campaigns": "Campagnes",
+    "donations": "Dons",
+    "search": "Recherche",
+    "dashboard": "Tableau de bord",
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "logout": "Déconnexion",
+    "login": "Connexion",
+    "signup": "Inscription",
+    "menu": "Menu",
+    "trending": "Tendances",
+    "help": "Aide",
+    "breadcrumb": {
+      "home": "Accueil",
+      "associations": "Associations",
+      "campaigns": "Campagnes",
+      "dashboard": "Tableau de bord",
+      "create": "Créer",
+      "edit": "Modifier",
+      "view": "Voir"
+    },
+    "footer": {
+      "about": "À propos",
+      "contact": "Contact",
+      "terms": "Conditions d'utilisation",
+      "privacy": "Politique de confidentialité",
+      "help": "Aide",
+      "faq": "FAQ"
+    }
+  },
+  "search": {
+    "title": "Recherche",
+    "placeholder": "Rechercher associations, campagnes...",
+    "filters": {
+      "title": "Filtres",
+      "clear": "Effacer",
+      "type": "Type",
+      "all": "Tout",
+      "associations": "Associations",
+      "campaigns": "Campagnes",
+      "category": "Catégorie",
+      "allCategories": "Toutes les catégories",
+      "location": "Localisation",
+      "locationPlaceholder": "Ville, région...",
+      "verification": "Vérification",
+      "verifiedOnly": "Associations vérifiées uniquement",
+      "advanced": "Filtres avancés",
+      "financialGoal": "Objectif financier (€)",
+      "min": "Min",
+      "max": "Max",
+      "campaignStatus": "Statut des campagnes",
+      "allStatuses": "Tous les statuts",
+      "startDate": "Date de début",
+      "endDate": "Date de fin",
+      "filtering": "Filtrage en cours...",
+      "reset": "Réinitialiser"
+    },
+    "results": {
+      "count": "{count} résultat(s)",
+      "associations": "associations",
+      "campaigns": "campagnes",
+      "empty": "Aucun résultat trouvé",
+      "emptyDescription": "Essayez de modifier vos critères de recherche ou vos filtres.",
+      "clearFilters": "Effacer les filtres"
+    },
+    "sort": {
+      "relevance": "Pertinence",
+      "newest": "Plus récent",
+      "popularity": "Popularité",
+      "alphabetical": "Alphabétique"
+    },
+    "actions": {
+      "save": "Sauvegarder",
+      "export": "Exporter"
     }
   }
 }

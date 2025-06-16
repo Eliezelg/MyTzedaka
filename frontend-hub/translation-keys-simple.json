@@ -1,0 +1,1511 @@
+{
+  "summary": {
+    "totalKeys": 147,
+    "totalNamespaces": 31,
+    "filesAnalyzed": 138,
+    "analysisDate": "2025-06-16T18:40:12.177Z"
+  },
+  "namespaces": [
+    "actions",
+    "associations",
+    "auth",
+    "campaign",
+    "campaigns",
+    "common",
+    "components",
+    "dashboard",
+    "directory",
+    "donations",
+    "empty",
+    "errors",
+    "filters",
+    "forms",
+    "goals",
+    "hero",
+    "history",
+    "login",
+    "metrics",
+    "navigation",
+    "page",
+    "performance",
+    "profile",
+    "progress",
+    "search",
+    "signup",
+    "socialImpact",
+    "stats",
+    "status",
+    "validation",
+    "widget"
+  ],
+  "keys": {
+    "associations": [
+      {
+        "file": "src\\app\\[locale]\\associations\\page.tsx",
+        "line": 37,
+        "context": "const t = useTranslations('associations')"
+      },
+      {
+        "file": "src\\components\\hub\\association-card.tsx",
+        "line": 20,
+        "context": "const t = useTranslations('associations')"
+      },
+      {
+        "file": "src\\components\\hub\\related-content.tsx",
+        "line": 174,
+        "context": "{t('explore')} {currentType === 'association' ? t('associations') : t('campaigns')}"
+      },
+      {
+        "file": "src\\components\\layout\\hub-header.tsx",
+        "line": 60,
+        "context": "label: t('associations'),"
+      },
+      {
+        "file": "src\\components\\ui\\translated-text.tsx",
+        "line": 77,
+        "context": "namespace=\"associations\""
+      },
+      {
+        "file": "src\\lib\\translations.ts",
+        "line": 20,
+        "context": "return useTranslations('associations')"
+      }
+    ],
+    "loading": [
+      {
+        "file": "src\\app\\[locale]\\associations\\page.tsx",
+        "line": 66,
+        "context": "error(t('loading'))"
+      }
+    ],
+    "empty.action": [
+      {
+        "file": "src\\app\\[locale]\\associations\\page.tsx",
+        "line": 92,
+        "context": "success(t('empty.action'))"
+      },
+      {
+        "file": "src\\app\\[locale]\\associations\\page.tsx",
+        "line": 194,
+        "context": "{t('empty.action')}"
+      },
+      {
+        "file": "src\\app\\[locale]\\campaigns\\page.tsx",
+        "line": 196,
+        "context": "{t('empty.action')}"
+      }
+    ],
+    "directory.title": [
+      {
+        "file": "src\\app\\[locale]\\associations\\page.tsx",
+        "line": 102,
+        "context": "{t('directory.title')}"
+      },
+      {
+        "file": "src\\app\\[locale]\\donor-portal\\directory\\page.tsx",
+        "line": 13,
+        "context": "title: t('directory.title'),"
+      }
+    ],
+    "directory.description": [
+      {
+        "file": "src\\app\\[locale]\\associations\\page.tsx",
+        "line": 105,
+        "context": "{t('directory.description')}"
+      },
+      {
+        "file": "src\\app\\[locale]\\donor-portal\\directory\\page.tsx",
+        "line": 14,
+        "context": "description: t('directory.description'),"
+      }
+    ],
+    "search.placeholder": [
+      {
+        "file": "src\\app\\[locale]\\associations\\page.tsx",
+        "line": 118,
+        "context": "placeholder={t('search.placeholder')}"
+      },
+      {
+        "file": "src\\app\\[locale]\\campaigns\\page.tsx",
+        "line": 106,
+        "context": "placeholder={t('search.placeholder')}"
+      }
+    ],
+    "empty.title": [
+      {
+        "file": "src\\app\\[locale]\\associations\\page.tsx",
+        "line": 185,
+        "context": "{t('empty.title')}"
+      },
+      {
+        "file": "src\\app\\[locale]\\campaigns\\page.tsx",
+        "line": 189,
+        "context": "<p className=\"text-gray-500 text-lg\">{t('empty.title')}</p>"
+      }
+    ],
+    "empty.description": [
+      {
+        "file": "src\\app\\[locale]\\associations\\page.tsx",
+        "line": 188,
+        "context": "{t('empty.description')}"
+      }
+    ],
+    "campaigns": [
+      {
+        "file": "src\\app\\[locale]\\campaigns\\page.tsx",
+        "line": 24,
+        "context": "const t = useTranslations('campaigns')"
+      },
+      {
+        "file": "src\\components\\hub\\campaign-card.tsx",
+        "line": 31,
+        "context": "const t = useTranslations('campaigns')"
+      },
+      {
+        "file": "src\\components\\hub\\related-content.tsx",
+        "line": 174,
+        "context": "{t('explore')} {currentType === 'association' ? t('associations') : t('campaigns')}"
+      },
+      {
+        "file": "src\\components\\layout\\hub-header.tsx",
+        "line": 66,
+        "context": "label: t('campaigns'),"
+      },
+      {
+        "file": "src\\components\\ui\\translated-text.tsx",
+        "line": 90,
+        "context": "namespace=\"campaigns\""
+      },
+      {
+        "file": "src\\lib\\translations.ts",
+        "line": 25,
+        "context": "return useTranslations('campaigns')"
+      }
+    ],
+    "filters.completed": [
+      {
+        "file": "src\\app\\[locale]\\campaigns\\page.tsx",
+        "line": 46,
+        "context": "return <Badge variant=\"secondary\" className=\"bg-green-100 text-green-800\">{t('filters.completed')}</Badge>"
+      },
+      {
+        "file": "src\\app\\[locale]\\campaigns\\page.tsx",
+        "line": 133,
+        "context": "{t('filters.completed')}"
+      }
+    ],
+    "filters.active": [
+      {
+        "file": "src\\app\\[locale]\\campaigns\\page.tsx",
+        "line": 49,
+        "context": "return <Badge variant=\"default\" className=\"bg-blue-100 text-blue-800\">{t('filters.active')}</Badge>"
+      },
+      {
+        "file": "src\\app\\[locale]\\campaigns\\page.tsx",
+        "line": 126,
+        "context": "{t('filters.active')}"
+      }
+    ],
+    "filters.inactive": [
+      {
+        "file": "src\\app\\[locale]\\campaigns\\page.tsx",
+        "line": 51,
+        "context": "return <Badge variant=\"outline\">{t('filters.inactive')}</Badge>"
+      }
+    ],
+    "progress.expired": [
+      {
+        "file": "src\\app\\[locale]\\campaigns\\page.tsx",
+        "line": 60,
+        "context": "if (diffDays < 0) return t('progress.expired')"
+      },
+      {
+        "file": "src\\components\\hub\\campaign-card.tsx",
+        "line": 117,
+        "context": "{isExpired ? t('progress.expired') : `${t('progress.deadline')} ${formatDate(campaign.endDate)}`}"
+      }
+    ],
+    "progress.lastDay": [
+      {
+        "file": "src\\app\\[locale]\\campaigns\\page.tsx",
+        "line": 61,
+        "context": "if (diffDays === 0) return t('progress.lastDay')"
+      }
+    ],
+    "progress.oneDay": [
+      {
+        "file": "src\\app\\[locale]\\campaigns\\page.tsx",
+        "line": 62,
+        "context": "if (diffDays === 1) return t('progress.oneDay')"
+      }
+    ],
+    "search.loading": [
+      {
+        "file": "src\\app\\[locale]\\campaigns\\page.tsx",
+        "line": 71,
+        "context": "<p className=\"mt-4 text-gray-600\">{t('search.loading')}</p>"
+      }
+    ],
+    "search.error": [
+      {
+        "file": "src\\app\\[locale]\\campaigns\\page.tsx",
+        "line": 81,
+        "context": "<p className=\"text-red-600\">{t('search.error')}</p>"
+      }
+    ],
+    "search.retry": [
+      {
+        "file": "src\\app\\[locale]\\campaigns\\page.tsx",
+        "line": 83,
+        "context": "{t('search.retry')}"
+      }
+    ],
+    "page.title": [
+      {
+        "file": "src\\app\\[locale]\\campaigns\\page.tsx",
+        "line": 95,
+        "context": "{t('page.title')}"
+      }
+    ],
+    "page.description": [
+      {
+        "file": "src\\app\\[locale]\\campaigns\\page.tsx",
+        "line": 98,
+        "context": "{t('page.description')}"
+      }
+    ],
+    "filters.all": [
+      {
+        "file": "src\\app\\[locale]\\campaigns\\page.tsx",
+        "line": 119,
+        "context": "{t('filters.all')}"
+      }
+    ],
+    "stats.total": [
+      {
+        "file": "src\\app\\[locale]\\campaigns\\page.tsx",
+        "line": 146,
+        "context": "<p className=\"text-sm font-medium text-gray-600\">{t('stats.total')}</p>"
+      }
+    ],
+    "stats.active": [
+      {
+        "file": "src\\app\\[locale]\\campaigns\\page.tsx",
+        "line": 158,
+        "context": "<p className=\"text-sm font-medium text-gray-600\">{t('stats.active')}</p>"
+      }
+    ],
+    "stats.endingSoon": [
+      {
+        "file": "src\\app\\[locale]\\campaigns\\page.tsx",
+        "line": 172,
+        "context": "<p className=\"text-sm font-medium text-gray-600\">{t('stats.endingSoon')}</p>"
+      }
+    ],
+    "welcome": [
+      {
+        "file": "src\\app\\[locale]\\debug-translations\\page.tsx",
+        "line": 45,
+        "context": "<strong>Welcome (via getTranslations):</strong> {t('welcome')}"
+      },
+      {
+        "file": "src\\app\\[locale]\\test-i18n\\client-test.tsx",
+        "line": 17,
+        "context": "console.log('ClientTest - Welcome translation:', t('welcome'))"
+      },
+      {
+        "file": "src\\app\\[locale]\\test-i18n\\client-test.tsx",
+        "line": 36,
+        "context": "<strong>Welcome (client):</strong> {t('welcome')}"
+      },
+      {
+        "file": "src\\app\\[locale]\\test-i18n\\page.tsx",
+        "line": 24,
+        "context": "<strong>Welcome (server):</strong> {t('welcome')}"
+      }
+    ],
+    "dashboard.title": [
+      {
+        "file": "src\\app\\[locale]\\donor-portal\\dashboard\\page.tsx",
+        "line": 13,
+        "context": "title: t('dashboard.title'),"
+      }
+    ],
+    "dashboard.description": [
+      {
+        "file": "src\\app\\[locale]\\donor-portal\\dashboard\\page.tsx",
+        "line": 14,
+        "context": "description: t('dashboard.description'),"
+      }
+    ],
+    "history.title": [
+      {
+        "file": "src\\app\\[locale]\\donor-portal\\history\\page.tsx",
+        "line": 13,
+        "context": "title: t('history.title'),"
+      }
+    ],
+    "history.description": [
+      {
+        "file": "src\\app\\[locale]\\donor-portal\\history\\page.tsx",
+        "line": 14,
+        "context": "description: t('history.description'),"
+      }
+    ],
+    "title": [
+      {
+        "file": "src\\app\\[locale]\\donor-portal\\layout.tsx",
+        "line": 14,
+        "context": "title: t('title'),"
+      },
+      {
+        "file": "src\\components\\hub\\related-content.tsx",
+        "line": 171,
+        "context": "{t('title')}"
+      },
+      {
+        "file": "src\\components\\hub\\related-content.tsx",
+        "line": 186,
+        "context": "default: return t('title')"
+      }
+    ],
+    "description": [
+      {
+        "file": "src\\app\\[locale]\\donor-portal\\layout.tsx",
+        "line": 15,
+        "context": "description: t('description'),"
+      }
+    ],
+    "profile.title": [
+      {
+        "file": "src\\app\\[locale]\\donor-portal\\profile\\page.tsx",
+        "line": 13,
+        "context": "title: t('profile.title'),"
+      }
+    ],
+    "profile.description": [
+      {
+        "file": "src\\app\\[locale]\\donor-portal\\profile\\page.tsx",
+        "line": 14,
+        "context": "description: t('profile.description'),"
+      }
+    ],
+    "auth": [
+      {
+        "file": "src\\app\\[locale]\\login\\page.tsx",
+        "line": 18,
+        "context": "const t = useTranslations('auth')"
+      },
+      {
+        "file": "src\\app\\[locale]\\signup\\page.tsx",
+        "line": 30,
+        "context": "const t = useTranslations('auth')"
+      },
+      {
+        "file": "src\\components\\ui\\translated-text.tsx",
+        "line": 116,
+        "context": "namespace=\"auth\""
+      },
+      {
+        "file": "src\\lib\\translations.ts",
+        "line": 35,
+        "context": "return useTranslations('auth')"
+      }
+    ],
+    "common": [
+      {
+        "file": "src\\app\\[locale]\\login\\page.tsx",
+        "line": 19,
+        "context": "const tCommon = useTranslations('common')"
+      },
+      {
+        "file": "src\\app\\[locale]\\page.tsx",
+        "line": 6,
+        "context": "const tCommon = useTranslations('common')"
+      },
+      {
+        "file": "src\\app\\[locale]\\signup\\page.tsx",
+        "line": 31,
+        "context": "const tCommon = useTranslations('common')"
+      },
+      {
+        "file": "src\\app\\[locale]\\test-i18n\\client-test.tsx",
+        "line": 10,
+        "context": "const t = useTranslations('common')"
+      },
+      {
+        "file": "src\\components\\hub\\search-bar.tsx",
+        "line": 46,
+        "context": "const t = useTranslations('common')"
+      },
+      {
+        "file": "src\\components\\ui\\translated-text.tsx",
+        "line": 38,
+        "context": "namespace=\"common\""
+      },
+      {
+        "file": "src\\lib\\translations.ts",
+        "line": 5,
+        "context": "return useTranslations('common')"
+      }
+    ],
+    "login.title": [
+      {
+        "file": "src\\app\\[locale]\\login\\page.tsx",
+        "line": 61,
+        "context": "<CardTitle>{t('login.title')}</CardTitle>"
+      }
+    ],
+    "login.subtitle": [
+      {
+        "file": "src\\app\\[locale]\\login\\page.tsx",
+        "line": 63,
+        "context": "{t('login.subtitle')}"
+      }
+    ],
+    "login.email": [
+      {
+        "file": "src\\app\\[locale]\\login\\page.tsx",
+        "line": 75,
+        "context": "<Label htmlFor=\"email\">{t('login.email')}</Label>"
+      }
+    ],
+    "login.password": [
+      {
+        "file": "src\\app\\[locale]\\login\\page.tsx",
+        "line": 89,
+        "context": "<Label htmlFor=\"password\">{t('login.password')}</Label>"
+      }
+    ],
+    "login.forgotPassword": [
+      {
+        "file": "src\\app\\[locale]\\login\\page.tsx",
+        "line": 121,
+        "context": "{t('login.forgotPassword')}"
+      }
+    ],
+    "login.loginButton": [
+      {
+        "file": "src\\app\\[locale]\\login\\page.tsx",
+        "line": 133,
+        "context": "{t('login.loginButton')}..."
+      },
+      {
+        "file": "src\\app\\[locale]\\login\\page.tsx",
+        "line": 136,
+        "context": "t('login.loginButton')"
+      }
+    ],
+    "login.noAccount": [
+      {
+        "file": "src\\app\\[locale]\\login\\page.tsx",
+        "line": 142,
+        "context": "{t('login.noAccount')}{' '}"
+      }
+    ],
+    "login.signupLink": [
+      {
+        "file": "src\\app\\[locale]\\login\\page.tsx",
+        "line": 147,
+        "context": "{t('login.signupLink')}"
+      }
+    ],
+    "errors": [
+      {
+        "file": "src\\app\\[locale]\\not-found\\page.tsx",
+        "line": 8,
+        "context": "const t = useTranslations('errors')"
+      },
+      {
+        "file": "src\\components\\ui\\translated-text.tsx",
+        "line": 129,
+        "context": "namespace=\"errors\""
+      },
+      {
+        "file": "src\\lib\\translations.ts",
+        "line": 45,
+        "context": "return useTranslations('errors')"
+      }
+    ],
+    "pageNotFound": [
+      {
+        "file": "src\\app\\[locale]\\not-found\\page.tsx",
+        "line": 21,
+        "context": "{t('pageNotFound')}"
+      }
+    ],
+    "pageNotFoundDescription": [
+      {
+        "file": "src\\app\\[locale]\\not-found\\page.tsx",
+        "line": 24,
+        "context": "{t('pageNotFoundDescription')}"
+      }
+    ],
+    "backToHome": [
+      {
+        "file": "src\\app\\[locale]\\not-found\\page.tsx",
+        "line": 33,
+        "context": "{t('backToHome')}"
+      }
+    ],
+    "index": [
+      {
+        "file": "src\\app\\[locale]\\page.tsx",
+        "line": 7,
+        "context": "const tIndex = useTranslations('index')"
+      },
+      {
+        "file": "src\\components\\hub\\hero-section.tsx",
+        "line": 14,
+        "context": "const t = useTranslations('index')"
+      }
+    ],
+    "search": [
+      {
+        "file": "src\\app\\[locale]\\search\\page.tsx",
+        "line": 112,
+        "context": "const t = useTranslations('search')"
+      },
+      {
+        "file": "src\\app\\[locale]\\test-i18n\\client-test.tsx",
+        "line": 18,
+        "context": "console.log('ClientTest - Search translation:', t('search'))"
+      },
+      {
+        "file": "src\\app\\[locale]\\test-i18n\\client-test.tsx",
+        "line": 40,
+        "context": "<strong>Search (client):</strong> {t('search')}"
+      },
+      {
+        "file": "src\\app\\[locale]\\test-i18n\\page.tsx",
+        "line": 27,
+        "context": "<strong>Search (server):</strong> {t('search')}"
+      },
+      {
+        "file": "src\\components\\hub\\filter-panel.tsx",
+        "line": 40,
+        "context": "const t = useTranslations('search')"
+      }
+    ],
+    "signup.title": [
+      {
+        "file": "src\\app\\[locale]\\signup\\page.tsx",
+        "line": 125,
+        "context": "<CardTitle>{t('signup.title')}</CardTitle>"
+      }
+    ],
+    "signup.email": [
+      {
+        "file": "src\\app\\[locale]\\signup\\page.tsx",
+        "line": 145,
+        "context": "<Label htmlFor=\"email\">{t('signup.email')}</Label>"
+      }
+    ],
+    "signup.password": [
+      {
+        "file": "src\\app\\[locale]\\signup\\page.tsx",
+        "line": 159,
+        "context": "<Label htmlFor=\"password\">{t('signup.password')}</Label>"
+      }
+    ],
+    "validation.passwordMinLength": [
+      {
+        "file": "src\\app\\[locale]\\signup\\page.tsx",
+        "line": 184,
+        "context": "<p className=\"text-xs text-gray-500\">{t('validation.passwordMinLength')}</p>"
+      }
+    ],
+    "signup.confirmPassword": [
+      {
+        "file": "src\\app\\[locale]\\signup\\page.tsx",
+        "line": 188,
+        "context": "<Label htmlFor=\"confirmPassword\">{t('signup.confirmPassword')}</Label>"
+      }
+    ],
+    "errors.passwordMismatch": [
+      {
+        "file": "src\\app\\[locale]\\signup\\page.tsx",
+        "line": 214,
+        "context": "<p className=\"text-xs text-red-500\">{t('errors.passwordMismatch')}</p>"
+      }
+    ],
+    "signup.firstName": [
+      {
+        "file": "src\\app\\[locale]\\signup\\page.tsx",
+        "line": 233,
+        "context": "<Label htmlFor=\"firstName\">{t('signup.firstName')}</Label>"
+      },
+      {
+        "file": "src\\app\\[locale]\\signup\\page.tsx",
+        "line": 240,
+        "context": "placeholder={t('signup.firstName')}"
+      }
+    ],
+    "signup.lastName": [
+      {
+        "file": "src\\app\\[locale]\\signup\\page.tsx",
+        "line": 245,
+        "context": "<Label htmlFor=\"lastName\">{t('signup.lastName')}</Label>"
+      },
+      {
+        "file": "src\\app\\[locale]\\signup\\page.tsx",
+        "line": 252,
+        "context": "placeholder={t('signup.lastName')}"
+      }
+    ],
+    "signup.signupButton": [
+      {
+        "file": "src\\app\\[locale]\\signup\\page.tsx",
+        "line": 333,
+        "context": "{t('signup.signupButton')}..."
+      },
+      {
+        "file": "src\\app\\[locale]\\signup\\page.tsx",
+        "line": 338,
+        "context": "{t('signup.signupButton')}"
+      }
+    ],
+    "signup.hasAccount": [
+      {
+        "file": "src\\app\\[locale]\\signup\\page.tsx",
+        "line": 348,
+        "context": "{t('signup.hasAccount')}{' '}"
+      }
+    ],
+    "signup.loginLink": [
+      {
+        "file": "src\\app\\[locale]\\signup\\page.tsx",
+        "line": 353,
+        "context": "{t('signup.loginLink')}"
+      }
+    ],
+    "searchPlaceholder": [
+      {
+        "file": "src\\app\\[locale]\\test-i18n\\client-test.tsx",
+        "line": 44,
+        "context": "<strong>Search placeholder (client):</strong> {t('searchPlaceholder')}"
+      },
+      {
+        "file": "src\\app\\[locale]\\test-i18n\\page.tsx",
+        "line": 30,
+        "context": "<strong>Search placeholder (server):</strong> {t('searchPlaceholder')}"
+      },
+      {
+        "file": "src\\components\\hub\\search-bar.tsx",
+        "line": 212,
+        "context": "placeholder={placeholder || t('searchPlaceholder')}"
+      }
+    ],
+    "verified": [
+      {
+        "file": "src\\components\\hub\\association-card.tsx",
+        "line": 62,
+        "context": "{t('verified')}"
+      }
+    ],
+    "campaign.active": [
+      {
+        "file": "src\\components\\hub\\association-card.tsx",
+        "line": 96,
+        "context": "{t('campaign.active')}"
+      }
+    ],
+    "campaign.total": [
+      {
+        "file": "src\\components\\hub\\association-card.tsx",
+        "line": 104,
+        "context": "{t('campaign.total')}"
+      }
+    ],
+    "actions.discover": [
+      {
+        "file": "src\\components\\hub\\association-card.tsx",
+        "line": 120,
+        "context": "{t('actions.discover')}"
+      }
+    ],
+    "status.draft": [
+      {
+        "file": "src\\components\\hub\\campaign-card.tsx",
+        "line": 34,
+        "context": "DRAFT: t('status.draft'),"
+      }
+    ],
+    "status.active": [
+      {
+        "file": "src\\components\\hub\\campaign-card.tsx",
+        "line": 35,
+        "context": "ACTIVE: t('status.active'),"
+      }
+    ],
+    "status.paused": [
+      {
+        "file": "src\\components\\hub\\campaign-card.tsx",
+        "line": 36,
+        "context": "PAUSED: t('status.paused'),"
+      }
+    ],
+    "status.completed": [
+      {
+        "file": "src\\components\\hub\\campaign-card.tsx",
+        "line": 37,
+        "context": "COMPLETED: t('status.completed'),"
+      }
+    ],
+    "status.cancelled": [
+      {
+        "file": "src\\components\\hub\\campaign-card.tsx",
+        "line": 38,
+        "context": "CANCELLED: t('status.cancelled')"
+      }
+    ],
+    "progress.collected": [
+      {
+        "file": "src\\components\\hub\\campaign-card.tsx",
+        "line": 93,
+        "context": "label={`${progress.toFixed(0)}% ${t('progress.collected')}`}"
+      }
+    ],
+    "progress.donorCount": [
+      {
+        "file": "src\\components\\hub\\campaign-card.tsx",
+        "line": 113,
+        "context": "{donorCount} {t('progress.donorCount')}"
+      }
+    ],
+    "progress.deadline": [
+      {
+        "file": "src\\components\\hub\\campaign-card.tsx",
+        "line": 117,
+        "context": "{isExpired ? t('progress.expired') : `${t('progress.deadline')} ${formatDate(campaign.endDate)}`}"
+      }
+    ],
+    "progress.goal": [
+      {
+        "file": "src\\components\\hub\\campaign-card.tsx",
+        "line": 124,
+        "context": "{t('progress.goal')} {formatCurrency(campaign.goal, campaign.currency)}"
+      }
+    ],
+    "actions.donate": [
+      {
+        "file": "src\\components\\hub\\campaign-card.tsx",
+        "line": 138,
+        "context": "{t('actions.donate')}"
+      }
+    ],
+    "actions.viewDetails": [
+      {
+        "file": "src\\components\\hub\\campaign-card.tsx",
+        "line": 150,
+        "context": "{t('actions.viewDetails')}"
+      }
+    ],
+    "components.comments": [
+      {
+        "file": "src\\components\\hub\\comment-system.tsx",
+        "line": 285,
+        "context": "const t = useTranslations('components.comments')"
+      }
+    ],
+    "connectedUser": [
+      {
+        "file": "src\\components\\hub\\comment-system.tsx",
+        "line": 83,
+        "context": "name: t('connectedUser'),"
+      },
+      {
+        "file": "src\\components\\hub\\comment-system.tsx",
+        "line": 108,
+        "context": "name: t('connectedUser'),"
+      }
+    ],
+    "cancel": [
+      {
+        "file": "src\\components\\hub\\comment-system.tsx",
+        "line": 356,
+        "context": "{t('cancel')}"
+      },
+      {
+        "file": "src\\components\\hub\\comment-system.tsx",
+        "line": 460,
+        "context": "{t('cancel')}"
+      }
+    ],
+    "donations": [
+      {
+        "file": "src\\components\\hub\\donation-widget.tsx",
+        "line": 36,
+        "context": "const t = useTranslations('donations')"
+      },
+      {
+        "file": "src\\components\\hub\\donation-widget.tsx",
+        "line": 352,
+        "context": "const t = useTranslations('donations')"
+      },
+      {
+        "file": "src\\components\\ui\\translated-text.tsx",
+        "line": 103,
+        "context": "namespace=\"donations\""
+      },
+      {
+        "file": "src\\lib\\translations.ts",
+        "line": 30,
+        "context": "return useTranslations('donations')"
+      }
+    ],
+    "widget.support": [
+      {
+        "file": "src\\components\\hub\\donation-widget.tsx",
+        "line": 90,
+        "context": "<h3 className=\"font-semibold\">{t('widget.support')}</h3>"
+      }
+    ],
+    "widget.donate": [
+      {
+        "file": "src\\components\\hub\\donation-widget.tsx",
+        "line": 109,
+        "context": "{t('widget.donate')}"
+      }
+    ],
+    "widget.makeDifference": [
+      {
+        "file": "src\\components\\hub\\donation-widget.tsx",
+        "line": 122,
+        "context": "<h2 className=\"text-2xl font-bold mb-2\">{t('widget.makeDifference')}</h2>"
+      }
+    ],
+    "widget.chooseAmount": [
+      {
+        "file": "src\\components\\hub\\donation-widget.tsx",
+        "line": 156,
+        "context": "<h3 className=\"text-lg font-semibold mb-4\">{t('widget.chooseAmount')}</h3>"
+      }
+    ],
+    "widget.taxReceipt": [
+      {
+        "file": "src\\components\\hub\\donation-widget.tsx",
+        "line": 174,
+        "context": "<div className=\"text-xs text-gray-500\">{t('widget.taxReceipt')}</div>"
+      }
+    ],
+    "widget.otherAmount": [
+      {
+        "file": "src\\components\\hub\\donation-widget.tsx",
+        "line": 184,
+        "context": "placeholder={t('widget.otherAmount')}"
+      }
+    ],
+    "widget.taxBenefit": [
+      {
+        "file": "src\\components\\hub\\donation-widget.tsx",
+        "line": 202,
+        "context": "<span className=\"font-semibold text-green-800\">{t('widget.taxBenefit')}</span>"
+      }
+    ],
+    "widget.continue": [
+      {
+        "file": "src\\components\\hub\\donation-widget.tsx",
+        "line": 219,
+        "context": "{t('widget.continue')}"
+      }
+    ],
+    "widget.yourInfo": [
+      {
+        "file": "src\\components\\hub\\donation-widget.tsx",
+        "line": 227,
+        "context": "<h3 className=\"text-lg font-semibold\">{t('widget.yourInfo')}</h3>"
+      }
+    ],
+    "widget.anonymousDonation": [
+      {
+        "file": "src\\components\\hub\\donation-widget.tsx",
+        "line": 240,
+        "context": "<label htmlFor=\"anonymous\" className=\"text-sm\">{t('widget.anonymousDonation')}</label>"
+      }
+    ],
+    "widget.yourName": [
+      {
+        "file": "src\\components\\hub\\donation-widget.tsx",
+        "line": 247,
+        "context": "placeholder={t('widget.yourName')}"
+      }
+    ],
+    "widget.yourEmail": [
+      {
+        "file": "src\\components\\hub\\donation-widget.tsx",
+        "line": 254,
+        "context": "placeholder={t('widget.yourEmail')}"
+      }
+    ],
+    "widget.supportMessage": [
+      {
+        "file": "src\\components\\hub\\donation-widget.tsx",
+        "line": 263,
+        "context": "placeholder={t('widget.supportMessage')}"
+      }
+    ],
+    "widget.back": [
+      {
+        "file": "src\\components\\hub\\donation-widget.tsx",
+        "line": 273,
+        "context": "{t('widget.back')}"
+      }
+    ],
+    "widget.payment": [
+      {
+        "file": "src\\components\\hub\\donation-widget.tsx",
+        "line": 276,
+        "context": "{t('widget.payment')}"
+      }
+    ],
+    "widget.securePayment": [
+      {
+        "file": "src\\components\\hub\\donation-widget.tsx",
+        "line": 285,
+        "context": "<h3 className=\"text-lg font-semibold\">{t('widget.securePayment')}</h3>"
+      }
+    ],
+    "widget.securedByStripe": [
+      {
+        "file": "src\\components\\hub\\donation-widget.tsx",
+        "line": 310,
+        "context": "<span>{t('widget.securedByStripe')}</span>"
+      }
+    ],
+    "widget.payByCard": [
+      {
+        "file": "src\\components\\hub\\donation-widget.tsx",
+        "line": 317,
+        "context": "{t('widget.payByCard')}"
+      }
+    ],
+    "widget.modifyInfo": [
+      {
+        "file": "src\\components\\hub\\donation-widget.tsx",
+        "line": 331,
+        "context": "{t('widget.modifyInfo')}"
+      }
+    ],
+    "filters.allCategories": [
+      {
+        "file": "src\\components\\hub\\filter-panel.tsx",
+        "line": 57,
+        "context": "t('filters.allCategories'),"
+      },
+      {
+        "file": "src\\components\\hub\\filter-panel.tsx",
+        "line": 104,
+        "context": "if (filters.category && filters.category !== t('filters.allCategories')) count++"
+      },
+      {
+        "file": "src\\components\\hub\\filter-panel.tsx",
+        "line": 174,
+        "context": "value: category === t('filters.allCategories') ? 'all_categories' : category"
+      }
+    ],
+    "filters.title": [
+      {
+        "file": "src\\components\\hub\\filter-panel.tsx",
+        "line": 123,
+        "context": "<h3 className=\"font-medium text-gray-900\">{t('filters.title')}</h3>"
+      }
+    ],
+    "filters.clear": [
+      {
+        "file": "src\\components\\hub\\filter-panel.tsx",
+        "line": 145,
+        "context": "{t('filters.clear')}"
+      }
+    ],
+    "filters.category": [
+      {
+        "file": "src\\components\\hub\\filter-panel.tsx",
+        "line": 169,
+        "context": "{t('filters.category')}"
+      }
+    ],
+    "filters.location": [
+      {
+        "file": "src\\components\\hub\\filter-panel.tsx",
+        "line": 187,
+        "context": "{t('filters.location')}"
+      }
+    ],
+    "hero.badge": [
+      {
+        "file": "src\\components\\hub\\hero-section.tsx",
+        "line": 35,
+        "context": "{t('hero.badge')}"
+      }
+    ],
+    "hero.title": [
+      {
+        "file": "src\\components\\hub\\hero-section.tsx",
+        "line": 46,
+        "context": "{t('hero.title')}"
+      }
+    ],
+    "hero.subtitle": [
+      {
+        "file": "src\\components\\hub\\hero-section.tsx",
+        "line": 56,
+        "context": "{t('hero.subtitle')}"
+      }
+    ],
+    "hero.searchButton": [
+      {
+        "file": "src\\components\\hub\\hero-section.tsx",
+        "line": 72,
+        "context": "{t('hero.searchButton')}"
+      }
+    ],
+    "hero.exploreButton": [
+      {
+        "file": "src\\components\\hub\\hero-section.tsx",
+        "line": 82,
+        "context": "{t('hero.exploreButton')}"
+      }
+    ],
+    "stats.associationsVerified": [
+      {
+        "file": "src\\components\\hub\\hero-section.tsx",
+        "line": 96,
+        "context": "<div className=\"text-sm text-gray-600\">{t('stats.associationsVerified')}</div>"
+      }
+    ],
+    "stats.raisedThisMonth": [
+      {
+        "file": "src\\components\\hub\\hero-section.tsx",
+        "line": 100,
+        "context": "<div className=\"text-sm text-gray-600\">{t('stats.raisedThisMonth')}</div>"
+      }
+    ],
+    "stats.activeDonors": [
+      {
+        "file": "src\\components\\hub\\hero-section.tsx",
+        "line": 104,
+        "context": "<div className=\"text-sm text-gray-600\">{t('stats.activeDonors')}</div>"
+      }
+    ],
+    "impact": [
+      {
+        "file": "src\\components\\hub\\impact-metrics.tsx",
+        "line": 81,
+        "context": "const t = useTranslations('impact')"
+      },
+      {
+        "file": "src\\components\\hub\\impact-metrics.tsx",
+        "line": 169,
+        "context": "{t('impact')}"
+      }
+    ],
+    "metrics.title": [
+      {
+        "file": "src\\components\\hub\\impact-metrics.tsx",
+        "line": 217,
+        "context": "{t('metrics.title')}"
+      }
+    ],
+    "socialImpact.title": [
+      {
+        "file": "src\\components\\hub\\impact-metrics.tsx",
+        "line": 258,
+        "context": "{t('socialImpact.title')}"
+      }
+    ],
+    "socialImpact.projects": [
+      {
+        "file": "src\\components\\hub\\impact-metrics.tsx",
+        "line": 279,
+        "context": "<div className=\"text-sm text-gray-600\">{t('socialImpact.projects')}</div>"
+      }
+    ],
+    "socialImpact.communities": [
+      {
+        "file": "src\\components\\hub\\impact-metrics.tsx",
+        "line": 289,
+        "context": "<div className=\"text-sm text-gray-600\">{t('socialImpact.communities')}</div>"
+      }
+    ],
+    "goals.title": [
+      {
+        "file": "src\\components\\hub\\impact-metrics.tsx",
+        "line": 299,
+        "context": "{t('goals.title')}"
+      }
+    ],
+    "performance.retention": [
+      {
+        "file": "src\\components\\hub\\impact-metrics.tsx",
+        "line": 396,
+        "context": "<div className=\"text-sm text-gray-600\">{t('performance.retention')}</div>"
+      }
+    ],
+    "performance.activeCampaigns": [
+      {
+        "file": "src\\components\\hub\\impact-metrics.tsx",
+        "line": 401,
+        "context": "<div className=\"text-sm text-gray-600\">{t('performance.activeCampaigns')}</div>"
+      }
+    ],
+    "performance.completedCampaigns": [
+      {
+        "file": "src\\components\\hub\\impact-metrics.tsx",
+        "line": 406,
+        "context": "<div className=\"text-sm text-gray-600\">{t('performance.completedCampaigns')}</div>"
+      }
+    ],
+    "components.media": [
+      {
+        "file": "src\\components\\hub\\media-gallery.tsx",
+        "line": 24,
+        "context": "const t = useTranslations('components.media')"
+      }
+    ],
+    "empty": [
+      {
+        "file": "src\\components\\hub\\media-gallery.tsx",
+        "line": 52,
+        "context": "<p className=\"text-gray-500\">{t('empty')}</p>"
+      }
+    ],
+    "videos": [
+      {
+        "file": "src\\components\\hub\\media-gallery.tsx",
+        "line": 82,
+        "context": "{t('videos')}"
+      }
+    ],
+    "components.related": [
+      {
+        "file": "src\\components\\hub\\related-content.tsx",
+        "line": 89,
+        "context": "const t = useTranslations('components.related')"
+      }
+    ],
+    "explore": [
+      {
+        "file": "src\\components\\hub\\related-content.tsx",
+        "line": 174,
+        "context": "{t('explore')} {currentType === 'association' ? t('associations') : t('campaigns')}"
+      }
+    ],
+    "popular": [
+      {
+        "file": "src\\components\\hub\\related-content.tsx",
+        "line": 182,
+        "context": "case 'popular': return t('popular')"
+      }
+    ],
+    "recent": [
+      {
+        "file": "src\\components\\hub\\related-content.tsx",
+        "line": 183,
+        "context": "case 'recent': return t('recent')"
+      }
+    ],
+    "otherCampaigns": [
+      {
+        "file": "src\\components\\hub\\related-content.tsx",
+        "line": 184,
+        "context": "case 'related': return currentType === 'campaign' ? t('otherCampaigns') : t('relatedContent')"
+      }
+    ],
+    "relatedContent": [
+      {
+        "file": "src\\components\\hub\\related-content.tsx",
+        "line": 184,
+        "context": "case 'related': return currentType === 'campaign' ? t('otherCampaigns') : t('relatedContent')"
+      }
+    ],
+    "all": [
+      {
+        "file": "src\\components\\hub\\related-content.tsx",
+        "line": 211,
+        "context": "{t('all')}"
+      }
+    ],
+    "viewMore": [
+      {
+        "file": "src\\components\\hub\\related-content.tsx",
+        "line": 258,
+        "context": "{t('viewMore')}"
+      }
+    ],
+    "searchButton": [
+      {
+        "file": "src\\components\\hub\\search-bar.tsx",
+        "line": 257,
+        "context": "t('searchButton')"
+      }
+    ],
+    "recentSearches": [
+      {
+        "file": "src\\components\\hub\\search-bar.tsx",
+        "line": 277,
+        "context": "{t('recentSearches')}"
+      }
+    ],
+    "suggestions": [
+      {
+        "file": "src\\components\\hub\\search-bar.tsx",
+        "line": 303,
+        "context": "{t('suggestions')}"
+      }
+    ],
+    "share": [
+      {
+        "file": "src\\components\\hub\\social-share.tsx",
+        "line": 156,
+        "context": "{t('share')}"
+      },
+      {
+        "file": "src\\components\\hub\\social-share.tsx",
+        "line": 220,
+        "context": "{t('share')}"
+      }
+    ],
+    "home": [
+      {
+        "file": "src\\components\\layout\\hub-header.tsx",
+        "line": 54,
+        "context": "label: t('home'),"
+      }
+    ],
+    "trending": [
+      {
+        "file": "src\\components\\layout\\hub-header.tsx",
+        "line": 73,
+        "context": "label: t('trending'),"
+      }
+    ],
+    "dashboard": [
+      {
+        "file": "src\\components\\layout\\hub-header.tsx",
+        "line": 81,
+        "context": "{ label: t('dashboard'), href: `/${locale}/dashboard`, icon: Home },"
+      },
+      {
+        "file": "src\\lib\\translations.ts",
+        "line": 40,
+        "context": "return useTranslations('dashboard')"
+      }
+    ],
+    "profile": [
+      {
+        "file": "src\\components\\layout\\hub-header.tsx",
+        "line": 82,
+        "context": "{ label: t('profile'), href: `/${locale}/profile`, icon: User },"
+      }
+    ],
+    "settings": [
+      {
+        "file": "src\\components\\layout\\hub-header.tsx",
+        "line": 83,
+        "context": "{ label: t('settings'), href: `/${locale}/settings`, icon: Settings },"
+      }
+    ],
+    "help": [
+      {
+        "file": "src\\components\\layout\\hub-header.tsx",
+        "line": 84,
+        "context": "{ label: t('help'), href: `/${locale}/help`, icon: HelpCircle },"
+      }
+    ],
+    "logout": [
+      {
+        "file": "src\\components\\layout\\hub-header.tsx",
+        "line": 226,
+        "context": "{t('logout')}"
+      }
+    ],
+    "login": [
+      {
+        "file": "src\\components\\layout\\hub-header.tsx",
+        "line": 238,
+        "context": "<span className=\"hidden sm:block\">{t('login')}</span>"
+      }
+    ],
+    "signup": [
+      {
+        "file": "src\\components\\layout\\hub-header.tsx",
+        "line": 244,
+        "context": "<span className=\"hidden sm:block\">{t('signup')}</span>"
+      }
+    ],
+    "navigation": [
+      {
+        "file": "src\\components\\ui\\translated-text.tsx",
+        "line": 51,
+        "context": "namespace=\"navigation\""
+      },
+      {
+        "file": "src\\lib\\translations.ts",
+        "line": 10,
+        "context": "return useTranslations('navigation')"
+      }
+    ],
+    "forms": [
+      {
+        "file": "src\\components\\ui\\translated-text.tsx",
+        "line": 64,
+        "context": "namespace=\"forms\""
+      },
+      {
+        "file": "src\\lib\\translations.ts",
+        "line": 15,
+        "context": "return useTranslations('forms')"
+      }
+    ]
+  },
+  "allKeys": [
+    "actions.discover",
+    "actions.donate",
+    "actions.viewDetails",
+    "all",
+    "associations",
+    "auth",
+    "backToHome",
+    "campaign.active",
+    "campaign.total",
+    "campaigns",
+    "cancel",
+    "common",
+    "components.comments",
+    "components.media",
+    "components.related",
+    "connectedUser",
+    "dashboard",
+    "dashboard.description",
+    "dashboard.title",
+    "description",
+    "directory.description",
+    "directory.title",
+    "donations",
+    "empty",
+    "empty.action",
+    "empty.description",
+    "empty.title",
+    "errors",
+    "errors.passwordMismatch",
+    "explore",
+    "filters.active",
+    "filters.all",
+    "filters.allCategories",
+    "filters.category",
+    "filters.clear",
+    "filters.completed",
+    "filters.inactive",
+    "filters.location",
+    "filters.title",
+    "forms",
+    "goals.title",
+    "help",
+    "hero.badge",
+    "hero.exploreButton",
+    "hero.searchButton",
+    "hero.subtitle",
+    "hero.title",
+    "history.description",
+    "history.title",
+    "home",
+    "impact",
+    "index",
+    "loading",
+    "login",
+    "login.email",
+    "login.forgotPassword",
+    "login.loginButton",
+    "login.noAccount",
+    "login.password",
+    "login.signupLink",
+    "login.subtitle",
+    "login.title",
+    "logout",
+    "metrics.title",
+    "navigation",
+    "otherCampaigns",
+    "page.description",
+    "page.title",
+    "pageNotFound",
+    "pageNotFoundDescription",
+    "performance.activeCampaigns",
+    "performance.completedCampaigns",
+    "performance.retention",
+    "popular",
+    "profile",
+    "profile.description",
+    "profile.title",
+    "progress.collected",
+    "progress.deadline",
+    "progress.donorCount",
+    "progress.expired",
+    "progress.goal",
+    "progress.lastDay",
+    "progress.oneDay",
+    "recent",
+    "recentSearches",
+    "relatedContent",
+    "search",
+    "search.error",
+    "search.loading",
+    "search.placeholder",
+    "search.retry",
+    "searchButton",
+    "searchPlaceholder",
+    "settings",
+    "share",
+    "signup",
+    "signup.confirmPassword",
+    "signup.email",
+    "signup.firstName",
+    "signup.hasAccount",
+    "signup.lastName",
+    "signup.loginLink",
+    "signup.password",
+    "signup.signupButton",
+    "signup.title",
+    "socialImpact.communities",
+    "socialImpact.projects",
+    "socialImpact.title",
+    "stats.active",
+    "stats.activeDonors",
+    "stats.associationsVerified",
+    "stats.endingSoon",
+    "stats.raisedThisMonth",
+    "stats.total",
+    "status.active",
+    "status.cancelled",
+    "status.completed",
+    "status.draft",
+    "status.paused",
+    "suggestions",
+    "title",
+    "trending",
+    "validation.passwordMinLength",
+    "verified",
+    "videos",
+    "viewMore",
+    "welcome",
+    "widget.anonymousDonation",
+    "widget.back",
+    "widget.chooseAmount",
+    "widget.continue",
+    "widget.donate",
+    "widget.makeDifference",
+    "widget.modifyInfo",
+    "widget.otherAmount",
+    "widget.payByCard",
+    "widget.payment",
+    "widget.securePayment",
+    "widget.securedByStripe",
+    "widget.support",
+    "widget.supportMessage",
+    "widget.taxBenefit",
+    "widget.taxReceipt",
+    "widget.yourEmail",
+    "widget.yourInfo",
+    "widget.yourName"
+  ]
+}

@@ -12,7 +12,8 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAssociationBySlug, useUpdateAssociation } from '@/lib/services/associations-service';
 import { AssociationFromAPI } from '@/types/association-with-campaigns';
-import CompletionManager from '@/components/associations/completion-manager';
+import AssociationSettings from '@/components/associations/AssociationSettings';
+import StripeStatusCard from '@/components/associations/stripe-status-card';
 import { 
   Users, 
   Settings, 
@@ -230,7 +231,7 @@ export default function AssociationDashboard({ params }: { params: { slug: strin
         </div>
 
         {/* Statistiques rapides */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Membres</CardTitle>
@@ -270,17 +271,33 @@ export default function AssociationDashboard({ params }: { params: { slug: strin
               <div className="text-2xl font-bold">{campaigns.length}</div>
             </CardContent>
           </Card>
+
+          {/* Statut Stripe */}
+          <StripeStatusCard />
         </div>
 
         {/* Onglets principaux */}
-        <Tabs defaultValue="admins" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+        <Tabs defaultValue="settings" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-6">
+            <TabsTrigger value="settings">Configuration</TabsTrigger>
             <TabsTrigger value="admins">Gestion des admins</TabsTrigger>
             <TabsTrigger value="members">Membres</TabsTrigger>
             <TabsTrigger value="campaigns">Campagnes</TabsTrigger>
-            <TabsTrigger value="completion">Étapes progressives</TabsTrigger>
-            <TabsTrigger value="settings">Paramètres</TabsTrigger>
+            <TabsTrigger value="advanced">Paramètres avancés</TabsTrigger>
           </TabsList>
+
+          {/* Configuration complète avec composants réutilisables */}
+          <TabsContent value="settings" className="space-y-6">
+            <AssociationSettings 
+              association={association}
+              onUpdate={(data) => {
+                updateAssociation.mutate({ 
+                  id: association.id, 
+                  data 
+                })
+              }}
+            />
+          </TabsContent>
 
           {/* Gestion des admins */}
           <TabsContent value="admins" className="space-y-6">
@@ -500,135 +517,8 @@ export default function AssociationDashboard({ params }: { params: { slug: strin
             </div>
           </TabsContent>
 
-          <TabsContent value="completion">
+          <TabsContent value="advanced">
             <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Target className="h-5 w-5" />
-                    Complétion progressive
-                  </CardTitle>
-                  <CardDescription>
-                    Complétez votre profil d'association pour débloquer toutes les fonctionnalités
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <CompletionManager 
-                    association={association}
-                    onUpdate={(data) => {
-                      updateAssociation.mutate({ 
-                        id: association.id, 
-                        data 
-                      })
-                    }}
-                  />
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="settings">
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="flex items-center gap-2">
-                        <Settings className="h-5 w-5" />
-                        Paramètres de l'association
-                      </CardTitle>
-                      <CardDescription>
-                        Modifiez les informations de votre association
-                      </CardDescription>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      {isEditing ? (
-                        <>
-                          <Button variant="outline" onClick={() => setIsEditing(false)}>
-                            <X className="h-4 w-4 mr-2" />
-                            Annuler
-                          </Button>
-                          <Button>
-                            <Save className="h-4 w-4 mr-2" />
-                            Sauvegarder
-                          </Button>
-                        </>
-                      ) : (
-                        <Button onClick={() => setIsEditing(true)}>
-                          <Edit className="h-4 w-4 mr-2" />
-                          Modifier
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Nom de l'association</Label>
-                      <Input
-                        id="name"
-                        value={editForm.name}
-                        onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                        disabled={!isEditing}
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email de contact</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={editForm.email}
-                        onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                        disabled={!isEditing}
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Téléphone</Label>
-                      <Input
-                        id="phone"
-                        value={editForm.phone}
-                        onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                        disabled={!isEditing}
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="website">Site web</Label>
-                      <Input
-                        id="website"
-                        value={editForm.website}
-                        onChange={(e) => setEditForm({ ...editForm, website: e.target.value })}
-                        disabled={!isEditing}
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="location">Localisation</Label>
-                      <Input
-                        id="location"
-                        value={editForm.location}
-                        onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
-                        disabled={!isEditing}
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="description">Description</Label>
-                    <textarea
-                      id="description"
-                      className="w-full min-h-[100px] p-3 border border-gray-300 rounded-md resize-vertical disabled:bg-gray-50 disabled:text-gray-500"
-                      value={editForm.description}
-                      onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-
               {/* Statistiques détaillées */}
               <Card>
                 <CardHeader>

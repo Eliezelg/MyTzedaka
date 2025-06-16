@@ -1,17 +1,17 @@
 import createIntlMiddleware from 'next-intl/middleware';
 import { locales, defaultLocale } from './i18n';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 // Créer le middleware next-intl
 const intlMiddleware = createIntlMiddleware({
   locales,
   defaultLocale,
-  localePrefix: 'as-needed',
+  localePrefix: 'always', // Force toujours le préfixe de locale dans l'URL
   localeDetection: true
 });
 
 export default function middleware(request: NextRequest) {
-  // Appliquer le middleware next-intl
+  // Appliquer le middleware next-intl pour toutes les routes
   return intlMiddleware(request);
 }
 

@@ -26,7 +26,7 @@ let AppModule = class AppModule {
     configure(consumer) {
         consumer
             .apply(tenant_middleware_1.TenantMiddleware)
-            .exclude({ path: 'api/hub/(.*)', method: common_1.RequestMethod.ALL }, { path: 'api/auth/login', method: common_1.RequestMethod.POST }, { path: 'api/auth/register', method: common_1.RequestMethod.POST }, { path: 'api/auth/register-hub', method: common_1.RequestMethod.POST }, { path: 'api/health', method: common_1.RequestMethod.GET }, { path: 'health', method: common_1.RequestMethod.GET })
+            .exclude({ path: 'api/hub/(.*)', method: common_1.RequestMethod.ALL }, { path: 'api/auth/login', method: common_1.RequestMethod.POST }, { path: 'api/auth/register', method: common_1.RequestMethod.POST }, { path: 'api/auth/register-hub', method: common_1.RequestMethod.POST }, { path: 'api/stripe-config/(.*)/publishable-key', method: common_1.RequestMethod.GET }, { path: 'api/stripe/connect/(.*)', method: common_1.RequestMethod.GET }, { path: 'api/stripe/user/(.*)', method: common_1.RequestMethod.GET }, { path: 'api/health', method: common_1.RequestMethod.GET }, { path: 'health', method: common_1.RequestMethod.GET })
             .forRoutes('*');
     }
 };

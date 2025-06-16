@@ -1,3 +1,5 @@
+'use client'
+
 import { motion } from 'framer-motion'
 import { Calendar, Target, Users, ArrowRight } from 'lucide-react'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
@@ -6,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Campaign } from '@/types/hub'
 import { formatCurrency, formatDate, truncateText, calculateProgress } from '@/lib/utils'
+import { useTranslations } from 'next-intl'
 
 interface CampaignCardProps {
   campaign: Campaign & {
@@ -24,15 +27,16 @@ const statusColors = {
   CANCELLED: 'destructive'
 } as const
 
-const statusLabels = {
-  DRAFT: 'Brouillon',
-  ACTIVE: 'Active',
-  PAUSED: 'En pause',
-  COMPLETED: 'Terminée',
-  CANCELLED: 'Annulée'
-} as const
-
 export function CampaignCard({ campaign, index = 0, onClick }: CampaignCardProps) {
+  const t = useTranslations('campaigns')
+  
+  const statusLabels = {
+    DRAFT: t('status.draft'),
+    ACTIVE: t('status.active'),
+    PAUSED: t('status.paused'),
+    COMPLETED: t('status.completed'),
+    CANCELLED: t('status.cancelled')
+  } as const
   const raised = campaign.raised || 0
   const donorCount = campaign.donorCount || campaign._count?.donations || 0
   const progress = calculateProgress(raised, campaign.goal)
@@ -86,7 +90,7 @@ export function CampaignCard({ campaign, index = 0, onClick }: CampaignCardProps
               max={campaign.goal} 
               variant="accent"
               showLabel
-              label={`${progress.toFixed(0)}% collecté`}
+              label={`${progress.toFixed(0)}% ${t('progress.collected')}`}
             />
           </div>
 
@@ -106,18 +110,18 @@ export function CampaignCard({ campaign, index = 0, onClick }: CampaignCardProps
           <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
             <div className="flex items-center text-gray-600 text-sm">
               <Users className="w-4 h-4 mr-2" />
-              {donorCount} donateur{donorCount > 1 ? 's' : ''}
+              {donorCount} {t('progress.donorCount')}
             </div>
             <div className="flex items-center text-gray-600 text-sm">
               <Calendar className="w-4 h-4 mr-2" />
-              {isExpired ? 'Expirée' : `Fin ${formatDate(campaign.endDate)}`}
+              {isExpired ? t('progress.expired') : `${t('progress.deadline')} ${formatDate(campaign.endDate)}`}
             </div>
           </div>
 
           {/* Objectif */}
           <div className="flex items-center text-gray-600 text-sm">
             <Target className="w-4 h-4 mr-2" />
-            Objectif: {formatCurrency(campaign.goal, campaign.currency)}
+            {t('progress.goal')} {formatCurrency(campaign.goal, campaign.currency)}
           </div>
         </CardContent>
 
@@ -131,7 +135,7 @@ export function CampaignCard({ campaign, index = 0, onClick }: CampaignCardProps
                 handleClick()
               }}
             >
-              Faire un don
+              {t('actions.donate')}
               <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           ) : (
@@ -143,7 +147,7 @@ export function CampaignCard({ campaign, index = 0, onClick }: CampaignCardProps
                 handleClick()
               }}
             >
-              Voir détails
+              {t('actions.viewDetails')}
               <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           )}

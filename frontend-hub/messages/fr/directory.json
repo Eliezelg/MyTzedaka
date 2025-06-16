@@ -1,0 +1,10 @@
+{
+  "title": "Annuaire des associations",
+  "description": "Découvrez et soutenez des associations caritatives du monde entier.",
+  "filters": {
+    "all": "Toutes",
+    "category": "Catégorie",
+    "country": "Pays",
+    "search": "Rechercher une association..."
+  }
+}

@@ -44,6 +44,11 @@ export class AppModule {
         { path: 'api/auth/login', method: RequestMethod.POST },
         { path: 'api/auth/register', method: RequestMethod.POST },
         { path: 'api/auth/register-hub', method: RequestMethod.POST },
+        // Routes Stripe publiques
+        { path: 'api/stripe-config/(.*)/publishable-key', method: RequestMethod.GET },
+        // Routes Stripe Connect (nécessitent l'authentification mais pas de contexte tenant)
+        { path: 'api/stripe/connect/(.*)', method: RequestMethod.GET },
+        { path: 'api/stripe/user/(.*)', method: RequestMethod.GET },
         // Routes de santé
         { path: 'api/health', method: RequestMethod.GET },
         { path: 'health', method: RequestMethod.GET }

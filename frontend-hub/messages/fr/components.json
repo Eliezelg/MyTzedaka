@@ -1,0 +1,92 @@
+{
+  "comments": {
+    "title": "Commentaires",
+    "count": "Commentaires ({count})",
+    "sort": {
+      "recent": "Plus récents",
+      "popular": "Plus populaires",
+      "oldest": "Plus anciens"
+    },
+    "placeholder": "Partagez votre opinion ou vos encouragements...",
+    "guidelines": "Soyez respectueux et constructif dans vos commentaires",
+    "publish": "Publier",
+    "empty": "Aucun commentaire pour le moment",
+    "emptyDescription": "Soyez le premier à partager votre opinion !",
+    "reply": "Répondre",
+    "replyTo": "Répondre à {name}...",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "report": "Signaler",
+    "save": "Sauvegarder",
+    "cancel": "Annuler",
+    "verified": "Vérifié",
+    "edited": "(modifié)",
+    "likes": "{count} j'aime",
+    "connectedUser": "Utilisateur Connecté"
+  },
+  "impact": {
+    "title": "Impact de votre soutien",
+    "metrics": "Métriques d'impact",
+    "donors": "Donateurs",
+    "raised": "Total collecté",
+    "goal": "Objectifs en cours",
+    "progress": "atteint",
+    "daysLeft": "Jours restants",
+    "beneficiaries": "Bénéficiaires aidés",
+    "projects": "Projets réalisés",
+    "volunteers": "Bénévoles",
+    "hoursVolunteered": "Heures de bénévolat",
+    "mealsProvided": "Repas distribués",
+    "peopleHelped": "Personnes aidées",
+    "communities": "Communautés touchées",
+    "since": "Depuis {date}",
+    "thisYear": "Cette année",
+    "thisMonth": "ce mois",
+    "allTime": "Depuis le début",
+    "impact": "Impact",
+    "transparency": "Transparence",
+    "efficiency": "Efficacité",
+    "average": "Don moyen",
+    "deadline": "Échéance",
+    "achievements": "Réalisations",
+    "detailedPerformance": "Performance détaillée",
+    "conversionRate": "Taux de conversion",
+    "retention": "Fidélisation",
+    "activeCampaigns": "Campagnes actives",
+    "completedCampaigns": "Campagnes terminées"
+  },
+  "media": "Médias",
+  "related": "Contenu associé",
+  "social": {
+    "share": "Partager",
+    "shareOn": "Partager sur {platform}",
+    "copyLink": "Copier le lien",
+    "linkCopied": "Lien copié !",
+    "shareMessage": "Découvrez {title} sur MyTzedaka",
+    "platforms": {
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "linkedin": "LinkedIn",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram",
+      "email": "Email"
+    }
+  },
+  "stats": {
+    "title": "Statistiques",
+    "total": "Total",
+    "average": "Moyenne",
+    "growth": "Croissance",
+    "trend": "Tendance",
+    "increase": "Augmentation",
+    "decrease": "Diminution",
+    "stable": "Stable",
+    "period": {
+      "day": "Jour",
+      "week": "Semaine",
+      "month": "Mois",
+      "year": "Année",
+      "allTime": "Tout"
+    }
+  }
+}

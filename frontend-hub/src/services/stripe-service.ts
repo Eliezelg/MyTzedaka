@@ -33,7 +33,7 @@ class StripeService {
    * Récupère la clé publique Stripe d'un tenant
    */
   async getPublishableKey(tenantId: string): Promise<{ publishableKey: string }> {
-    const response = await apiClient.get<{ publishableKey: string }>(`/stripe-config/${tenantId}/keys/publishable`);
+    const response = await apiClient.get<{ publishableKey: string }>(`/stripe-config/${tenantId}/publishable-key`);
     return response.data;
   }
 

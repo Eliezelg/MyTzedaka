@@ -1,0 +1,20 @@
+{
+  "title": "ביצועים",
+  "subtitle": "ניתוח תוצאות",
+  "retention": "שמירה",
+  "retentionDescription": "אחוז תורמים שחוזרים",
+  "activeCampaigns": "קמפיינים פעילים",
+  "activeCampaignsDescription": "מספר קמפיינים בתהליך",
+  "completedCampaigns": "קמפיינים שהושלמו",
+  "completedCampaignsDescription": "מספר קמפיינים שהסתיימו בהצלחה",
+  "successRate": "אחוז הצלחה",
+  "averageAmount": "סכום ממוצע",
+  "totalRaised": "סך הכל נגוה",
+  "growth": "צמיחה",
+  "monthly": "חודשי",
+  "quarterly": "רבעוני", 
+  "annual": "שנתי",
+  "trends": "מגמות",
+  "analytics": "ניתוחים",
+  "insights": "תובנות"
+}

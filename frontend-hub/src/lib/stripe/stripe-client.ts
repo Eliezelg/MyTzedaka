@@ -1,22 +1,67 @@
 import { loadStripe, Stripe } from '@stripe/stripe-js';
 
-let stripePromise: Promise<Stripe | null>;
+// Cache des instances Stripe par tenant
+const stripeInstances: Map<string, Promise<Stripe | null>> = new Map();
 
 /**
- * Initialise et récupère l'instance Stripe
+ * Initialise et récupère l'instance Stripe pour un tenant spécifique
  */
-export const getStripe = () => {
-  if (!stripePromise) {
+export const getStripe = async (tenantId?: string): Promise<Stripe | null> => {
+  // Si pas de tenantId, utiliser la clé plateforme par défaut
+  if (!tenantId) {
     const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-    
     if (!publishableKey) {
       throw new Error('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is required');
     }
-
-    stripePromise = loadStripe(publishableKey);
+    return await loadStripe(publishableKey);
   }
+
+  // Vérifier le cache
+  if (stripeInstances.has(tenantId)) {
+    return await stripeInstances.get(tenantId)!;
+  }
+
+  // Créer une nouvelle instance pour ce tenant
+  const stripePromise = loadStripeForTenant(tenantId);
+  stripeInstances.set(tenantId, stripePromise);
   
-  return stripePromise;
+  return await stripePromise;
+};
+
+/**
+ * Charge Stripe avec la clé publique spécifique au tenant
+ */
+async function loadStripeForTenant(tenantId: string): Promise<Stripe | null> {
+  try {
+    // Récupérer la clé publique du tenant depuis l'API
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/stripe-config/${tenantId}/publishable-key`);
+    
+    if (!response.ok) {
+      throw new Error(`Erreur récupération clé Stripe: ${response.status}`);
+    }
+
+    const { publishableKey } = await response.json();
+    
+    if (!publishableKey) {
+      throw new Error('Clé publique Stripe non configurée pour ce tenant');
+    }
+
+    return await loadStripe(publishableKey);
+  } catch (error) {
+    console.error('Erreur initialisation Stripe pour tenant:', tenantId, error);
+    throw error;
+  }
+}
+
+/**
+ * Nettoie le cache pour un tenant (utile lors de changements de configuration)
+ */
+export const clearStripeCache = (tenantId?: string) => {
+  if (tenantId) {
+    stripeInstances.delete(tenantId);
+  } else {
+    stripeInstances.clear();
+  }
 };
 
 /**

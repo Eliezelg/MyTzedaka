@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useAuth } from '@/contexts/AuthContext'
 import { 
   Card, 
   CardContent, 
@@ -28,7 +29,10 @@ import {
   Star,
   Clock,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Info,
+  CreditCard,
+  Shield
 } from 'lucide-react'
 
 import type { 
@@ -44,6 +48,15 @@ import type {
 } from '@/types/association-creation'
 import { COUNTRIES, CATEGORIES } from '@/types/association-creation'
 import { useCreateAssociation } from '@/lib/services/associations-service'
+import { 
+  BasicInfoStep,
+  ContactStep,
+  MissionStep,
+  FullProfileStep,
+  StripeConfigStep,
+  ResponsibleStep,
+  LegalAgreementsStep
+} from '@/components/associations/steps'
 
 interface ProgressiveCreationFormProps {
   onComplete?: (data: any) => void
@@ -51,6 +64,7 @@ interface ProgressiveCreationFormProps {
 
 export default function ProgressiveCreationForm({ onComplete }: ProgressiveCreationFormProps) {
   const router = useRouter()
+  const { user } = useAuth()
   const createAssociation = useCreateAssociation()
   
   // États principaux
@@ -63,6 +77,7 @@ export default function ProgressiveCreationForm({ onComplete }: ProgressiveCreat
   const [basicInfo, setBasicInfo] = useState<Partial<MinimalAssociationInfo>>({
     country: '',
     category: 'GENERAL',
+    stripeMode: 'PLATFORM',
     termsAccepted: false,
     dataProtectionCompliance: false
   })
@@ -79,6 +94,21 @@ export default function ProgressiveCreationForm({ onComplete }: ProgressiveCreat
   })
   const [fullProfile, setFullProfile] = useState<Partial<FullProfileInfo>>({})
   const [countrySpecific, setCountrySpecific] = useState<Partial<CountrySpecificLegalInfo>>({})
+  
+  // Charger les données de l'utilisateur connecté au démarrage
+  useEffect(() => {
+    if (user) {
+      setBasicInfo(prev => ({
+        ...prev,
+        creatorInfo: {
+          firstName: user.firstName || '',
+          lastName: user.lastName || '',
+          email: user.email,
+          role: 'PRESIDENT'
+        }
+      }))
+    }
+  }, [user])
 
   // Configuration des étapes
   const steps: CompletionStep[] = [
@@ -93,39 +123,57 @@ export default function ProgressiveCreationForm({ onComplete }: ProgressiveCreat
     },
     {
       level: 2,
+      title: "Responsable légal",
+      description: "Informations du responsable principal",
+      required: true,
+      completed: completedSteps.has(2),
+      fields: ['firstName', 'lastName', 'email', 'role'],
+      estimatedTime: "1 min"
+    },
+    {
+      level: 3,
       title: "Contact et présence",
       description: "Coordonnées complètes et présence en ligne",
       required: false,
-      completed: completedSteps.has(2),
+      completed: completedSteps.has(3),
       fields: ['phone', 'website', 'address', 'socialMedia'],
       estimatedTime: "3 min"
     },
     {
-      level: 3,
+      level: 4,
       title: "Mission et objectifs",
       description: "Description détaillée de votre mission",
       required: false,
-      completed: completedSteps.has(3),
+      completed: completedSteps.has(4),
       fields: ['fullDescription', 'objectives', 'targetAudience'],
       estimatedTime: "5 min"
     },
     {
-      level: 4,
-      title: "Gouvernance et structure",
-      description: "Organisation interne et membres dirigeants",
+      level: 5,
+      title: "Configuration Stripe",
+      description: "Mode de paiement (clés CUSTOM configurables plus tard)",
+      required: true,
+      completed: completedSteps.has(5),
+      fields: ['stripeMode'],
+      estimatedTime: "1 min"
+    },
+    {
+      level: 6,
+      title: "Profil complet",
+      description: "Informations légales complémentaires",
       required: false,
-      completed: completedSteps.has(4),
-      fields: ['boardMembers', 'governance', 'countrySpecific'],
+      completed: completedSteps.has(6),
+      fields: ['legal', 'branding'],
       estimatedTime: "7 min"
     },
     {
-      level: 5,
-      title: "Profil complet",
-      description: "Informations financières et documents officiels",
-      required: false,
-      completed: completedSteps.has(5),
-      fields: ['financial', 'legal', 'branding'],
-      estimatedTime: "10 min"
+      level: 7,
+      title: "Accords légaux",
+      description: "Conditions d'utilisation et conformité",
+      required: true,
+      completed: completedSteps.has(7),
+      fields: ['termsAccepted', 'dataProtectionCompliance'],
+      estimatedTime: "1 min"
     }
   ]
 
@@ -135,27 +183,49 @@ export default function ProgressiveCreationForm({ onComplete }: ProgressiveCreat
   // Validation des étapes
   const validateStep = (step: CompletionLevel): boolean => {
     switch (step) {
-      case 1:
-        return !!(
+      case 1: // BasicInfoStep - Informations de base uniquement
+        const baseValidation = !!(
           basicInfo.name?.trim() &&
           basicInfo.email?.trim() &&
           basicInfo.country &&
           basicInfo.category &&
-          basicInfo.shortDescription?.trim() &&
+          basicInfo.shortDescription?.trim()
+        )
+        
+        // Validation de l'objet selon le pays
+        const purposeValidation = !basicInfo.country || 
+          ['FR', 'BE', 'CH', 'CA'].includes(basicInfo.country) ? 
+          !!basicInfo.associationPurpose?.trim() : true
+        
+        return baseValidation && purposeValidation
+
+      case 2: // ResponsibleStep - Informations du responsable
+        return !!(
           basicInfo.creatorInfo?.firstName?.trim() &&
           basicInfo.creatorInfo?.lastName?.trim() &&
-          basicInfo.creatorInfo?.email?.trim() &&
+          basicInfo.creatorInfo?.email?.trim()
+        )
+
+      case 3: // ContactStep - Optionnel
+        return true
+
+      case 4: // MissionStep - Optionnel  
+        return true
+
+      case 5: // StripeConfigStep - Configuration Stripe obligatoire
+        // On exige seulement le choix du mode Stripe
+        // Les clés CUSTOM peuvent être configurées plus tard dans le dashboard
+        return !!basicInfo.stripeMode
+
+      case 6: // FullProfileStep - Optionnel
+        return true
+
+      case 7: // LegalAgreementsStep - Conditions obligatoires
+        return !!(
           basicInfo.termsAccepted &&
           basicInfo.dataProtectionCompliance
         )
-      case 2:
-        return true // Optionnel
-      case 3:
-        return true // Optionnel
-      case 4:
-        return true // Optionnel
-      case 5:
-        return true // Optionnel
+
       default:
         return false
     }
@@ -179,7 +249,7 @@ export default function ProgressiveCreationForm({ onComplete }: ProgressiveCreat
   const nextStep = () => {
     if (validateStep(currentStep)) {
       markStepCompleted(currentStep)
-      if (currentStep < 5) {
+      if (currentStep < 7) {
         setCurrentStep((currentStep + 1) as CompletionLevel)
       }
     }
@@ -192,10 +262,17 @@ export default function ProgressiveCreationForm({ onComplete }: ProgressiveCreat
     }
   }
 
-  // Soumettre la création (minimum niveau 1)
+  // Soumettre la création (minimum toutes les étapes obligatoires)
   const handleSubmit = async () => {
-    if (!validateStep(1)) {
-      setMessage({ type: 'error', text: 'Veuillez remplir toutes les informations obligatoires.' })
+    // Vérifier toutes les étapes obligatoires: 1, 2, 5, 7
+    const requiredSteps: CompletionLevel[] = [1, 2, 5, 7]
+    const missingSteps = requiredSteps.filter(step => !validateStep(step))
+    
+    if (missingSteps.length > 0) {
+      setMessage({ 
+        type: 'error', 
+        text: `Veuillez compléter toutes les étapes obligatoires. Étapes manquantes: ${missingSteps.join(', ')}` 
+      })
       return
     }
 
@@ -212,8 +289,26 @@ export default function ProgressiveCreationForm({ onComplete }: ProgressiveCreat
         category: basicInfo.category,
         country: basicInfo.country,
         
+        // Informations du créateur
+        creatorInfo: {
+          firstName: basicInfo.creatorInfo?.firstName || '',
+          lastName: basicInfo.creatorInfo?.lastName || '',
+          email: basicInfo.creatorInfo?.email || '',
+          role: basicInfo.creatorInfo?.role || 'PRESIDENT'
+        },
+        
+        // Configuration Stripe
+        stripeMode: basicInfo.stripeMode,
+        ...(basicInfo.stripeMode === 'CUSTOM' ? {
+          stripeSecretKey: basicInfo.stripeSecretKey,
+          stripePublishableKey: basicInfo.stripePublishableKey
+        } : {}),
+        
+        // Objet de l'association
+        associationPurpose: basicInfo.associationPurpose,
+        
         // Contact étendu si complété
-        ...(completedSteps.has(2) && extendedContact ? {
+        ...(completedSteps.has(3) && extendedContact ? {
           phone: extendedContact.phone,
           address: extendedContact.address?.street ? 
             `${extendedContact.address.street}, ${extendedContact.address.postalCode} ${extendedContact.address.city}` : 
@@ -223,12 +318,12 @@ export default function ProgressiveCreationForm({ onComplete }: ProgressiveCreat
         } : {}),
         
         // Données progressives comme objets pour extensions futures
-        legalInfo: completedSteps.has(4) ? countrySpecific : undefined,
-        contactInfo: completedSteps.has(2) ? extendedContact : undefined,
+        legalInfo: completedSteps.has(6) ? countrySpecific : undefined,
+        contactInfo: completedSteps.has(3) ? extendedContact : undefined,
         additionalInfo: {
-          detailedMission: completedSteps.has(3) ? detailedMission : undefined,
-          governance: completedSteps.has(4) ? governance : undefined,
-          fullProfile: completedSteps.has(5) ? fullProfile : undefined,
+          detailedMission: completedSteps.has(4) ? detailedMission : undefined,
+          governance: completedSteps.has(6) ? governance : undefined,
+          fullProfile: completedSteps.has(6) ? fullProfile : undefined,
           completionLevel: Math.max(...Array.from(completedSteps)) as CompletionLevel
         }
       }
@@ -351,7 +446,7 @@ export default function ProgressiveCreationForm({ onComplete }: ProgressiveCreat
         </div>
 
         <div className="flex items-center space-x-4">
-          {currentStep < 5 ? (
+          {currentStep < 7 ? (
             <>
               <Button
                 variant="outline"
@@ -362,7 +457,27 @@ export default function ProgressiveCreationForm({ onComplete }: ProgressiveCreat
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
               
-              {completedSteps.has(1) && (
+              {(currentStep === 1 && validateStep(1)) && (
+                <Button
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Création...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      Créer l'association
+                    </>
+                  )}
+                </Button>
+              )}
+              
+              {completedSteps.has(1) && currentStep > 1 && (
                 <Button
                   onClick={handleSubmit}
                   disabled={isSubmitting}
@@ -452,294 +567,57 @@ export default function ProgressiveCreationForm({ onComplete }: ProgressiveCreat
           </div>
         </CardHeader>
         <CardContent>
-          {currentStep === 1 && renderStep1()}
-          {currentStep === 2 && renderStep2()}
-          {currentStep === 3 && renderStep3()}
-          {currentStep === 4 && renderStep4()}
-          {currentStep === 5 && renderStep5()}
+          {currentStep === 1 && (
+            <BasicInfoStep 
+              data={basicInfo}
+              onChange={setBasicInfo}
+              errors={{}}
+            />
+          )}
+          {currentStep === 2 && (
+            <ResponsibleStep 
+              data={basicInfo.creatorInfo}
+              onChange={(data) => setBasicInfo(prev => ({ ...prev, creatorInfo: data }))}
+              errors={{}}
+            />
+          )}
+          {currentStep === 3 && (
+            <ContactStep 
+              data={extendedContact}
+              onChange={setExtendedContact}
+              errors={{}}
+            />
+          )}
+          {currentStep === 4 && (
+            <MissionStep 
+              data={detailedMission}
+              onChange={setDetailedMission}
+              errors={{}}
+            />
+          )}
+          {currentStep === 5 && (
+            <StripeConfigStep 
+              data={basicInfo}
+              onChange={setBasicInfo}
+              errors={{}}
+            />
+          )}
+          {currentStep === 6 && (
+            <FullProfileStep 
+              data={fullProfile}
+              onChange={setFullProfile}
+              errors={{}}
+            />
+          )}
+          {currentStep === 7 && (
+            <LegalAgreementsStep 
+              data={basicInfo}
+              onChange={setBasicInfo}
+              errors={{}}
+            />
+          )}
         </CardContent>
       </Card>
-    )
-  }
-
-  // Contenu des étapes (à implémenter)
-  function renderStep1() {
-    return (
-      <div className="space-y-6">
-        <p className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">
-          <span className="font-medium">Information :</span> Ces informations sont obligatoires pour créer votre association. 
-          Vous pourrez modifier et compléter votre profil après la création.
-        </p>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Nom de l'association */}
-          <div className="space-y-2">
-            <Label htmlFor="name" className="text-sm font-medium">
-              Nom de l'association *
-            </Label>
-            <Input
-              id="name"
-              value={basicInfo.name || ''}
-              onChange={(e) => setBasicInfo(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="Ex: Association pour l'aide humanitaire"
-              className="w-full"
-            />
-          </div>
-
-          {/* Email principal */}
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-sm font-medium">
-              Email principal *
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              value={basicInfo.email || ''}
-              onChange={(e) => setBasicInfo(prev => ({ ...prev, email: e.target.value }))}
-              placeholder="contact@monassociation.org"
-              className="w-full"
-            />
-          </div>
-
-          {/* Pays */}
-          <div className="space-y-2">
-            <Label htmlFor="country" className="text-sm font-medium">
-              Pays *
-            </Label>
-            <select
-              id="country"
-              value={basicInfo.country || ''}
-              onChange={(e) => setBasicInfo(prev => ({ ...prev, country: e.target.value }))}
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">Sélectionnez un pays</option>
-              {COUNTRIES.map(country => (
-                <option key={country.code} value={country.code}>
-                  {country.flag} {country.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Catégorie */}
-          <div className="space-y-2">
-            <Label htmlFor="category" className="text-sm font-medium">
-              Catégorie principale *
-            </Label>
-            <select
-              id="category"
-              value={basicInfo.category || 'GENERAL'}
-              onChange={(e) => setBasicInfo(prev => ({ ...prev, category: e.target.value as AssociationCategory }))}
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              {CATEGORIES.map(category => (
-                <option key={category.value} value={category.value}>
-                  {category.label}
-                </option>
-              ))}
-            </select>
-            <p className="text-xs text-gray-500">
-              {CATEGORIES.find(c => c.value === basicInfo.category)?.description}
-            </p>
-          </div>
-        </div>
-
-        {/* Description courte */}
-        <div className="space-y-2">
-          <Label htmlFor="shortDescription" className="text-sm font-medium">
-            Description courte de votre mission *
-          </Label>
-          <Textarea
-            id="shortDescription"
-            value={basicInfo.shortDescription || ''}
-            onChange={(e) => setBasicInfo(prev => ({ ...prev, shortDescription: e.target.value }))}
-            placeholder="Décrivez en quelques phrases la mission principale de votre association..."
-            rows={3}
-            className="w-full"
-          />
-          <p className="text-xs text-gray-500">
-            {basicInfo.shortDescription?.length || 0}/200 caractères recommandés
-          </p>
-        </div>
-
-        {/* Informations du créateur */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium text-gray-900 border-b pb-2">
-            Informations du responsable
-          </h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="creatorFirstName" className="text-sm font-medium">
-                Prénom *
-              </Label>
-              <Input
-                id="creatorFirstName"
-                value={basicInfo.creatorInfo?.firstName || ''}
-                onChange={(e) => setBasicInfo(prev => ({ 
-                  ...prev, 
-                  creatorInfo: { ...prev.creatorInfo, firstName: e.target.value } as any 
-                }))}
-                placeholder="Jean"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="creatorLastName" className="text-sm font-medium">
-                Nom *
-              </Label>
-              <Input
-                id="creatorLastName"
-                value={basicInfo.creatorInfo?.lastName || ''}
-                onChange={(e) => setBasicInfo(prev => ({ 
-                  ...prev, 
-                  creatorInfo: { ...prev.creatorInfo, lastName: e.target.value } as any 
-                }))}
-                placeholder="Dupont"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="creatorEmail" className="text-sm font-medium">
-                Email *
-              </Label>
-              <Input
-                id="creatorEmail"
-                type="email"
-                value={basicInfo.creatorInfo?.email || ''}
-                onChange={(e) => setBasicInfo(prev => ({ 
-                  ...prev, 
-                  creatorInfo: { ...prev.creatorInfo, email: e.target.value } as any 
-                }))}
-                placeholder="jean.dupont@email.com"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="creatorRole" className="text-sm font-medium">
-              Rôle dans l'association *
-            </Label>
-            <select
-              id="creatorRole"
-              value={basicInfo.creatorInfo?.role || 'PRESIDENT'}
-              onChange={(e) => setBasicInfo(prev => ({ 
-                ...prev, 
-                creatorInfo: { ...prev.creatorInfo, role: e.target.value } as any 
-              }))}
-              className="w-full md:w-1/3 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="PRESIDENT">Président(e)</option>
-              <option value="FOUNDER">Fondateur/Fondatrice</option>
-              <option value="COORDINATOR">Coordinateur/Coordinatrice</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Accords légaux */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium text-gray-900 border-b pb-2">
-            Accords et conformité
-          </h3>
-          
-          <div className="space-y-3">
-            <label className="flex items-start space-x-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={basicInfo.termsAccepted || false}
-                onChange={(e) => setBasicInfo(prev => ({ ...prev, termsAccepted: e.target.checked }))}
-                className="mt-0.5 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <span className="text-sm text-gray-700">
-                J'accepte les{' '}
-                <a href="/terms" target="_blank" className="text-blue-600 hover:underline">
-                  conditions générales d'utilisation
-                </a>{' '}
-                de la plateforme *
-              </span>
-            </label>
-
-            <label className="flex items-start space-x-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={basicInfo.dataProtectionCompliance || false}
-                onChange={(e) => setBasicInfo(prev => ({ ...prev, dataProtectionCompliance: e.target.checked }))}
-                className="mt-0.5 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <span className="text-sm text-gray-700">
-                Je confirme respecter les réglementations sur la protection des données (RGPD) 
-                et m'engage à traiter les données des membres et donateurs de manière conforme *
-              </span>
-            </label>
-          </div>
-        </div>
-
-        {/* Validation visuelle */}
-        {validateStep(1) && (
-          <div className="flex items-center space-x-2 p-3 bg-green-50 border border-green-200 rounded-lg">
-            <CheckCircle className="h-5 w-5 text-green-600" />
-            <span className="text-sm font-medium text-green-800">
-              Toutes les informations obligatoires sont remplies !
-            </span>
-          </div>
-        )}
-      </div>
-    )
-  }
-
-  function renderStep2() {
-    return (
-      <div className="space-y-6">
-        <p className="text-sm text-gray-600 bg-green-50 p-3 rounded-lg">
-          <span className="font-medium">Optionnel :</span> Ajoutez vos coordonnées complètes pour faciliter le contact avec votre association.
-        </p>
-        
-        <div className="text-center py-8 text-gray-500">
-          Contenu de l'étape 2 à implémenter...
-        </div>
-      </div>
-    )
-  }
-
-  function renderStep3() {
-    return (
-      <div className="space-y-6">
-        <p className="text-sm text-gray-600 bg-purple-50 p-3 rounded-lg">
-          <span className="font-medium">Mission détaillée :</span> Décrivez précisément votre mission et vos objectifs.
-        </p>
-        
-        <div className="text-center py-8 text-gray-500">
-          Contenu de l'étape 3 à implémenter...
-        </div>
-      </div>
-    )
-  }
-
-  function renderStep4() {
-    return (
-      <div className="space-y-6">
-        <p className="text-sm text-gray-600 bg-orange-50 p-3 rounded-lg">
-          <span className="font-medium">Gouvernance :</span> Définissez la structure de gouvernance de votre association.
-        </p>
-        
-        <div className="text-center py-8 text-gray-500">
-          Contenu de l'étape 4 à implémenter...
-        </div>
-      </div>
-    )
-  }
-
-  function renderStep5() {
-    return (
-      <div className="space-y-6">
-        <p className="text-sm text-gray-600 bg-yellow-50 p-3 rounded-lg">
-          <span className="font-medium">Profil complet :</span> Finalisez votre profil avec les informations financières et documents.
-        </p>
-        
-        <div className="text-center py-8 text-gray-500">
-          Contenu de l'étape 5 à implémenter...
-        </div>
-      </div>
     )
   }
 }

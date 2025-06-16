@@ -1,10 +1,12 @@
 import { ConfigService } from '@nestjs/config';
+import { PrismaService } from '../prisma/prisma.service';
 import Stripe from 'stripe';
 export declare class StripeService {
     private configService;
+    private prisma;
     private readonly logger;
     private stripe;
-    constructor(configService: ConfigService);
+    constructor(configService: ConfigService, prisma: PrismaService);
     createPaymentIntent(params: {
         amount: number;
         currency?: string;
@@ -18,4 +20,5 @@ export declare class StripeService {
     createRefund(paymentIntentId: string, amount?: number, reason?: Stripe.RefundCreateParams.Reason): Promise<Stripe.Refund>;
     static centsToEuros(cents: number): number;
     static eurosToCents(euros: number): number;
+    getStripeAccountByTenantId(tenantId: string): Promise<any>;
 }

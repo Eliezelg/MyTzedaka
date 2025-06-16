@@ -1,5 +1,6 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { PrismaService } from '../prisma/prisma.service';
 import Stripe from 'stripe';
 
 @Injectable()
@@ -7,7 +8,10 @@ export class StripeService {
   private readonly logger = new Logger(StripeService.name);
   private stripe: Stripe;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private prisma: PrismaService,
+  ) {
     const secretKey = this.configService.get<string>('STRIPE_SECRET_KEY');
     
     if (!secretKey) {
@@ -186,5 +190,21 @@ export class StripeService {
    */
   static eurosToCents(euros: number): number {
     return Math.round(euros * 100);
+  }
+
+  /**
+   * Récupère le compte Stripe associé à un tenant
+   */
+  async getStripeAccountByTenantId(tenantId: string): Promise<any> {
+    try {
+      const stripeAccount = await this.prisma.stripeAccount.findUnique({
+        where: { tenantId },
+      });
+      
+      return stripeAccount;
+    } catch (error) {
+      this.logger.error(`Error getting Stripe account for tenant ${tenantId}:`, error);
+      throw error;
+    }
   }
 }

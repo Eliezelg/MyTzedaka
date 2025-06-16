@@ -17,6 +17,7 @@ exports.DonationController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const public_hub_decorator_1 = require("../common/decorators/public-hub.decorator");
 const donation_service_1 = require("./donation.service");
 let DonationController = DonationController_1 = class DonationController {
     constructor(donationService) {
@@ -38,6 +39,23 @@ let DonationController = DonationController_1 = class DonationController {
             },
         };
     }
+    async createPublicDonation(createDonationDto) {
+        const { tenantId, ...donationData } = createDonationDto;
+        if (!tenantId) {
+            throw new common_1.BadRequestException('tenantId est requis pour une donation publique');
+        }
+        this.logger.log(`Creating public donation: ${donationData.amount}€ for tenant ${tenantId}`);
+        const result = await this.donationService.createDonation(tenantId, null, donationData);
+        return {
+            success: true,
+            data: {
+                donationId: result.donation.id,
+                clientSecret: result.clientSecret,
+                amount: result.donation.amount,
+                currency: result.donation.currency,
+            },
+        };
+    }
     async confirmDonation(req, paymentIntentId) {
         this.logger.log(`Confirming donation for PaymentIntent: ${paymentIntentId}`);
         const donation = await this.donationService.confirmDonation(paymentIntentId);
@@ -48,6 +66,19 @@ let DonationController = DonationController_1 = class DonationController {
                 amount: donation.amount,
                 status: donation.status,
                 campaign: donation.campaign,
+            },
+        };
+    }
+    async confirmPublicDonation(paymentIntentId) {
+        this.logger.log(`Confirming public donation for PaymentIntent: ${paymentIntentId}`);
+        const donation = await this.donationService.confirmDonation(paymentIntentId);
+        return {
+            success: true,
+            data: {
+                donationId: donation.id,
+                amount: donation.amount,
+                currency: donation.currency,
+                status: donation.status,
             },
         };
     }
@@ -91,6 +122,8 @@ let DonationController = DonationController_1 = class DonationController {
 exports.DonationController = DonationController;
 __decorate([
     (0, common_1.Post)('create'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
     (0, swagger_1.ApiOperation)({ summary: 'Créer une donation avec PaymentIntent' }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Donation créée avec succès' }),
@@ -103,7 +136,22 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], DonationController.prototype, "createDonation", null);
 __decorate([
+    (0, public_hub_decorator_1.PublicHub)(),
+    (0, common_1.Post)('create-public'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
+    (0, swagger_1.ApiOperation)({ summary: 'Créer une donation publique depuis le hub (sans authentification)' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Donation créée avec succès' }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: 'Données invalides' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Campagne non trouvée' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], DonationController.prototype, "createPublicDonation", null);
+__decorate([
     (0, common_1.Post)('confirm/:paymentIntentId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({ summary: 'Confirmer une donation après paiement réussi' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Donation confirmée' }),
@@ -116,7 +164,22 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], DonationController.prototype, "confirmDonation", null);
 __decorate([
+    (0, public_hub_decorator_1.PublicHub)(),
+    (0, common_1.Post)('confirm-public/:paymentIntentId'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({ summary: 'Confirmer une donation publique après paiement réussi' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Donation confirmée' }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: 'Paiement non confirmé' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Donation non trouvée' }),
+    __param(0, (0, common_1.Param)('paymentIntentId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], DonationController.prototype, "confirmPublicDonation", null);
+__decorate([
     (0, common_1.Get)('history'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Récupérer l\'historique des donations de l\'utilisateur' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Historique récupéré' }),
     __param(0, (0, common_1.Request)()),
@@ -129,6 +192,8 @@ __decorate([
 ], DonationController.prototype, "getDonationHistory", null);
 __decorate([
     (0, common_1.Get)('campaign/:campaignId'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Récupérer les donations d\'une campagne' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Donations de la campagne' }),
     __param(0, (0, common_1.Request)()),
@@ -140,6 +205,8 @@ __decorate([
 ], DonationController.prototype, "getCampaignDonations", null);
 __decorate([
     (0, common_1.Get)('campaign/:campaignId/stats'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Statistiques des donations d\'une campagne' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Statistiques de la campagne' }),
     __param(0, (0, common_1.Request)()),
@@ -151,8 +218,6 @@ __decorate([
 exports.DonationController = DonationController = DonationController_1 = __decorate([
     (0, swagger_1.ApiTags)('Donations'),
     (0, common_1.Controller)('donations'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, swagger_1.ApiBearerAuth)(),
     __metadata("design:paramtypes", [donation_service_1.DonationService])
 ], DonationController);
 //# sourceMappingURL=donation.controller.js.map

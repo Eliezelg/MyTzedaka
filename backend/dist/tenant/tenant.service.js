@@ -29,6 +29,7 @@ let TenantService = TenantService_1 = class TenantService {
             const tenant = await this.prisma.tenant.findFirst({
                 where: {
                     OR: [
+                        { id: identifier },
                         { slug: identifier },
                         { domain: identifier }
                     ]

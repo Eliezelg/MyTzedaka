@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useSearchHistory } from '@/hooks/useSearchHistory'
 import { SearchService, AutocompleteResponse } from '@/lib/search-service'
+import { useTranslations } from 'next-intl'
 
 interface SearchBarProps {
   onSearch?: (query: string, type?: 'all' | 'associations' | 'campaigns') => void
@@ -39,9 +40,10 @@ interface SpeechRecognitionErrorEvent extends Event {
 
 export function SearchBar({ 
   onSearch, 
-  placeholder = "Rechercher une association, une campagne...", 
+  placeholder, 
   className
 }: SearchBarProps) {
+  const t = useTranslations('common')
   const [query, setQuery] = useState("")
   const [autocompleteData, setAutocompleteData] = useState<AutocompleteResponse>({ suggestions: [], recent: [] })
   const [isLoading, setIsLoading] = useState(false)
@@ -207,7 +209,7 @@ export function SearchBar({
         <Input
           ref={inputRef}
           type="text"
-          placeholder={placeholder}
+          placeholder={placeholder || t('searchPlaceholder')}
           value={query}
           onChange={handleInputChange}
           onKeyDown={handleKeyPress}
@@ -252,7 +254,7 @@ export function SearchBar({
             {isLoading ? (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
-              'Rechercher'
+              t('searchButton')
             )}
           </Button>
         </div>
@@ -272,7 +274,7 @@ export function SearchBar({
             {autocompleteData.recent.length > 0 && (
               <div className="border-b border-gray-100">
                 <div className="px-4 py-2 text-xs font-medium text-gray-500 bg-gray-50">
-                  Recherches récentes
+                  {t('recentSearches')}
                 </div>
                 {autocompleteData.recent.map((recent, index) => (
                   <button
@@ -298,7 +300,7 @@ export function SearchBar({
             {autocompleteData.suggestions.length > 0 && (
               <div>
                 <div className="px-4 py-2 text-xs font-medium text-gray-500 bg-gray-50">
-                  Suggestions
+                  {t('suggestions')}
                 </div>
                 {autocompleteData.suggestions.map((suggestion, index) => {
                   const globalIndex = index + autocompleteData.recent.length

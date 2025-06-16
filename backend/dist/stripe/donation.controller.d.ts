@@ -13,6 +13,17 @@ export declare class DonationController {
             campaign: any;
         };
     }>;
+    createPublicDonation(createDonationDto: CreateDonationDto & {
+        tenantId: string;
+    }): Promise<{
+        success: boolean;
+        data: {
+            donationId: any;
+            clientSecret: string;
+            amount: any;
+            currency: any;
+        };
+    }>;
     confirmDonation(req: any, paymentIntentId: string): Promise<{
         success: boolean;
         data: {
@@ -20,6 +31,15 @@ export declare class DonationController {
             amount: any;
             status: any;
             campaign: any;
+        };
+    }>;
+    confirmPublicDonation(paymentIntentId: string): Promise<{
+        success: boolean;
+        data: {
+            donationId: any;
+            amount: any;
+            currency: any;
+            status: any;
         };
     }>;
     getDonationHistory(req: any, limit?: string, offset?: string, tenantId?: string): Promise<{

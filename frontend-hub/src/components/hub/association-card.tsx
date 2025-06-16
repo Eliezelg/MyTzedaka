@@ -1,3 +1,5 @@
+'use client'
+
 import { motion } from 'framer-motion'
 import { ArrowRight, CheckCircle, MapPin, Building } from 'lucide-react'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
@@ -6,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Association } from '@/types/hub'
 import { truncateText } from '@/lib/utils'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 
 interface AssociationCardProps {
   association: Association
@@ -14,6 +17,8 @@ interface AssociationCardProps {
 }
 
 export function AssociationCard({ association, index = 0, onClick }: AssociationCardProps) {
+  const t = useTranslations('associations')
+  
   const handleClick = () => {
     onClick?.(association)
   }
@@ -54,7 +59,7 @@ export function AssociationCard({ association, index = 0, onClick }: Association
             {association.isVerified && (
               <Badge variant="verified" className="flex items-center gap-1">
                 <CheckCircle className="w-3 h-3" />
-                Vérifiée
+                {t('verified')}
               </Badge>
             )}
           </div>
@@ -88,7 +93,7 @@ export function AssociationCard({ association, index = 0, onClick }: Association
                   {association.activeCampaigns}
                 </div>
                 <div className="text-xs text-gray-500">
-                  Campagne{association.activeCampaigns > 1 ? 's' : ''} active{association.activeCampaigns > 1 ? 's' : ''}
+                  {t('campaign.active')}
                 </div>
               </div>
               <div className="text-center">
@@ -96,7 +101,7 @@ export function AssociationCard({ association, index = 0, onClick }: Association
                   {association.totalCampaigns}
                 </div>
                 <div className="text-xs text-gray-500">
-                  Total campagnes
+                  {t('campaign.total')}
                 </div>
               </div>
             </div>
@@ -112,7 +117,7 @@ export function AssociationCard({ association, index = 0, onClick }: Association
               handleClick()
             }}
           >
-            Découvrir
+            {t('actions.discover')}
             <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
         </CardFooter>

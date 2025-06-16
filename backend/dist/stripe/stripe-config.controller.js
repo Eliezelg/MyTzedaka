@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.StripeConfigController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
+const public_hub_decorator_1 = require("../common/decorators/public-hub.decorator");
 const multi_tenant_stripe_service_1 = require("./multi-tenant-stripe.service");
 const prisma_service_1 = require("../prisma/prisma.service");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
@@ -133,6 +134,7 @@ let StripeConfigController = class StripeConfigController {
 exports.StripeConfigController = StripeConfigController;
 __decorate([
     (0, common_1.Get)('/:tenantId/config'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)(client_1.UserRole.ADMIN, client_1.UserRole.SUPER_ADMIN),
     (0, swagger_1.ApiOperation)({ summary: 'Récupère la configuration Stripe d\'un tenant' }),
     __param(0, (0, common_1.Param)('tenantId')),
@@ -142,6 +144,7 @@ __decorate([
 ], StripeConfigController.prototype, "getStripeConfig", null);
 __decorate([
     (0, common_1.Post)('/:tenantId/configure'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)(client_1.UserRole.ADMIN, client_1.UserRole.SUPER_ADMIN),
     (0, swagger_1.ApiOperation)({ summary: 'Configure le mode Stripe pour un tenant' }),
     __param(0, (0, common_1.Param)('tenantId')),
@@ -152,6 +155,7 @@ __decorate([
 ], StripeConfigController.prototype, "configureStripe", null);
 __decorate([
     (0, common_1.Post)('/:tenantId/connect/onboarding'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)(client_1.UserRole.ADMIN, client_1.UserRole.SUPER_ADMIN),
     (0, swagger_1.ApiOperation)({ summary: 'Génère un lien d\'onboarding Stripe Connect' }),
     __param(0, (0, common_1.Param)('tenantId')),
@@ -162,6 +166,7 @@ __decorate([
 ], StripeConfigController.prototype, "createOnboardingLink", null);
 __decorate([
     (0, common_1.Get)('/:tenantId/publishable-key'),
+    (0, public_hub_decorator_1.PublicHub)(),
     (0, swagger_1.ApiOperation)({ summary: 'Récupère la clé publique Stripe pour le frontend' }),
     __param(0, (0, common_1.Param)('tenantId')),
     __metadata("design:type", Function),
@@ -180,7 +185,6 @@ __decorate([
 exports.StripeConfigController = StripeConfigController = __decorate([
     (0, swagger_1.ApiTags)('stripe-config'),
     (0, common_1.Controller)('stripe-config'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     __metadata("design:paramtypes", [multi_tenant_stripe_service_1.MultiTenantStripeService,
         prisma_service_1.PrismaService])
 ], StripeConfigController);

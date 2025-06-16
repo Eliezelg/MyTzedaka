@@ -36,6 +36,14 @@ const nextConfig = {
       },
     ];
   },
+  webpack: (config, { isServer }) => {
+    // Fix for framer-motion module resolution issue
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'framer-motion': require.resolve('framer-motion'),
+    };
+    return config;
+  },
 };
 
 module.exports = withNextIntl(nextConfig);

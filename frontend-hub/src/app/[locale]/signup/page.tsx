@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -26,6 +27,8 @@ interface FormData {
 export default function SignupPage() {
   const { register, isLoading, error } = useAuth()
   const router = useRouter()
+  const t = useTranslations('auth')
+  const tCommon = useTranslations('common')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [step, setStep] = useState(1)
@@ -114,14 +117,14 @@ export default function SignupPage() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-900">MyTzedaka</h1>
-          <p className="mt-2 text-gray-600">Rejoignez le hub des associations caritatives</p>
+          <p className="mt-2 text-gray-600">{tCommon('header.tagline')}</p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Inscription</CardTitle>
+            <CardTitle>{t('signup.title')}</CardTitle>
             <CardDescription>
-              Étape {step} sur 2 : {step === 1 ? 'Sécurité' : 'Profil'}
+              {tCommon('steps.step')} {step} {tCommon('steps.of')} 2 : {step === 1 ? tCommon('steps.security') : tCommon('steps.profile')}
             </CardDescription>
             <div className="flex space-x-2">
               <div className={`h-2 rounded-full flex-1 ${step >= 1 ? 'bg-blue-500' : 'bg-gray-200'}`} />
@@ -139,7 +142,7 @@ export default function SignupPage() {
               {step === 1 && (
                 <>
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email">{t('signup.email')}</Label>
                     <Input
                       id="email"
                       name="email"
@@ -147,13 +150,13 @@ export default function SignupPage() {
                       value={formData.email}
                       onChange={handleInputChange}
                       required
-                      placeholder="votre@email.com"
+                      placeholder="exemple@email.com"
                       disabled={isLoading}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="password">Mot de passe</Label>
+                    <Label htmlFor="password">{t('signup.password')}</Label>
                     <div className="relative">
                       <Input
                         id="password"
@@ -178,11 +181,11 @@ export default function SignupPage() {
                         )}
                       </button>
                     </div>
-                    <p className="text-xs text-gray-500">Minimum 8 caractères</p>
+                    <p className="text-xs text-gray-500">{t('validation.passwordMinLength')}</p>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+                    <Label htmlFor="confirmPassword">{t('signup.confirmPassword')}</Label>
                     <div className="relative">
                       <Input
                         id="confirmPassword"
@@ -208,7 +211,7 @@ export default function SignupPage() {
                       </button>
                     </div>
                     {formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                      <p className="text-xs text-red-500">Les mots de passe ne correspondent pas</p>
+                      <p className="text-xs text-red-500">{t('errors.passwordMismatch')}</p>
                     )}
                   </div>
 
@@ -218,7 +221,7 @@ export default function SignupPage() {
                     className="w-full"
                     disabled={!validateStep1()}
                   >
-                    Continuer
+                    {tCommon('actions.continue')}
                   </Button>
                 </>
               )}
@@ -227,33 +230,33 @@ export default function SignupPage() {
                 <>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="firstName">Prénom</Label>
+                      <Label htmlFor="firstName">{t('signup.firstName')}</Label>
                       <Input
                         id="firstName"
                         name="firstName"
                         value={formData.firstName}
                         onChange={handleInputChange}
                         required
-                        placeholder="Prénom"
+                        placeholder={t('signup.firstName')}
                         disabled={isLoading}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="lastName">Nom</Label>
+                      <Label htmlFor="lastName">{t('signup.lastName')}</Label>
                       <Input
                         id="lastName"
                         name="lastName"
                         value={formData.lastName}
                         onChange={handleInputChange}
                         required
-                        placeholder="Nom"
+                        placeholder={t('signup.lastName')}
                         disabled={isLoading}
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Téléphone (optionnel)</Label>
+                    <Label htmlFor="phone">{tCommon('profile.phone')} ({tCommon('fields.optional')})</Label>
                     <Input
                       id="phone"
                       name="phone"
@@ -266,15 +269,15 @@ export default function SignupPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="userType">Type de compte</Label>
+                    <Label htmlFor="userType">{tCommon('profile.accountType')}</Label>
                     <CustomSelect
                       name="userType"
                       value={formData.userType}
                       onChange={handleInputChange}
-                      placeholder="Choisissez votre type de compte"
+                      placeholder={tCommon('profile.chooseAccountType')}
                       options={[
-                        { value: 'DONATOR', label: 'Donateur' },
-                        { value: 'ASSOCIATION_ADMIN', label: 'Responsable d\'association' }
+                        { value: 'DONATOR', label: tCommon('profile.donor') },
+                        { value: 'ASSOCIATION_ADMIN', label: tCommon('profile.associationAdmin') }
                       ]}
                     />
                   </div>
@@ -282,26 +285,26 @@ export default function SignupPage() {
                   {formData.userType === 'ASSOCIATION_ADMIN' && (
                     <>
                       <div className="space-y-2">
-                        <Label htmlFor="associationName">Nom de l'association</Label>
+                        <Label htmlFor="associationName">{tCommon('profile.associationName')}</Label>
                         <Input
                           id="associationName"
                           name="associationName"
                           value={formData.associationName}
                           onChange={handleInputChange}
                           required
-                          placeholder="Nom de votre association"
+                          placeholder={tCommon('profile.associationName')}
                           disabled={isLoading}
                         />
                       </div>
                       
                       <div className="space-y-2">
-                        <Label htmlFor="associationDescription">Description (optionnel)</Label>
+                        <Label htmlFor="associationDescription">{tCommon('profile.description')} ({tCommon('fields.optional')})</Label>
                         <textarea
                           id="associationDescription"
                           name="associationDescription"
                           value={formData.associationDescription}
                           onChange={handleInputChange}
-                          placeholder="Décrivez brièvement votre association..."
+                          placeholder={tCommon('profile.descriptionPlaceholder')}
                           disabled={isLoading}
                           className="w-full p-2 border rounded-md resize-none h-20"
                         />
@@ -317,7 +320,7 @@ export default function SignupPage() {
                       className="flex-1"
                       disabled={isLoading}
                     >
-                      Retour
+                      {tCommon('actions.back')}
                     </Button>
                     <Button
                       type="submit"
@@ -327,12 +330,12 @@ export default function SignupPage() {
                       {isLoading ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Création...
+                          {t('signup.signupButton')}...
                         </>
                       ) : (
                         <>
                           <CheckCircle className="mr-2 h-4 w-4" />
-                          Créer mon compte
+                          {t('signup.signupButton')}
                         </>
                       )}
                     </Button>
@@ -342,12 +345,12 @@ export default function SignupPage() {
 
               <div className="text-center">
                 <span className="text-sm text-gray-600">
-                  Déjà un compte ?{' '}
+                  {t('signup.hasAccount')}{' '}
                   <Link 
                     href="/login"
                     className="font-medium text-blue-600 hover:text-blue-500"
                   >
-                    Se connecter
+                    {t('signup.loginLink')}
                   </Link>
                 </span>
               </div>
@@ -356,13 +359,13 @@ export default function SignupPage() {
         </Card>
 
         <div className="text-center text-sm text-gray-500">
-          En créant un compte, vous acceptez nos{' '}
+          {tCommon('legal.bySigningUp')}{' '}
           <Link href="/terms" className="text-blue-600 hover:text-blue-500">
-            conditions d'utilisation
+            {tCommon('legal.termsOfService')}
           </Link>
-          {' '}et notre{' '}
+          {' '}{tCommon('legal.and')}{' '}
           <Link href="/privacy" className="text-blue-600 hover:text-blue-500">
-            politique de confidentialité
+            {tCommon('legal.privacyPolicy')}
           </Link>
         </div>
       </div>

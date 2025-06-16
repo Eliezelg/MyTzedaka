@@ -141,13 +141,21 @@ interface EnhancedAssociationCardProps {
     donationsCount: number
     totalRaised: number
     image?: string
+    tenant?: {
+      id: string
+      slug: string
+      name: string
+    }
   }
   className?: string
 }
 
 export function EnhancedAssociationCard({ association, className = "" }: EnhancedAssociationCardProps) {
+  // Utiliser le slug du tenant si disponible, sinon fallback sur l'ID
+  const href = association.tenant?.slug ? `/associations/${association.tenant.slug}` : `/associations/${association.id}`
+  
   return (
-    <EnhancedCard className={className} enableHover enableTilt href={`/associations/${association.id}`}>
+    <EnhancedCard className={className} enableHover enableTilt href={href}>
       <CardHeader className="relative">
         {association.image && (
           <motion.div

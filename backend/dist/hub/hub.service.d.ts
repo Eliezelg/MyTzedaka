@@ -1,8 +1,12 @@
 import { PrismaService } from '../prisma/prisma.service';
+import { EncryptionService } from '../stripe/encryption.service';
+import { MultiTenantStripeService } from '../stripe/multi-tenant-stripe.service';
 import { HubStatsDto, AssociationSearchDto, DonorProfileDto, CreateDonorProfileDto, RecordActivityDto } from './dto/hub.dto';
 export declare class HubService {
     private readonly prisma;
-    constructor(prisma: PrismaService);
+    private readonly encryptionService;
+    private readonly multiTenantStripeService;
+    constructor(prisma: PrismaService, encryptionService: EncryptionService, multiTenantStripeService: MultiTenantStripeService);
     getPublicAssociations(): Promise<{
         data: any[];
         total: number;
@@ -50,6 +54,10 @@ export declare class HubService {
         website?: string;
         tenantId?: string;
         userId: string;
+        stripeMode?: 'PLATFORM' | 'CUSTOM';
+        stripeSecretKey?: string;
+        stripePublishableKey?: string;
+        associationPurpose?: string;
         legalInfo?: any;
         contactInfo?: any;
         additionalInfo?: any;
@@ -115,5 +123,10 @@ export declare class HubService {
             createdAt: string;
             updatedAt: string;
         }[];
+    }>;
+    getUserDefaultTenantId(userId: string): Promise<string | null>;
+    getUserTenantIds(userId: string): Promise<string[]>;
+    getTenantStripePublishableKey(tenantId: string): Promise<{
+        publishableKey: string;
     }>;
 }

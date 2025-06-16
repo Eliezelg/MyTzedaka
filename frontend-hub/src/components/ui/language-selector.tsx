@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useLocale } from 'next-intl'
 import { ChevronDown, Globe } from 'lucide-react'
 import { locales } from '@/i18n'
@@ -15,18 +15,32 @@ export function LanguageSelector() {
   const [isOpen, setIsOpen] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
-  const locale = useLocale()
+  const localeFromHook = useLocale()
+  
+  // Extraire la locale actuelle du pathname comme fallback
+  const localeMatch = pathname.match(/^\/([a-z]{2})(?:\/|$)/)
+  const currentLocale = localeMatch ? localeMatch[1] : localeFromHook
 
   const handleLanguageChange = (newLocale: string) => {
-    // Extraire le pathname sans la locale actuelle
-    const pathWithoutLocale = pathname.replace(`/${locale}`, '') || '/'
+    // Ne rien faire si c'est déjà la locale actuelle
+    if (newLocale === currentLocale) {
+      setIsOpen(false)
+      return
+    }
     
-    // Rediriger vers la nouvelle locale
-    router.push(`/${newLocale}${pathWithoutLocale}`)
+    // Utiliser une expression régulière pour remplacer la locale
+    const newPathname = pathname.replace(/^\/[a-z]{2}(?=\/|$)/, `/${newLocale}`)
+    
+    // Si le pathname n'a pas changé, c'est qu'il n'y avait pas de locale
+    // Dans ce cas, ajouter la nouvelle locale
+    const finalPath = newPathname === pathname ? `/${newLocale}${pathname}` : newPathname
+    
+    // Forcer un rechargement complet pour les changements de langue
+    window.location.replace(finalPath)
     setIsOpen(false)
   }
 
-  const currentLanguage = languages[locale as keyof typeof languages]
+  const currentLanguage = languages[currentLocale as keyof typeof languages] || languages.fr
 
   return (
     <div className="relative">
@@ -55,12 +69,12 @@ export function LanguageSelector() {
                 key={lang}
                 onClick={() => handleLanguageChange(lang)}
                 className={`flex w-full items-center space-x-3 px-4 py-2 text-left text-sm hover:bg-gray-50 ${
-                  lang === locale ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
+                  lang === currentLocale ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
                 }`}
               >
                 <span className="text-lg">{languages[lang as keyof typeof languages].flag}</span>
                 <span>{languages[lang as keyof typeof languages].name}</span>
-                {lang === locale && (
+                {lang === currentLocale && (
                   <span className="ml-auto text-blue-600">✓</span>
                 )}
               </button>
@@ -76,11 +90,20 @@ export function LanguageSelector() {
 export function SimpleLanguageSelector() {
   const router = useRouter()
   const pathname = usePathname()
-  const locale = useLocale()
+  const localeFromHook = useLocale()
+  
+  // Extraire la locale actuelle du pathname
+  const localeMatch = pathname.match(/^\/([a-z]{2})(?:\/|$)/)
+  const currentLocale = localeMatch ? localeMatch[1] : localeFromHook
 
   const handleLanguageChange = (newLocale: string) => {
-    const pathWithoutLocale = pathname.replace(`/${locale}`, '') || '/'
-    router.push(`/${newLocale}${pathWithoutLocale}`)
+    if (newLocale === currentLocale) return
+    
+    const newPathname = pathname.replace(/^\/[a-z]{2}(?=\/|$)/, `/${newLocale}`)
+    const finalPath = newPathname === pathname ? `/${newLocale}${pathname}` : newPathname
+    
+    // Forcer un rechargement complet pour les changements de langue
+    window.location.replace(finalPath)
   }
 
   return (
@@ -90,7 +113,7 @@ export function SimpleLanguageSelector() {
           key={lang}
           onClick={() => handleLanguageChange(lang)}
           className={`flex items-center space-x-1 rounded px-2 py-1 text-sm transition-colors ${
-            lang === locale
+            lang === currentLocale
               ? 'bg-blue-600 text-white'
               : 'text-gray-400 hover:text-white'
           }`}

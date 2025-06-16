@@ -89,12 +89,44 @@
   },
   "progress": {
     "funded": "{percent}% financé",
-    "raised": "{amount} collectés",
+    "raised": "{amount} collectés", 
     "backers": "{count} donateurs",
     "daysLeft": "{days} jours restants",
     "hoursLeft": "{hours} heures restantes",
     "completed": "Objectif atteint !",
-    "exceeded": "Objectif dépassé de {percent}%"
+    "exceeded": "Objectif dépassé de {percent}%",
+    "collected": "collecté",
+    "donorCount": "donateur(s)",
+    "deadline": "Fin",
+    "expired": "Expirée",
+    "goal": "Objectif:",
+    "lastDay": "Dernière jour",
+    "oneDay": "1 jour restant"
+  },
+  "page": {
+    "title": "Toutes les Campagnes",
+    "description": "Découvrez et soutenez les campagnes de collecte"
+  },
+  "search": {
+    "placeholder": "Rechercher une campagne...",
+    "loading": "Chargement des campagnes...",
+    "error": "Erreur lors du chargement",
+    "retry": "Réessayer"
+  },
+  "filters": {
+    "all": "Toutes",
+    "active": "Actives", 
+    "completed": "Complétées",
+    "inactive": "Inactives"
+  },
+  "stats": {
+    "total": "Total Campagnes",
+    "active": "Campagnes Actives",
+    "endingSoon": "Se Terminent Bientôt"
+  },
+  "empty": {
+    "title": "Aucune campagne trouvée",
+    "action": "Réinitialiser la recherche"
   },
   "messages": {
     "createSuccess": "Campagne créée avec succès",

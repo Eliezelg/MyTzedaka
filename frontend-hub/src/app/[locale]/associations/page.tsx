@@ -10,6 +10,7 @@ import { CardLoader } from '@/components/ui/loading-states'
 import { ToastProvider, useToastHelpers } from '@/components/ui/toast'
 import { useAssociations, type AssociationsFilters } from '@/lib/services/associations-service'
 import { useUrlState } from '@/hooks/useUrlState'
+import { useTranslations } from 'next-intl'
 
 // Interface étendue pour les filtres des associations
 interface AssociationFilterOptions extends FilterOptions {
@@ -33,6 +34,7 @@ const convertFiltersToAPI = (filters: AssociationFilterOptions & { search?: stri
 }
 
 function AssociationsContent() {
+  const t = useTranslations('associations')
   const [searchQuery, setSearchQuery] = useState('')
   const [filters, setFilters] = useUrlState<AssociationFilterOptions>({
     category: '',
@@ -61,7 +63,7 @@ function AssociationsContent() {
   // Gestion des erreurs API avec useEffect pour éviter l'appel pendant le rendu
   useEffect(() => {
     if (apiError) {
-      error('Erreur lors du chargement des associations')
+      error(t('loading'))
     }
   }, [apiError, error])
 
@@ -87,7 +89,7 @@ function AssociationsContent() {
 
   const handleRefresh = () => {
     refetch()
-    success('Liste des associations actualisée')
+    success(t('empty.action'))
   }
 
   return (
@@ -97,13 +99,13 @@ function AssociationsContent() {
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Annuaire des Associations
+              {t('directory.title')}
             </h1>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Découvrez et soutenez les associations qui œuvrent pour notre communauté.
+              {t('directory.description')}
               {totalCount > 0 && (
                 <span className="block mt-2 font-medium text-blue-600">
-                  {totalCount} association{totalCount > 1 ? 's' : ''} trouvée{totalCount > 1 ? 's' : ''}
+                  {t('search.resultsCount', { count: totalCount })}
                 </span>
               )}
             </p>
@@ -113,7 +115,7 @@ function AssociationsContent() {
           <div className="mb-8">
             <SearchBar 
               onSearch={handleSearch}
-              placeholder="Rechercher une association par nom, catégorie ou localisation..."
+              placeholder={t('search.placeholder')}
               className="max-w-2xl mx-auto"
             />
           </div>
@@ -180,16 +182,16 @@ function AssociationsContent() {
                     </svg>
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    Aucune association trouvée
+                    {t('empty.title')}
                   </h3>
                   <p className="text-gray-600 mb-6">
-                    Essayez de modifier vos critères de recherche ou vos filtres.
+                    {t('empty.description')}
                   </p>
                   <button 
                     onClick={handleRefresh}
                     className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                   >
-                    Actualiser la liste
+                    {t('empty.action')}
                   </button>
                 </div>
               )}

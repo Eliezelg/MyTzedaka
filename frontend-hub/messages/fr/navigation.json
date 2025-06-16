@@ -11,6 +11,8 @@
   "login": "Connexion",
   "signup": "Inscription",
   "menu": "Menu",
+  "trending": "Tendances",
+  "help": "Aide",
   "breadcrumb": {
     "home": "Accueil",
     "associations": "Associations",

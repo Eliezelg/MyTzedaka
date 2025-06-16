@@ -1,0 +1,10 @@
+{
+  "expired": "Terminée",
+  "lastDay": "Dernier jour !",
+  "oneDay": "1 jour restant",
+  "daysLeft": "{count} jours restants",
+  "ofGoal": "sur {goal} {currency}",
+  "raised": "Collecté",
+  "goal": "Objectif",
+  "supporters": "Contributeurs"
+}

@@ -1,0 +1,46 @@
+{
+  "title": "Recherche",
+  "placeholder": "Rechercher associations, campagnes...",
+  "filters": {
+    "title": "Filtres",
+    "clear": "Effacer",
+    "type": "Type",
+    "all": "Tout",
+    "associations": "Associations",
+    "campaigns": "Campagnes",
+    "category": "Catégorie",
+    "allCategories": "Toutes les catégories",
+    "location": "Localisation",
+    "locationPlaceholder": "Ville, région...",
+    "verification": "Vérification",
+    "verifiedOnly": "Associations vérifiées uniquement",
+    "advanced": "Filtres avancés",
+    "financialGoal": "Objectif financier (€)",
+    "min": "Min",
+    "max": "Max",
+    "campaignStatus": "Statut des campagnes",
+    "allStatuses": "Tous les statuts",
+    "startDate": "Date de début",
+    "endDate": "Date de fin",
+    "filtering": "Filtrage en cours...",
+    "reset": "Réinitialiser"
+  },
+  "results": {
+    "count": "{count} résultat(s)",
+    "associations": "associations",
+    "campaigns": "campagnes",
+    "empty": "Aucun résultat trouvé",
+    "emptyDescription": "Essayez de modifier vos critères de recherche ou vos filtres.",
+    "clearFilters": "Effacer les filtres"
+  },
+  "sort": {
+    "relevance": "Pertinence",
+    "newest": "Plus récent",
+    "popularity": "Popularité",
+    "alphabetical": "Alphabétique"
+  },
+  "actions": {
+    "save": "Sauvegarder",
+    "export": "Exporter"
+  }
+}

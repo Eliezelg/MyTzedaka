@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { notFound } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, getTranslations } from 'next-intl/server'
 import { locales } from '@/i18n'
@@ -8,6 +8,7 @@ import { QueryProvider } from '@/lib/query-provider'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { HubHeader } from '@/components/layout/hub-header'
 import { ClientLayout } from '@/components/layout/client-layout'
+import { LanguageSelector } from '@/components/ui/language-selector'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -64,10 +65,11 @@ export default async function LocaleLayout({
 }: Props) {
   // Valider que la locale est supportée
   if (!locales.includes(locale as any)) {
-    notFound()
+    // Rediriger vers la locale par défaut au lieu de notFound()
+    redirect('/fr')
   }
 
-  const messages = await getMessages()
+  const messages = await getMessages({ locale })
 
   return (
     <html 
@@ -76,7 +78,7 @@ export default async function LocaleLayout({
       className="scroll-smooth"
     >
       <body className={inter.className}>
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider key={locale} locale={locale} messages={messages}>
           <QueryProvider>
             <AuthProvider>
               <ClientLayout>
@@ -134,27 +136,18 @@ export default async function LocaleLayout({
                         </div>
 
                         <div>
-                          <h3 className="text-sm font-semibold uppercase tracking-wider">
+                          <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
                             {locale === 'he' ? 'שפות' : 'Langues'}
                           </h3>
-                          <ul className="mt-4 space-y-2">
-                            <li>
-                              <a href="/fr" className="text-gray-400 hover:text-white">
-                                🇫🇷 Français
-                              </a>
-                            </li>
-                            <li>
-                              <a href="/he" className="text-gray-400 hover:text-white">
-                                🇮🇱 עברית
-                              </a>
-                            </li>
-                          </ul>
+                          <div className="mt-4">
+                            <LanguageSelector />
+                          </div>
                         </div>
                       </div>
 
                       <div className="mt-8 border-t border-gray-800 pt-8">
                         <p className="text-center text-gray-400">
-                          © 2025 {locale === 'he' ? 'מרכז התרומות' : 'Hub Central'}. 
+                          2025 {locale === 'he' ? 'מרכז התרומות' : 'Hub Central'}. 
                           {locale === 'he' ? ' כל הזכויות שמורות.' : ' Tous droits réservés.'}
                         </p>
                       </div>

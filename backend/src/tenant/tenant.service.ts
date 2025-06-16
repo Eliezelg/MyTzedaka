@@ -18,10 +18,11 @@ export class TenantService {
         return this.cache.get(cacheKey)!;
       }
 
-      // Rechercher par slug ou domaine
+      // Rechercher par id, slug ou domaine
       const tenant = await this.prisma.tenant.findFirst({
         where: {
           OR: [
+            { id: identifier },
             { slug: identifier },
             { domain: identifier }
           ]

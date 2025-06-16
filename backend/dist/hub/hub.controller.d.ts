@@ -23,6 +23,10 @@ export declare class HubController {
         city?: string;
         country?: string;
         website?: string;
+        stripeMode?: 'PLATFORM' | 'CUSTOM';
+        stripeSecretKey?: string;
+        stripePublishableKey?: string;
+        associationPurpose?: string;
         legalInfo?: any;
         contactInfo?: any;
         additionalInfo?: any;
@@ -111,6 +115,12 @@ export declare class HubController {
     }): Promise<any>;
     getDonorGlobalHistory(donorId: string): Promise<DonorProfileDto>;
     updateDonorGlobalStats(donorId: string): Promise<DonorProfileDto>;
+    testStripe(): Promise<{
+        message: string;
+    }>;
+    getTenantStripePublishableKey(tenantId: string): Promise<{
+        publishableKey: string;
+    }>;
     createTestUser(userData: {
         email: string;
         firstName: string;

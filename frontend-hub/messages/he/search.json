@@ -1,0 +1,46 @@
+{
+  "title": "חיפוש",
+  "placeholder": "חיפוש עמותות, קמפיינים...",
+  "filters": {
+    "title": "מסננים",
+    "clear": "ניקוי",
+    "type": "סוג",
+    "all": "הכל",
+    "associations": "עמותות",
+    "campaigns": "קמפיינים",
+    "category": "קטגוריה",
+    "allCategories": "כל הקטגוריות",
+    "location": "מיקום",
+    "locationPlaceholder": "עיר, אזור...",
+    "verification": "אימות",
+    "verifiedOnly": "עמותות מאומתות בלבד",
+    "advanced": "מסננים מתקדמים",
+    "financialGoal": "מטרה כספית (₪)",
+    "min": "מינימום",
+    "max": "מקסימום",
+    "campaignStatus": "סטטוס קמפיינים",
+    "allStatuses": "כל הסטטוסים",
+    "startDate": "תאריך התחלה",
+    "endDate": "תאריך סיום",
+    "filtering": "מסנן...",
+    "reset": "איפוס"
+  },
+  "results": {
+    "count": "{count} תוצאות",
+    "associations": "עמותות",
+    "campaigns": "קמפיינים",
+    "empty": "לא נמצאו תוצאות",
+    "emptyDescription": "נסו לשנות את קריטריוני החיפוש או המסננים.",
+    "clearFilters": "ניקוי מסננים"
+  },
+  "sort": {
+    "relevance": "רלוונטיות",
+    "newest": "החדש ביותר",
+    "popularity": "פופולריות",
+    "alphabetical": "אלפביתי"
+  },
+  "actions": {
+    "save": "שמירה",
+    "export": "ייצוא"
+  }
+}

@@ -8,6 +8,7 @@ import {
   Request,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { PublicHub } from '../common/decorators/public-hub.decorator';
 import { MultiTenantStripeService } from './multi-tenant-stripe.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -32,7 +33,6 @@ class StripeOnboardingDto {
 
 @ApiTags('stripe-config')
 @Controller('stripe-config')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class StripeConfigController {
   constructor(
     private stripeService: MultiTenantStripeService,
@@ -40,6 +40,7 @@ export class StripeConfigController {
   ) {}
 
   @Get('/:tenantId/config')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @ApiOperation({ summary: 'Récupère la configuration Stripe d\'un tenant' })
   async getStripeConfig(@Param('tenantId') tenantId: string) {
@@ -71,6 +72,7 @@ export class StripeConfigController {
   }
 
   @Post('/:tenantId/configure')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @ApiOperation({ summary: 'Configure le mode Stripe pour un tenant' })
   async configureStripe(
@@ -121,6 +123,7 @@ export class StripeConfigController {
   }
 
   @Post('/:tenantId/connect/onboarding')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.SUPER_ADMIN)
   @ApiOperation({ summary: 'Génère un lien d\'onboarding Stripe Connect' })
   async createOnboardingLink(
@@ -140,6 +143,7 @@ export class StripeConfigController {
   }
 
   @Get('/:tenantId/publishable-key')
+  @PublicHub()
   @ApiOperation({ summary: 'Récupère la clé publique Stripe pour le frontend' })
   async getPublishableKey(@Param('tenantId') tenantId: string) {
     const publishableKey = await this.stripeService.getPublishableKey(tenantId);

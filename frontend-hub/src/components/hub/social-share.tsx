@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslations } from 'next-intl'
 import { 
   Share2, 
   Facebook, 
@@ -152,7 +153,7 @@ export function SocialShare({
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         >
           <Share2 className="w-4 h-4 mr-2" />
-          Partager
+          {t('share')}
         </Button>
 
         <AnimatePresence>
@@ -216,7 +217,7 @@ export function SocialShare({
         className={className}
       >
         <Share2 className="w-4 h-4 mr-2" />
-        Partager
+        {t('share')}
       </Button>
 
       {/* Modal de partage */}

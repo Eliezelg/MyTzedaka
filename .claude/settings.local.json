@@ -14,7 +14,18 @@
       "Bash(true)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git config:*)"
+      "Bash(git config:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm install:*)",
+      "Bash(node:*)",
+      "Bash(rm:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(pkill:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run start:dev:*)"
     ],
     "deny": []
   }

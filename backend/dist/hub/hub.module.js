@@ -11,12 +11,13 @@ const common_1 = require("@nestjs/common");
 const hub_controller_1 = require("./hub.controller");
 const hub_service_1 = require("./hub.service");
 const prisma_module_1 = require("../prisma/prisma.module");
+const stripe_module_1 = require("../stripe/stripe.module");
 let HubModule = class HubModule {
 };
 exports.HubModule = HubModule;
 exports.HubModule = HubModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule],
+        imports: [prisma_module_1.PrismaModule, stripe_module_1.StripeModule],
         controllers: [hub_controller_1.HubController],
         providers: [hub_service_1.HubService],
         exports: [hub_service_1.HubService],

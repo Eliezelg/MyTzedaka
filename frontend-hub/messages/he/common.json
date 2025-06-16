@@ -12,6 +12,10 @@
   "next": "הבא",
   "previous": "הקודם",
   "search": "חיפוש",
+  "searchButton": "חיפוש",
+  "appName": "מיי צדקה",
+  "searchPlaceholder": "חיפוש עמותה, קמפיין...",
+  "suggestions": "הצעות",
   "filter": "סינון",
   "sort": "מיון",
   "view": "צפייה",
@@ -49,5 +53,38 @@
   "translation": "תרגומים",
   "multiLanguage": "תמיכה מלאה בצרפתית ועברית עם ניווט חלק",
   "rtlSupport": "ממשק RTL מקורי למשתמשים דוברי עברית",
-  "comprehensive": "למעלה מ-2000 תרגומים מאורגנים לפי קטגוריות"
+  "comprehensive": "למעלה מ-2000 תרגומים מאורגנים לפי קטגוריות",
+  "header": {
+    "tagline": "מרכז עמותות צדקה"
+  },
+  "steps": {
+    "step": "שלב",
+    "of": "מתוך",
+    "security": "אבטחה",
+    "profile": "פרופיל"
+  },
+  "actions": {
+    "continue": "המשך",
+    "back": "חזרה"
+  },
+  "fields": {
+    "optional": "אופציונלי",
+    "required": "חובה"
+  },
+  "profile": {
+    "phone": "טלפון",
+    "accountType": "סוג חשבון",
+    "chooseAccountType": "בחר את סוג החשבון שלך",
+    "donor": "תורם",
+    "associationAdmin": "מנהל עמותה",
+    "associationName": "שם העמותה",
+    "description": "תיאור",
+    "descriptionPlaceholder": "תאר בקצרה את העמותה שלך..."
+  },
+  "legal": {
+    "bySigningUp": "בהמשך, אתה מסכים",
+    "termsOfService": "לתנאי השימוש",
+    "privacyPolicy": "למדיניות הפרטיות",
+    "and": "ו"
+  }
 }

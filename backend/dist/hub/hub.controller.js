@@ -86,6 +86,12 @@ let HubController = class HubController {
     async updateDonorGlobalStats(donorId) {
         return this.hubService.updateDonorGlobalStats(donorId);
     }
+    async testStripe() {
+        return { message: 'Route Stripe fonctionnelle' };
+    }
+    async getTenantStripePublishableKey(tenantId) {
+        return this.hubService.getTenantStripePublishableKey(tenantId);
+    }
     async createTestUser(userData) {
         return this.hubService.createTestUser(userData);
     }
@@ -267,6 +273,22 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], HubController.prototype, "updateDonorGlobalStats", null);
+__decorate([
+    (0, common_1.Get)('test-stripe'),
+    (0, swagger_1.ApiOperation)({ summary: 'Test route Stripe' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], HubController.prototype, "testStripe", null);
+__decorate([
+    (0, common_1.Get)('stripe/:tenantId/publishable-key'),
+    (0, swagger_1.ApiOperation)({ summary: 'Récupère la clé publique Stripe pour un tenant (route publique)' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Clé publique Stripe' }),
+    __param(0, (0, common_1.Param)('tenantId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], HubController.prototype, "getTenantStripePublishableKey", null);
 __decorate([
     (0, common_1.Post)('test-user'),
     (0, swagger_1.ApiOperation)({ summary: 'Crée un utilisateur de test (développement uniquement)' }),

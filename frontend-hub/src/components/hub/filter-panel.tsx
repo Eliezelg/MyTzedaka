@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { CustomSelect } from '@/components/ui/custom-select'
 import { Badge } from '@/components/ui/badge'
 import { useUrlState } from '@/hooks/useUrlState'
+import { useTranslations } from 'next-intl'
 
 export interface FilterOptions {
   category: string
@@ -36,6 +37,7 @@ export function FilterPanel({
   className = "",
   defaultFilters = {}
 }: FilterPanelProps) {
+  const t = useTranslations('search')
   const [isExpanded, setIsExpanded] = useState(false)
   
   // Utiliser le hook URL state pour persister les filtres
@@ -52,15 +54,15 @@ export function FilterPanel({
   }, 'filters')
 
   const categories = [
-    'Toutes les catégories',
-    'Éducation',
-    'Santé',
-    'Action sociale',
+    t('filters.allCategories'),
+    'Education',
+    'Health', 
+    'Social',
     'Culture',
-    'Sport',
-    'Environnement',
-    'Aide humanitaire',
-    'Religion'
+    'Sports',
+    'Environment',
+    'Humanitarian',
+    'Religious'
   ]
 
   const locations = [
@@ -99,7 +101,7 @@ export function FilterPanel({
 
   const getActiveFiltersCount = () => {
     let count = 0
-    if (filters.category && filters.category !== 'Toutes les catégories') count++
+    if (filters.category && filters.category !== t('filters.allCategories')) count++
     if (filters.location && filters.location !== 'Toutes les locations') count++
     if (filters.verified !== null) count++
     if (filters.minGoal) count++
@@ -118,7 +120,7 @@ export function FilterPanel({
       <div className="flex items-center justify-between p-4 border-b border-gray-100">
         <div className="flex items-center gap-2">
           <Filter className="w-5 h-5 text-gray-500" />
-          <h3 className="font-medium text-gray-900">Filtres</h3>
+          <h3 className="font-medium text-gray-900">{t('filters.title')}</h3>
           {activeFiltersCount > 0 && (
             <Badge variant="default" className="text-xs">
               {activeFiltersCount}
@@ -126,7 +128,7 @@ export function FilterPanel({
           )}
           {totalResults > 0 && (
             <span className="text-sm text-gray-500">
-              ({totalResults} résultat{totalResults > 1 ? 's' : ''})
+              ({t('results.count', { count: totalResults })})
             </span>
           )}
         </div>
@@ -140,7 +142,7 @@ export function FilterPanel({
               className="text-gray-500 hover:text-gray-700"
             >
               <X className="w-4 h-4 mr-1" />
-              Effacer
+              {t('filters.clear')}
             </Button>
           )}
           
@@ -164,12 +166,12 @@ export function FilterPanel({
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               <Tag className="w-4 h-4 inline mr-1" />
-              Catégorie
+              {t('filters.category')}
             </label>
             <CustomSelect
               options={categories.map(category => ({ 
                 label: category, 
-                value: category === 'Toutes les catégories' ? 'all_categories' : category 
+                value: category === t('filters.allCategories') ? 'all_categories' : category 
               }))}
               value={filters.category}
               onChange={(e) =>
@@ -182,7 +184,7 @@ export function FilterPanel({
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               <MapPin className="w-4 h-4 inline mr-1" />
-              Localisation
+              {t('filters.location')}
             </label>
             <CustomSelect
               options={locations.map(location => ({ 

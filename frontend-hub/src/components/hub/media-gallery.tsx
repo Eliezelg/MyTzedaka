@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslations } from 'next-intl'
 import { Camera, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
@@ -20,6 +21,7 @@ interface MediaGalleryProps {
 }
 
 export function MediaGallery({ items, className = '' }: MediaGalleryProps) {
+  const t = useTranslations('components.media')
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
 
@@ -47,7 +49,7 @@ export function MediaGallery({ items, className = '' }: MediaGalleryProps) {
     return (
       <div className={`bg-gray-100 rounded-lg p-8 text-center ${className}`}>
         <Camera className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-        <p className="text-gray-500">Aucune photo disponible</p>
+        <p className="text-gray-500">{t('empty')}</p>
       </div>
     )
   }
@@ -77,7 +79,7 @@ export function MediaGallery({ items, className = '' }: MediaGalleryProps) {
             </div>
             {item.type === 'video' && (
               <div className="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
-                Vidéo
+                {t('videos')}
               </div>
             )}
           </motion.div>

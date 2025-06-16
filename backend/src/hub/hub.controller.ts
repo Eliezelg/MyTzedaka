@@ -61,6 +61,12 @@ export class HubController {
       city?: string;
       country?: string;
       website?: string;
+      // Configuration Stripe
+      stripeMode?: 'PLATFORM' | 'CUSTOM';
+      stripeSecretKey?: string;
+      stripePublishableKey?: string;
+      // Objet de l'association
+      associationPurpose?: string;
       // Données progressives additionnelles
       legalInfo?: any;
       contactInfo?: any;
@@ -208,6 +214,19 @@ export class HubController {
   @ApiResponse({ status: 200, type: DonorProfileDto })
   async updateDonorGlobalStats(@Param('donorId') donorId: string) {
     return this.hubService.updateDonorGlobalStats(donorId);
+  }
+
+  @Get('test-stripe')
+  @ApiOperation({ summary: 'Test route Stripe' })
+  async testStripe() {
+    return { message: 'Route Stripe fonctionnelle' };
+  }
+
+  @Get('stripe/:tenantId/publishable-key')
+  @ApiOperation({ summary: 'Récupère la clé publique Stripe pour un tenant (route publique)' })
+  @ApiResponse({ status: 200, description: 'Clé publique Stripe' })
+  async getTenantStripePublishableKey(@Param('tenantId') tenantId: string) {
+    return this.hubService.getTenantStripePublishableKey(tenantId);
   }
 
   @Post('test-user')

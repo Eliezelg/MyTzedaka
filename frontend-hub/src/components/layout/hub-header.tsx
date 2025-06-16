@@ -40,44 +40,48 @@ interface NavigationItem {
 
 export function HubHeader() {
   const pathname = usePathname()
+  const locale = useLocale()
   const { user, logout, isLoading } = useAuth()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
 
+  // Utiliser les hooks de traduction
+  const t = useNavigationTranslations()
+
   const navigationItems: NavigationItem[] = [
     {
-      label: 'Accueil',
-      href: '/',
+      label: t('home'),
+      href: `/${locale}`,
       icon: Home,
       description: 'Page d\'accueil du Hub'
     },
     {
-      label: 'Associations',
-      href: '/associations',
+      label: t('associations'),
+      href: `/${locale}/associations`,
       icon: Building2,
       description: 'Découvrir les associations'
     },
     {
-      label: 'Campagnes',
-      href: '/campaigns',
+      label: t('campaigns'),
+      href: `/${locale}/campaigns`,
       icon: Target,
       badge: 12,
       description: 'Campagnes de collecte'
     },
     {
-      label: 'Tendances',
-      href: '/trending',
+      label: t('trending'),
+      href: `/${locale}/trending`,
       icon: TrendingUp,
       description: 'Campagnes populaires'
     }
   ]
 
   const profileMenuItems = [
-    { label: 'Dashboard', href: '/dashboard', icon: Home },
-    { label: 'Mon Profil', href: '/profile', icon: User },
-    { label: 'Paramètres', href: '/settings', icon: Settings },
-    { label: 'Aide', href: '/help', icon: HelpCircle },
+    { label: t('dashboard'), href: `/${locale}/dashboard`, icon: Home },
+    { label: t('profile'), href: `/${locale}/profile`, icon: User },
+    { label: t('settings'), href: `/${locale}/settings`, icon: Settings },
+    { label: t('help'), href: `/${locale}/help`, icon: HelpCircle },
   ]
 
   const handleLogout = async () => {
@@ -95,7 +99,7 @@ export function HubHeader() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo et Navigation Principal */}
           <div className="flex items-center space-x-8">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href={`/${locale}`} className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
                 <Heart className="w-5 h-5 text-white" />
               </div>
@@ -219,7 +223,7 @@ export function HubHeader() {
                           disabled={isLoading}
                         >
                           <LogOut className="w-4 h-4 mr-3" />
-                          Déconnexion
+                          {t('logout')}
                         </button>
                       </div>
                     </motion.div>
@@ -228,16 +232,16 @@ export function HubHeader() {
               </>
             ) : (
               <div className="flex items-center space-x-2">
-                <Link href="/login">
+                <Link href={`/${locale}/login`}>
                   <Button variant="ghost" size="sm" className="flex items-center space-x-2">
                     <LogIn className="h-4 w-4" />
-                    <span className="hidden sm:block">Connexion</span>
+                    <span className="hidden sm:block">{t('login')}</span>
                   </Button>
                 </Link>
-                <Link href="/signup">
+                <Link href={`/${locale}/signup`}>
                   <Button size="sm" className="flex items-center space-x-2">
                     <UserPlus className="h-4 w-4" />
-                    <span className="hidden sm:block">Inscription</span>
+                    <span className="hidden sm:block">{t('signup')}</span>
                   </Button>
                 </Link>
               </div>

@@ -6,12 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { useDonorProfile, useDonorHistory } from '@/hooks/use-donor-profile'
-
-// Placeholder pour useAuth jusqu'à l'implémentation complète
-const useAuth = () => ({
-  user: { email: 'test@example.com' }
-})
-
+import { useAuth } from '@/contexts/AuthContext'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 

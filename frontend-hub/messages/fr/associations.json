@@ -80,7 +80,27 @@
     "share": "Partager",
     "contact": "Contacter",
     "viewCampaigns": "Voir les campagnes",
-    "createCampaign": "Créer une campagne"
+    "createCampaign": "Créer une campagne",
+    "discover": "Découvrir"
+  },
+  "directory": {
+    "title": "Annuaire des Associations",
+    "description": "Découvrez et soutenez les associations qui œuvrent pour notre communauté."
+  },
+  "search": {
+    "placeholder": "Rechercher une association par nom...",
+    "resultsCount": "{count} association(s) trouvée(s)"
+  },
+  "verified": "Vérifiée",
+  "campaign": {
+    "active": "Campagne(s) active(s)",
+    "total": "Total campagnes"
+  },
+  "loading": "Chargement des associations...",
+  "empty": {
+    "title": "Aucune association trouvée",
+    "description": "Essayez de modifier vos critères de recherche",
+    "action": "Actualiser la liste"
   },
   "messages": {
     "createSuccess": "Association créée avec succès",

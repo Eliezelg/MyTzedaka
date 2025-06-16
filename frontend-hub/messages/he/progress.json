@@ -1,0 +1,10 @@
+{
+  "expired": "הסתיים",
+  "lastDay": "היום האחרון!",
+  "oneDay": "יום אחד נותר",
+  "daysLeft": "{count} ימים נותרו",
+  "ofGoal": "מתוך {goal} {currency}",
+  "raised": "נאסף",
+  "goal": "יעד",
+  "supporters": "תומכים"
+}
