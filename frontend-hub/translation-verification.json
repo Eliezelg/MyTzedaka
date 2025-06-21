@@ -1,10 +1,10 @@
 {
   "summary": {
     "totalKeys": 147,
-    "foundKeys": 41,
-    "missingKeys": 75,
+    "foundKeys": 51,
+    "missingKeys": 65,
     "ambiguousKeys": 31,
-    "verificationDate": "2025-06-16T18:45:28.700Z"
+    "verificationDate": "2025-06-17T16:33:24.485Z"
   },
   "foundKeys": [
     {
@@ -213,6 +213,66 @@
       "key": "hero.exploreButton",
       "namespace": "hero",
       "keyPath": "exploreButton",
+      "status": "found"
+    },
+    {
+      "key": "stats.raisedThisMonth",
+      "namespace": "stats",
+      "keyPath": "raisedThisMonth",
+      "status": "found"
+    },
+    {
+      "key": "stats.activeDonors",
+      "namespace": "stats",
+      "keyPath": "activeDonors",
+      "status": "found"
+    },
+    {
+      "key": "metrics.title",
+      "namespace": "metrics",
+      "keyPath": "title",
+      "status": "found"
+    },
+    {
+      "key": "socialImpact.title",
+      "namespace": "socialImpact",
+      "keyPath": "title",
+      "status": "found"
+    },
+    {
+      "key": "socialImpact.projects",
+      "namespace": "socialImpact",
+      "keyPath": "projects",
+      "status": "found"
+    },
+    {
+      "key": "socialImpact.communities",
+      "namespace": "socialImpact",
+      "keyPath": "communities",
+      "status": "found"
+    },
+    {
+      "key": "goals.title",
+      "namespace": "goals",
+      "keyPath": "title",
+      "status": "found"
+    },
+    {
+      "key": "performance.retention",
+      "namespace": "performance",
+      "keyPath": "retention",
+      "status": "found"
+    },
+    {
+      "key": "performance.activeCampaigns",
+      "namespace": "performance",
+      "keyPath": "activeCampaigns",
+      "status": "found"
+    },
+    {
+      "key": "performance.completedCampaigns",
+      "namespace": "performance",
+      "keyPath": "completedCampaigns",
       "status": "found"
     },
     {
@@ -747,99 +807,19 @@
       "usages": 1
     },
     {
-      "key": "stats.raisedThisMonth",
-      "namespace": "stats",
-      "keyPath": "raisedThisMonth",
-      "status": "missing",
-      "reason": "Clé non trouvée",
-      "usages": 1
-    },
-    {
-      "key": "stats.activeDonors",
-      "namespace": "stats",
-      "keyPath": "activeDonors",
-      "status": "missing",
-      "reason": "Clé non trouvée",
-      "usages": 1
-    },
-    {
-      "key": "metrics.title",
-      "namespace": "metrics",
-      "keyPath": "title",
-      "status": "missing",
-      "reason": "Namespace non trouvé",
-      "usages": 1
-    },
-    {
-      "key": "socialImpact.title",
-      "namespace": "socialImpact",
-      "keyPath": "title",
-      "status": "missing",
-      "reason": "Namespace non trouvé",
-      "usages": 1
-    },
-    {
-      "key": "socialImpact.projects",
-      "namespace": "socialImpact",
-      "keyPath": "projects",
-      "status": "missing",
-      "reason": "Namespace non trouvé",
-      "usages": 1
-    },
-    {
-      "key": "socialImpact.communities",
-      "namespace": "socialImpact",
-      "keyPath": "communities",
-      "status": "missing",
-      "reason": "Namespace non trouvé",
-      "usages": 1
-    },
-    {
-      "key": "goals.title",
-      "namespace": "goals",
-      "keyPath": "title",
-      "status": "missing",
-      "reason": "Namespace non trouvé",
-      "usages": 1
-    },
-    {
-      "key": "performance.retention",
-      "namespace": "performance",
-      "keyPath": "retention",
-      "status": "missing",
-      "reason": "Namespace non trouvé",
-      "usages": 1
-    },
-    {
-      "key": "performance.activeCampaigns",
-      "namespace": "performance",
-      "keyPath": "activeCampaigns",
-      "status": "missing",
-      "reason": "Namespace non trouvé",
-      "usages": 1
-    },
-    {
-      "key": "performance.completedCampaigns",
-      "namespace": "performance",
-      "keyPath": "completedCampaigns",
-      "status": "missing",
-      "reason": "Namespace non trouvé",
-      "usages": 1
-    },
-    {
       "key": "components.media",
       "namespace": "components",
       "keyPath": "media",
-      "status": "missing",
-      "reason": "Clé non trouvée",
+      "status": "partial",
+      "missingIn": "he",
       "usages": 1
     },
     {
       "key": "components.related",
       "namespace": "components",
       "keyPath": "related",
-      "status": "missing",
-      "reason": "Clé non trouvée",
+      "status": "partial",
+      "missingIn": "he",
       "usages": 1
     }
   ],
@@ -872,9 +852,13 @@
         "directory",
         "donations",
         "empty",
+        "goals",
         "hero",
+        "metrics",
         "page",
-        "search"
+        "performance",
+        "search",
+        "socialImpact"
       ],
       "usages": 3
     },
@@ -1092,7 +1076,7 @@
       "usedCount": 3
     },
     "components": {
-      "frCount": 103,
+      "frCount": 76,
       "heCount": 96,
       "usedCount": 0
     },
@@ -1136,6 +1120,11 @@
       "heCount": 46,
       "usedCount": 0
     },
+    "goals": {
+      "frCount": 15,
+      "heCount": 15,
+      "usedCount": 1
+    },
     "hero": {
       "frCount": 5,
       "heCount": 5,
@@ -1145,6 +1134,11 @@
       "frCount": 675,
       "heCount": 665,
       "usedCount": 0
+    },
+    "metrics": {
+      "frCount": 11,
+      "heCount": 11,
+      "usedCount": 1
     },
     "navigation": {
       "frCount": 27,
@@ -1156,6 +1150,11 @@
       "heCount": 4,
       "usedCount": 2
     },
+    "performance": {
+      "frCount": 18,
+      "heCount": 18,
+      "usedCount": 3
+    },
     "progress": {
       "frCount": 8,
       "heCount": 8,
@@ -1166,10 +1165,15 @@
       "heCount": 36,
       "usedCount": 1
     },
-    "stats": {
-      "frCount": 10,
-      "heCount": 10,
+    "socialImpact": {
+      "frCount": 12,
+      "heCount": 12,
       "usedCount": 3
+    },
+    "stats": {
+      "frCount": 12,
+      "heCount": 12,
+      "usedCount": 5
     }
   }
 }

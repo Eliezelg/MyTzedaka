@@ -1,8 +1,10 @@
-import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException, Inject, forwardRef } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from '../prisma/prisma.service';
 import { MultiTenantStripeService } from './multi-tenant-stripe.service';
 import { DonationStatus, DonationType, DonationSource, UserRole } from '@prisma/client';
+import { TaxReceiptService } from '../tax-receipt/tax-receipt.service';
+import { CountryCode } from '../tax-receipt/dto/tax-receipt.dto';
 import Stripe from 'stripe';
 
 export interface CreateDonationDto {
@@ -30,6 +32,8 @@ export class DonationService {
   constructor(
     private prisma: PrismaService,
     private multiTenantStripeService: MultiTenantStripeService,
+    @Inject(forwardRef(() => TaxReceiptService))
+    private taxReceiptService: TaxReceiptService,
   ) {}
 
   /**
@@ -237,6 +241,7 @@ export class DonationService {
         include: {
           campaign: true,
           tenant: true,
+          user: true,
         },
       });
 
@@ -254,6 +259,25 @@ export class DonationService {
         this.logger.log(
           `Campaign ${donation.campaignId} raised amount updated (+${donation.amount}€)`
         );
+      }
+
+      // Générer automatiquement le reçu fiscal si demandé
+      if (donation.fiscalReceiptRequested && !donation.isAnonymous) {
+        try {
+          // Déterminer le pays par défaut basé sur l'utilisateur ou l'association
+          const defaultCountry = this.getDefaultCountry(donation.user, donation.tenant);
+          
+          await this.taxReceiptService.generateTaxReceipt(
+            donation.tenantId,
+            donation.id,
+            defaultCountry,
+          );
+          
+          this.logger.log(`Tax receipt generated for donation ${donation.id}`);
+        } catch (error) {
+          this.logger.error(`Failed to generate tax receipt for donation ${donation.id}:`, error);
+          // Ne pas faire échouer la confirmation de donation si la génération du reçu échoue
+        }
       }
 
       this.logger.log(`Donation confirmed: ${donation.id} - ${donation.amount}€`);
@@ -340,6 +364,29 @@ export class DonationService {
     ]);
 
     return { donations, total };
+  }
+
+  /**
+   * Détermine le pays par défaut pour la génération de reçu fiscal
+   */
+  private getDefaultCountry(user: any, tenant: any): CountryCode {
+    // Priorité : pays de l'utilisateur > pays de l'association > France par défaut
+    if (user?.country) {
+      const userCountry = user.country.toUpperCase();
+      if (Object.values(CountryCode).includes(userCountry as CountryCode)) {
+        return userCountry as CountryCode;
+      }
+    }
+
+    if (tenant?.associationListing?.country) {
+      const tenantCountry = tenant.associationListing.country.toUpperCase();
+      if (Object.values(CountryCode).includes(tenantCountry as CountryCode)) {
+        return tenantCountry as CountryCode;
+      }
+    }
+
+    // Par défaut : France
+    return CountryCode.FR;
   }
 
   /**

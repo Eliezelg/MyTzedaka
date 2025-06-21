@@ -5,9 +5,11 @@
 
 // Enums du backend
 export enum UserRole {
-  DONATOR = 'DONATOR',
-  ASSOCIATION_ADMIN = 'ASSOCIATION_ADMIN',
-  PLATFORM_ADMIN = 'PLATFORM_ADMIN'
+  SUPER_ADMIN = 'SUPER_ADMIN',  // Accès plateforme complète
+  ADMIN = 'ADMIN',              // Administrateur tenant
+  TREASURER = 'TREASURER',      // Trésorier
+  MANAGER = 'MANAGER',          // Gestionnaire
+  MEMBER = 'MEMBER'             // Membre standard
 }
 
 export enum DonationSource {

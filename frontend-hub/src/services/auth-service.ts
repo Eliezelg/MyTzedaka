@@ -126,6 +126,25 @@ class AuthService {
     return response.json()
   }
 
+  async updateProfile(data: any, token: string): Promise<User> {
+    const response = await fetch(`${this.baseUrl}/profile`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(data),
+    })
+
+    if (!response.ok) {
+      const error = await response.text()
+      throw new Error(error || 'Erreur de mise à jour du profil')
+    }
+
+    return response.json()
+  }
+
   async logout(token: string): Promise<{ message: string }> {
     const response = await fetch(`${this.baseUrl}/logout`, {
       method: 'POST',

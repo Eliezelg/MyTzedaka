@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Backend (NestJS)
 ```bash
 cd backend
-npm run start:dev        # Start development server (port 3000)
+npm run start:dev        # Start development server (port 3002)
 npm run build           # Build production
 npm run lint            # Lint TypeScript code
 npm run test            # Run unit tests
@@ -56,8 +56,8 @@ This is a **multi-tenant SaaS platform** for Jewish charitable associations wher
 - **Global users** (tenantId: null) can access the hub and donate across tenants
 
 ### Key Components
-- **Backend**: NestJS + Prisma + PostgreSQL (port 3000)
-- **Frontend Hub**: Next.js 14 + React Query + Tailwind (port 3001)
+- **Backend**: NestJS + Prisma + PostgreSQL (port 3002)
+- **Frontend Hub**: Next.js 14 + React Query + Tailwind (port 3000)
 - **Database**: PostgreSQL with multi-tenant schema
 - **Auth**: AWS Cognito with JWT tokens
 - **Payments**: Stripe with multi-tenant support (PLATFORM/CUSTOM modes)
@@ -254,7 +254,7 @@ ENCRYPTION_SECRET="..."  # For encrypting Stripe keys
 
 ### Frontend (.env.local)
 ```bash
-NEXT_PUBLIC_API_BASE_URL="http://localhost:3000/api"
+NEXT_PUBLIC_API_BASE_URL="http://localhost:3002/api"
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="..."
 ```
 

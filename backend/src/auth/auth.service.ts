@@ -14,7 +14,7 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider';
 import { PrismaService } from '../prisma/prisma.service';
 import { getCurrentTenant } from '../tenant/tenant.context';
-import { LoginDto, RegisterDto, ResetPasswordDto, ChangePasswordDto } from './dto/auth.dto';
+import { LoginDto, RegisterDto, ResetPasswordDto, ChangePasswordDto, UpdateProfileDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -234,6 +234,22 @@ export class AuthService {
         },
       });
 
+      // Créer le profil de donateur séparément
+      const donorProfile = await this.prisma.donorProfile.create({
+        data: {
+          email,
+          cognitoId: user.cognitoId,
+          firstName,
+          lastName,
+          phone: phone || null,
+          totalDonations: 0,
+          totalAmount: 0,
+          favoriteAssociations: [],
+          preferredCurrency: 'EUR',
+          communicationPrefs: {},
+        },
+      });
+
       return {
         message: 'Utilisateur créé avec succès sur la plateforme (version test)',
         user: {
@@ -375,15 +391,55 @@ export class AuthService {
         firstName: true,
         lastName: true,
         phone: true,
+        addressLine1: true,
+        addressLine2: true,
+        city: true,
+        postalCode: true,
+        country: true,
+        preferences: true,
         role: true,
         permissions: true,
         lastLoginAt: true,
         createdAt: true,
+        isActive: true,
       },
     });
 
     if (!user) {
       throw new UnauthorizedException('Utilisateur non trouvé');
+    }
+
+    return user;
+  }
+
+  async getHubUserProfile(userId: string) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        id: userId,
+        tenantId: null, // Utilisateurs du hub uniquement
+      },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        addressLine1: true,
+        addressLine2: true,
+        city: true,
+        postalCode: true,
+        country: true,
+        preferences: true,
+        role: true,
+        permissions: true,
+        lastLoginAt: true,
+        createdAt: true,
+        isActive: true,
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Utilisateur du hub non trouvé');
     }
 
     return user;
@@ -406,10 +462,20 @@ export class AuthService {
           email: true,
           firstName: true,
           lastName: true,
+          phone: true,
+          addressLine1: true,
+          addressLine2: true,
+          city: true,
+          postalCode: true,
+          country: true,
+          preferences: true,
           role: true,
           cognitoId: true,
           tenantId: true,
           permissions: true,
+          lastLoginAt: true,
+          createdAt: true,
+          isActive: true,
         },
       });
 
@@ -453,6 +519,101 @@ export class AuthService {
         throw error;
       }
       throw new BadRequestException('Erreur lors de la connexion: ' + error.message);
+    }
+  }
+
+  async updateUserProfile(userId: string, updateData: UpdateProfileDto) {
+    const tenant = getCurrentTenant();
+    
+    // Si pas de tenant, c'est un utilisateur du hub
+    if (!tenant) {
+      return this.updateHubUserProfile(userId, updateData);
+    }
+
+    try {
+      const updatedUser = await this.prisma.user.update({
+        where: {
+          id: userId,
+          tenantId: tenant.id,
+        },
+        data: {
+          firstName: updateData.firstName,
+          lastName: updateData.lastName,
+          phone: updateData.phone,
+          addressLine1: updateData.addressLine1,
+          addressLine2: updateData.addressLine2,
+          city: updateData.city,
+          postalCode: updateData.postalCode,
+          country: updateData.country,
+          preferences: updateData.preferences,
+        },
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          phone: true,
+          addressLine1: true,
+          addressLine2: true,
+          city: true,
+          postalCode: true,
+          country: true,
+          preferences: true,
+          role: true,
+          permissions: true,
+          lastLoginAt: true,
+          createdAt: true,
+          isActive: true,
+        },
+      });
+
+      return updatedUser;
+    } catch (error) {
+      throw new BadRequestException('Erreur lors de la mise à jour du profil: ' + error.message);
+    }
+  }
+
+  async updateHubUserProfile(userId: string, updateData: UpdateProfileDto) {
+    try {
+      const updatedUser = await this.prisma.user.update({
+        where: {
+          id: userId,
+          tenantId: null, // Utilisateurs du hub uniquement
+        },
+        data: {
+          firstName: updateData.firstName,
+          lastName: updateData.lastName,
+          phone: updateData.phone,
+          addressLine1: updateData.addressLine1,
+          addressLine2: updateData.addressLine2,
+          city: updateData.city,
+          postalCode: updateData.postalCode,
+          country: updateData.country,
+          preferences: updateData.preferences,
+        },
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          phone: true,
+          addressLine1: true,
+          addressLine2: true,
+          city: true,
+          postalCode: true,
+          country: true,
+          preferences: true,
+          role: true,
+          permissions: true,
+          lastLoginAt: true,
+          createdAt: true,
+          isActive: true,
+        },
+      });
+
+      return updatedUser;
+    } catch (error) {
+      throw new BadRequestException('Erreur lors de la mise à jour du profil hub: ' + error.message);
     }
   }
 }

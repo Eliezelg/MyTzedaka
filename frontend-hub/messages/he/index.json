@@ -1,4 +1,28 @@
 {
+  "hero": {
+    "title": "פלטפורמת תרומות לעמותות",
+    "subtitle": "תמכו במטרות החשובות לכם",
+    "description": "מצאו ותמכו בעמותות אמינות בלחיצת כפתור. התרומה שלכם עושה את ההבדל."
+  },
+  "stats": {
+    "associationsCount": "500+",
+    "associationsLabel": "עמותות פעילות",
+    "donationsAmount": "1M₪+",
+    "donationsLabel": "נאסף בסך הכל",
+    "donorsCount": "10K+",
+    "donorsLabel": "תורמים פעילים"
+  },
+  "featured": {
+    "title": "עמותות מומלצות",
+    "association": "עמותה",
+    "description": "תמכו בעמותה זו שעושה עבודה יוצאת דופן בקהילה שלה.",
+    "learnMore": "למידע נוסף"
+  },
+  "cta": {
+    "title": "מוכן לעשות הבדל?",
+    "subtitle": "הצטרף לאלפי תורמים שתומכים במטרות החשובות להם.",
+    "button": "תרום עכשיו"
+  },
   "associations": {
     "title": "עמותות",
     "singleTitle": "עמותה",

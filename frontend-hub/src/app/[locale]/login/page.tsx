@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
@@ -15,6 +15,7 @@ import { useAuth } from '@/contexts/AuthContext'
 export default function LoginPage() {
   const { login, isLoading, error } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const t = useTranslations('auth')
   const tCommon = useTranslations('common')
   const [showPassword, setShowPassword] = useState(false)
@@ -37,10 +38,13 @@ export default function LoginPage() {
     try {
       await login(formData)
       
+      // Récupérer l'URL de retour ou utiliser le dashboard par défaut
+      const returnUrl = searchParams.get('returnUrl') || '/dashboard'
+      
       // Attendre un court délai pour que les cookies soient définis
       setTimeout(() => {
         // Utiliser window.location.href pour forcer un rechargement complet
-        window.location.href = '/dashboard'
+        window.location.href = returnUrl
       }, 100)
     } catch (error) {
       // L'erreur est gérée par le context

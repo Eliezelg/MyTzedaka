@@ -16,6 +16,8 @@ import {
 import { useDonorHistory } from '@/hooks/use-donor-profile'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
+import { useAuth } from '@/contexts/AuthContext'
+import { useDonorProfile } from '@/hooks/use-donor-profile'
 
 interface HistoryFilters {
   startDate?: string
@@ -26,11 +28,6 @@ interface HistoryFilters {
   limit: number
 }
 
-// Placeholder for auth context
-const useAuth = () => ({
-  user: { email: 'test@example.com' }
-})
-
 export function DonationHistory() {
   const { user } = useAuth()
   const [filters, setFilters] = useState<HistoryFilters>({
@@ -38,10 +35,10 @@ export function DonationHistory() {
     limit: 20
   })
 
-  // Simuler l'ID du profil donateur (à récupérer dynamiquement)
-  const donorProfileId = user?.email ? `profile-${user.email}` : undefined
+  // Récupérer le profil donateur pour obtenir l'ID
+  const { data: profile } = useDonorProfile(user?.email)
 
-  const { data: historyData, isLoading, error } = useDonorHistory(donorProfileId, filters)
+  const { data: historyData, isLoading, error } = useDonorHistory(profile?.id, filters)
 
   const handleFilterChange = (key: keyof HistoryFilters, value: string | number) => {
     setFilters(prev => ({

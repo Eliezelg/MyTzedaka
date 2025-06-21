@@ -9,6 +9,7 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import { HubHeader } from '@/components/layout/hub-header'
 import { ClientLayout } from '@/components/layout/client-layout'
 import { LanguageSelector } from '@/components/ui/language-selector'
+import { Toaster } from 'sonner'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -90,6 +91,9 @@ export default async function LocaleLayout({
                   <main className="flex-1">
                     {children}
                   </main>
+
+                  {/* Toast notifications */}
+                  <Toaster position="top-right" richColors />
 
                   {/* Footer */}
                   <footer className="bg-gray-900 text-white">

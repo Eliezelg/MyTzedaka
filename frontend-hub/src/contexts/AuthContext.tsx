@@ -9,6 +9,7 @@ interface AuthContextType extends AuthState {
   register: (userData: RegisterRequest) => Promise<void>
   logout: () => Promise<void>
   refreshToken: () => Promise<void>
+  updateProfile: (data: any) => Promise<void>
 }
 
 type AuthAction =
@@ -16,13 +17,15 @@ type AuthAction =
   | { type: 'AUTH_SUCCESS'; payload: { user: User; tenant: Tenant | null; token: string } }
   | { type: 'AUTH_ERROR'; payload: string }
   | { type: 'AUTH_LOGOUT' }
+  | { type: 'AUTH_LOADING_COMPLETE' }
+  | { type: 'UPDATE_USER'; payload: User }
   | { type: 'CLEAR_ERROR' }
 
 const initialState: AuthState = {
   user: null,
   tenant: null,
   token: null,
-  isLoading: false,
+  isLoading: true, // Commencer par true pour éviter les redirections prématurées
   isAuthenticated: false,
   error: null,
 }
@@ -56,7 +59,20 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
         error: action.payload,
       }
     case 'AUTH_LOGOUT':
-      return initialState
+      return {
+        ...initialState,
+        isLoading: false, // Important: ne pas rester en état de chargement
+      }
+    case 'AUTH_LOADING_COMPLETE':
+      return {
+        ...state,
+        isLoading: false,
+      }
+    case 'UPDATE_USER':
+      return {
+        ...state,
+        user: action.payload,
+      }
     case 'CLEAR_ERROR':
       return {
         ...state,
@@ -74,17 +90,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Vérifier si l'utilisateur est déjà connecté au chargement
   useEffect(() => {
-    const authData = authService.getAuthData()
-    if (authData) {
-      dispatch({
-        type: 'AUTH_SUCCESS',
-        payload: {
-          user: authData.user,
-          tenant: authData.tenant,
-          token: authData.token,
-        },
-      })
+    const checkAuthStatus = async () => {
+      const authData = authService.getAuthData()
+      if (authData) {
+        // Vérifier si le token est encore valide
+        try {
+          await authService.getProfile(authData.token)
+          dispatch({
+            type: 'AUTH_SUCCESS',
+            payload: {
+              user: authData.user,
+              tenant: authData.tenant,
+              token: authData.token,
+            },
+          })
+        } catch (error) {
+          // Token invalide, essayer de rafraîchir
+          if (authData.refreshToken) {
+            try {
+              const response = await authService.refreshToken(authData.refreshToken)
+              authService.setAuthData(response)
+              dispatch({
+                type: 'AUTH_SUCCESS',
+                payload: {
+                  user: response.user,
+                  tenant: response.tenant,
+                  token: response.access_token,
+                },
+              })
+            } catch (refreshError) {
+              // Refresh failed, clear auth data
+              authService.clearAuthData()
+              dispatch({ type: 'AUTH_LOGOUT' })
+            }
+          } else {
+            // Pas de refresh token, déconnecter
+            authService.clearAuthData()
+            dispatch({ type: 'AUTH_LOGOUT' })
+          }
+        }
+      } else {
+        // Pas de données d'auth, s'assurer que isLoading est false
+        dispatch({ type: 'AUTH_LOADING_COMPLETE' })
+      }
     }
+
+    checkAuthStatus()
   }, [])
 
   const login = async (credentials: LoginRequest) => {
@@ -163,6 +214,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const updateProfile = async (data: any) => {
+    if (!state.token) {
+      throw new Error('Utilisateur non authentifié')
+    }
+
+    try {
+      const updatedUser = await authService.updateProfile(data, state.token)
+      dispatch({ type: 'UPDATE_USER', payload: updatedUser })
+      
+      // Mettre à jour les données stockées localement
+      const authData = authService.getAuthData()
+      if (authData) {
+        authService.setAuthData({
+          ...authData,
+          user: updatedUser
+        })
+      }
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du profil:', error)
+      throw error
+    }
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -171,6 +245,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         register,
         logout,
         refreshToken,
+        updateProfile,
       }}
     >
       {children}

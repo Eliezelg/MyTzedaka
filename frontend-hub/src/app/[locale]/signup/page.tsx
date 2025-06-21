@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { CustomSelect } from '@/components/ui/custom-select'
 import { Loader2, Eye, EyeOff, CheckCircle } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 
@@ -19,9 +18,6 @@ interface FormData {
   firstName: string
   lastName: string
   phone: string
-  userType: 'DONATOR' | 'ASSOCIATION_ADMIN'
-  associationName: string
-  associationDescription: string
 }
 
 export default function SignupPage() {
@@ -39,9 +35,6 @@ export default function SignupPage() {
     firstName: '',
     lastName: '',
     phone: '',
-    userType: 'DONATOR',
-    associationName: '',
-    associationDescription: '',
   })
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement> | { target: { name?: string; value: string } }) => {
@@ -71,13 +64,9 @@ export default function SignupPage() {
   }
 
   const validateStep2 = () => {
-    const { firstName, lastName, userType, associationName } = formData
+    const { firstName, lastName } = formData
     
     if (!firstName || !lastName) {
-      return false
-    }
-    
-    if (userType === 'ASSOCIATION_ADMIN' && !associationName) {
       return false
     }
     
@@ -268,49 +257,6 @@ export default function SignupPage() {
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="userType">{tCommon('profile.accountType')}</Label>
-                    <CustomSelect
-                      name="userType"
-                      value={formData.userType}
-                      onChange={handleInputChange}
-                      placeholder={tCommon('profile.chooseAccountType')}
-                      options={[
-                        { value: 'DONATOR', label: tCommon('profile.donor') },
-                        { value: 'ASSOCIATION_ADMIN', label: tCommon('profile.associationAdmin') }
-                      ]}
-                    />
-                  </div>
-
-                  {formData.userType === 'ASSOCIATION_ADMIN' && (
-                    <>
-                      <div className="space-y-2">
-                        <Label htmlFor="associationName">{tCommon('profile.associationName')}</Label>
-                        <Input
-                          id="associationName"
-                          name="associationName"
-                          value={formData.associationName}
-                          onChange={handleInputChange}
-                          required
-                          placeholder={tCommon('profile.associationName')}
-                          disabled={isLoading}
-                        />
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="associationDescription">{tCommon('profile.description')} ({tCommon('fields.optional')})</Label>
-                        <textarea
-                          id="associationDescription"
-                          name="associationDescription"
-                          value={formData.associationDescription}
-                          onChange={handleInputChange}
-                          placeholder={tCommon('profile.descriptionPlaceholder')}
-                          disabled={isLoading}
-                          className="w-full p-2 border rounded-md resize-none h-20"
-                        />
-                      </div>
-                    </>
-                  )}
 
                   <div className="flex space-x-3">
                     <Button

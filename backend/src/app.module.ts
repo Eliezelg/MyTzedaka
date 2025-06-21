@@ -13,6 +13,7 @@ import { HubModule } from './hub/hub.module';
 import { S3Service } from './s3/s3.service';
 import { DonorPortalModule } from './donor-portal/donor-portal.module';
 import { StripeModule } from './stripe/stripe.module';
+import { TaxReceiptModule } from './tax-receipt/tax-receipt.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { StripeModule } from './stripe/stripe.module';
     HubModule,
     DonorPortalModule,
     StripeModule,
+    TaxReceiptModule,
   ],
   controllers: [AppController],
   providers: [AppService, S3Service],

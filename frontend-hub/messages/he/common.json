@@ -72,14 +72,7 @@
     "required": "חובה"
   },
   "profile": {
-    "phone": "טלפון",
-    "accountType": "סוג חשבון",
-    "chooseAccountType": "בחר את סוג החשבון שלך",
-    "donor": "תורם",
-    "associationAdmin": "מנהל עמותה",
-    "associationName": "שם העמותה",
-    "description": "תיאור",
-    "descriptionPlaceholder": "תאר בקצרה את העמותה שלך..."
+    "phone": "טלפון"
   },
   "legal": {
     "bySigningUp": "בהמשך, אתה מסכים",

@@ -25,7 +25,10 @@
       "Bash(npx prisma generate:*)",
       "Bash(pkill:*)",
       "Bash(npm run lint:*)",
-      "Bash(npm run start:dev:*)"
+      "Bash(npm run start:dev:*)",
+      "Bash(npx prisma migrate dev:*)",
+      "Bash(NODE_OPTIONS=--max-old-space-size=4096 npx prisma generate)",
+      "Bash(npm uninstall:*)"
     ],
     "deny": []
   }

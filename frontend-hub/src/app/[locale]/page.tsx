@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl'
 
 export default function LocalizedHomePage() {
   const tCommon = useTranslations('common')
+  const tHero = useTranslations('hero')
   const tIndex = useTranslations('index')
   
   return (
@@ -12,13 +13,13 @@ export default function LocalizedHomePage() {
       <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-20">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-5xl font-bold mb-6">
-            {tIndex('hero.title')}
+            {tHero('title')}
           </h1>
           <p className="text-xl mb-8">
-            {tCommon('appName')} - {tIndex('hero.subtitle')}
+            {tCommon('appName')} - {tHero('subtitle')}
           </p>
           <p className="text-lg opacity-90 max-w-2xl mx-auto">
-            {tIndex('hero.description')}
+            {tHero('description')}
           </p>
         </div>
       </section>

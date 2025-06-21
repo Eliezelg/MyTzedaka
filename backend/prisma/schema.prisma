@@ -1,7 +1,8 @@
 // Schéma Prisma Multi-Tenant avec Row Level Security
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "windows", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -20,6 +21,7 @@ model Tenant {
   // Configuration
   theme       Json     @default("{}")  // Configuration thème personnalisé
   settings    Json     @default("{}")  // Paramètres spécifiques
+  logoPath    String?  // Chemin local du logo de l'association
   
   // Configuration Stripe
   stripeMode  StripeMode @default(PLATFORM) // Mode de paiement Stripe
@@ -37,6 +39,7 @@ model Tenant {
   events      Event[]
   associationListing AssociationListing?
   stripeAccount StripeAccount? // Compte Stripe associé
+  taxReceipts TaxReceipt[] // Reçus fiscaux émis
   
   @@map("tenants")
 }
@@ -68,6 +71,16 @@ model User {
   firstName   String
   lastName    String
   phone       String?
+  
+  // Adresse postale complète
+  addressLine1    String?
+  addressLine2    String?
+  city           String?
+  postalCode     String?
+  country        String?
+  
+  // Préférences utilisateur
+  preferences     Json     @default("{\"emailNotifications\":true,\"donationReceipts\":true,\"newsletterUpdates\":false,\"campaignUpdates\":true}")
   
   // Rôles et permissions
   role        UserRole @default(MEMBER)
@@ -166,11 +179,74 @@ model Donation {
   tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   user        User     @relation(fields: [userId], references: [id])
   campaign    Campaign? @relation(fields: [campaignId], references: [id])
+  taxReceipt  TaxReceipt? // Reçu fiscal associé
   
   @@index([userId]) // Index pour requêtes cross-tenant par user
   @@index([tenantId, source]) // Index pour filtrer par source
   @@unique([stripePaymentIntentId]) // Index unique pour PaymentIntent Stripe
   @@map("donations")
+}
+
+// Table des reçus fiscaux
+model TaxReceipt {
+  id          String   @id @default(uuid())
+  tenantId    String   // Clé d'isolation
+  donationId  String   @unique // Un reçu par donation
+  
+  // Numéro du reçu
+  receiptNumber String   @unique // Format: [YEAR]-[TENANT_CODE]-[SEQUENCE]
+  issueDate     DateTime @default(now())
+  
+  // Informations du donateur
+  donorName     String
+  donorAddress  String
+  donorEmail    String
+  donorPhone    String?
+  
+  // Informations de l'association
+  associationName    String
+  associationAddress String
+  associationEmail   String?
+  associationPhone   String?
+  associationRegistrationNumber String? // Numéro d'enregistrement légal
+  
+  // Détails du don
+  donationAmount    Decimal  @db.Decimal(10,2)
+  donationCurrency  String
+  donationDate      DateTime
+  paymentMethod     String
+  
+  // Configuration légale selon le pays
+  country           String   // Code pays ISO (FR, IL, US, etc.)
+  legalClause       String   @db.Text // Mention légale obligatoire selon pays
+  taxDeductionRate  Decimal? @db.Decimal(5,2) // Taux de déduction applicable
+  
+  // Stockage du document
+  pdfPath           String?  // Chemin local du PDF généré
+  pdfGeneratedAt    DateTime?
+  
+  // Statut
+  status            TaxReceiptStatus @default(DRAFT)
+  emailedAt         DateTime? // Date d'envoi par email
+  
+  // Métadonnées
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  tenant            Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  donation          Donation @relation(fields: [donationId], references: [id])
+  
+  @@index([tenantId, receiptNumber])
+  @@index([tenantId, issueDate])
+  @@map("tax_receipts")
+}
+
+enum TaxReceiptStatus {
+  DRAFT       // En cours de création
+  GENERATED   // PDF généré
+  SENT        // Envoyé au donateur
+  CANCELLED   // Annulé
 }
 
 enum DonationType {

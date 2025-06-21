@@ -13,10 +13,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useFavoriteAssociations, useToggleFavoriteAssociation } from '@/hooks/use-donor-profile'
-// Temporary placeholders until real hooks are available
-// import { useAssociations } from '@/hooks/use-associations'
-// import { useAuth } from '@/contexts/auth-context'
+import { useDonorFavorites, useToggleFavoriteAssociation, useDonorProfile } from '@/hooks/use-donor-profile'
+import { useAuth } from '@/contexts/AuthContext'
+import { useAssociations } from '@/hooks/use-associations'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -28,25 +27,15 @@ interface DirectoryFilters {
   limit: number
 }
 
-// Placeholder hooks until real implementations are available
-const useAssociations = (filters: any) => ({
-  data: {
-    data: [] as any[],
-    pagination: { page: 1, limit: 12, total: 0, pages: 0 }
-  },
-  isLoading: false
-})
-
-const useAuth = () => ({
-  user: { email: 'test@example.com' }
-})
-
 export function AssociationDirectory() {
   const { user } = useAuth()
   const [filters, setFilters] = useState<DirectoryFilters>({
     page: 1,
     limit: 12
   })
+
+  // Récupération du profil donateur pour obtenir l'ID
+  const { data: donorProfile } = useDonorProfile(user?.email)
 
   // Récupération des associations avec filtres
   const { data: associationsData, isLoading: associationsLoading } = useAssociations({
@@ -58,8 +47,7 @@ export function AssociationDirectory() {
   })
 
   // Récupération des favoris du donateur
-  const donorProfileId = user?.email ? `profile-${user.email}` : undefined
-  const { data: favorites = [], isLoading: favoritesLoading } = useFavoriteAssociations(donorProfileId)
+  const { data: favorites = [], isLoading: favoritesLoading } = useDonorFavorites(donorProfile?.id)
   
   // Mutation pour toggle favori
   const toggleFavorite = useToggleFavoriteAssociation()
@@ -73,13 +61,13 @@ export function AssociationDirectory() {
   }
 
   const handleToggleFavorite = async (tenantId: string) => {
-    if (!donorProfileId) return
+    if (!donorProfile?.id) return
     
     try {
       await toggleFavorite.mutateAsync({
-        donorProfileId,
+        donorProfileId: donorProfile.id,
         tenantId,
-        action: 'toggle' // Add the required action parameter
+        action: 'toggle'
       })
     } catch (error) {
       console.error('Erreur lors du toggle favori:', error)
@@ -301,7 +289,7 @@ export function AssociationDirectory() {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleToggleFavorite(association.tenantId)}
-                      disabled={toggleFavorite.isPending || !donorProfileId}
+                      disabled={toggleFavorite.isPending || !donorProfile?.id}
                       className="shrink-0"
                     >
                       <span className={`text-lg ${favorite ? 'text-red-500' : 'text-gray-400'}`}>

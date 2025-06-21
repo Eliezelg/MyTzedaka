@@ -13,7 +13,15 @@
     "donorsLabel": "Donateurs actifs"
   },
   "featured": {
-    "title": "Associations à la une"
+    "title": "Associations à la une",
+    "association": "Association",
+    "description": "Soutenez cette association qui fait un travail remarquable dans sa communauté.",
+    "learnMore": "En savoir plus"
+  },
+  "cta": {
+    "title": "Prêt à faire la différence ?",
+    "subtitle": "Rejoignez des milliers de donateurs qui soutiennent des causes qui leur tiennent à cœur.",
+    "button": "Faire un don maintenant"
   },
   "associations": {
     "title": "Associations",

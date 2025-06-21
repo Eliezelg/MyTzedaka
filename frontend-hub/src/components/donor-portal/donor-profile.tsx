@@ -9,29 +9,27 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useDonorProfile, useUpdateDonorProfile } from '@/hooks/use-donor-profile'
+import { useAuth } from '@/contexts/AuthContext'
 import { toast } from 'sonner'
 
-// Placeholder for auth context
-const useAuth = () => ({
-  user: { email: 'test@example.com' }
-})
-
 export function DonorProfile() {
-  const { user } = useAuth()
+  const { user, updateProfile } = useAuth()
   const [isEditing, setIsEditing] = useState(false)
+  const [isUpdating, setIsUpdating] = useState(false)
   
-  // Récupération du profil donateur
-  const { data: profile, isLoading, error } = useDonorProfile(user?.email)
-  
-  // Mutation pour mise à jour
-  const updateProfile = useUpdateDonorProfile()
+  // Récupération du profil donateur pour les stats seulement
+  const { data: donorStats } = useDonorProfile(user?.email)
 
-  // État local pour l'édition
+  // État local pour l'édition - initialisé avec les données du user
   const [editData, setEditData] = useState({
     firstName: '',
     lastName: '',
     phone: '',
-    bio: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    postalCode: '',
+    country: '',
     preferences: {
       emailNotifications: true,
       donationReceipts: true,
@@ -40,31 +38,43 @@ export function DonorProfile() {
     }
   })
 
-  // Initialiser les données d'édition quand le profil est chargé
+  // Initialiser les données d'édition avec les données du user
   React.useEffect(() => {
-    if (profile && !isEditing) {
+    if (user && !isEditing) {
       setEditData({
-        firstName: profile.firstName || '',
-        lastName: profile.lastName || '',
-        phone: profile.phone || '',
-        bio: profile.bio || '',
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        phone: user.phone || '',
+        addressLine1: user.addressLine1 || '',
+        addressLine2: user.addressLine2 || '',
+        city: user.city || '',
+        postalCode: user.postalCode || '',
+        country: user.country || '',
         preferences: {
-          emailNotifications: profile.preferences?.emailNotifications ?? true,
-          donationReceipts: profile.preferences?.donationReceipts ?? true,
-          newsletterUpdates: profile.preferences?.newsletterUpdates ?? false,
-          campaignUpdates: profile.preferences?.campaignUpdates ?? true
+          emailNotifications: user.preferences?.emailNotifications ?? true,
+          donationReceipts: user.preferences?.donationReceipts ?? true,
+          newsletterUpdates: user.preferences?.newsletterUpdates ?? false,
+          campaignUpdates: user.preferences?.campaignUpdates ?? true
         }
       })
     }
-  }, [profile, isEditing])
+  }, [user, isEditing])
 
   const handleSave = async () => {
     if (!user?.email) return
 
+    setIsUpdating(true)
     try {
-      await updateProfile.mutateAsync({
-        email: user.email,
-        data: editData
+      await updateProfile({
+        firstName: editData.firstName,
+        lastName: editData.lastName,
+        phone: editData.phone,
+        addressLine1: editData.addressLine1,
+        addressLine2: editData.addressLine2,
+        city: editData.city,
+        postalCode: editData.postalCode,
+        country: editData.country,
+        preferences: editData.preferences,
       })
       
       setIsEditing(false)
@@ -72,60 +82,39 @@ export function DonorProfile() {
     } catch (error) {
       console.error('Erreur lors de la mise à jour:', error)
       toast.error('Erreur lors de la mise à jour du profil')
+    } finally {
+      setIsUpdating(false)
     }
   }
 
   const handleCancel = () => {
     setIsEditing(false)
-    // Réinitialiser les données d'édition
-    if (profile) {
+    // Réinitialiser les données d'édition avec les données du user
+    if (user) {
       setEditData({
-        firstName: profile.firstName || '',
-        lastName: profile.lastName || '',
-        phone: profile.phone || '',
-        bio: profile.bio || '',
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        phone: user.phone || '',
+        addressLine1: user.addressLine1 || '',
+        addressLine2: user.addressLine2 || '',
+        city: user.city || '',
+        postalCode: user.postalCode || '',
+        country: user.country || '',
         preferences: {
-          emailNotifications: profile.preferences?.emailNotifications ?? true,
-          donationReceipts: profile.preferences?.donationReceipts ?? true,
-          newsletterUpdates: profile.preferences?.newsletterUpdates ?? false,
-          campaignUpdates: profile.preferences?.campaignUpdates ?? true
+          emailNotifications: user.preferences?.emailNotifications ?? true,
+          donationReceipts: user.preferences?.donationReceipts ?? true,
+          newsletterUpdates: user.preferences?.newsletterUpdates ?? false,
+          campaignUpdates: user.preferences?.campaignUpdates ?? true
         }
       })
     }
   }
 
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <div className="h-6 bg-gray-200 rounded w-1/4 animate-pulse"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse"></div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-10 bg-gray-200 rounded animate-pulse"></div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
-  if (error) {
+  if (!user) {
     return (
       <Card>
         <CardContent className="p-8 text-center">
-          <p className="text-red-600">Erreur lors du chargement du profil</p>
-          <Button 
-            variant="outline" 
-            className="mt-4"
-            onClick={() => window.location.reload()}
-          >
-            Réessayer
-          </Button>
+          <p className="text-gray-600">Veuillez vous connecter pour voir votre profil</p>
         </CardContent>
       </Card>
     )
@@ -145,15 +134,15 @@ export function DonorProfile() {
               <Button 
                 variant="outline" 
                 onClick={handleCancel}
-                disabled={updateProfile.isPending}
+                disabled={isUpdating}
               >
                 Annuler
               </Button>
               <Button 
                 onClick={handleSave}
-                disabled={updateProfile.isPending}
+                disabled={isUpdating}
               >
-                {updateProfile.isPending ? 'Sauvegarde...' : 'Sauvegarder'}
+                {isUpdating ? 'Sauvegarde...' : 'Sauvegarder'}
               </Button>
             </>
           ) : (
@@ -185,7 +174,7 @@ export function DonorProfile() {
                   <Label htmlFor="firstName">Prénom</Label>
                   <Input
                     id="firstName"
-                    value={isEditing ? editData.firstName : (profile?.firstName || '')}
+                    value={isEditing ? editData.firstName : (user?.firstName || '')}
                     onChange={(e) => setEditData(prev => ({ ...prev, firstName: e.target.value }))}
                     disabled={!isEditing}
                   />
@@ -195,7 +184,7 @@ export function DonorProfile() {
                   <Label htmlFor="lastName">Nom</Label>
                   <Input
                     id="lastName"
-                    value={isEditing ? editData.lastName : (profile?.lastName || '')}
+                    value={isEditing ? editData.lastName : (user?.lastName || '')}
                     onChange={(e) => setEditData(prev => ({ ...prev, lastName: e.target.value }))}
                     disabled={!isEditing}
                   />
@@ -206,7 +195,7 @@ export function DonorProfile() {
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
-                  value={profile?.email || ''}
+                  value={user?.email || ''}
                   disabled
                   className="bg-gray-50"
                 />
@@ -219,23 +208,73 @@ export function DonorProfile() {
                 <Label htmlFor="phone">Téléphone</Label>
                 <Input
                   id="phone"
-                  value={isEditing ? editData.phone : (profile?.phone || '')}
+                  value={isEditing ? editData.phone : (user?.phone || '')}
                   onChange={(e) => setEditData(prev => ({ ...prev, phone: e.target.value }))}
                   disabled={!isEditing}
                   placeholder="+33 1 23 45 67 89"
                 />
               </div>
 
-              <div>
-                <Label htmlFor="bio">Biographie (optionnel)</Label>
-                <Textarea
-                  id="bio"
-                  value={isEditing ? editData.bio : (profile?.bio || '')}
-                  onChange={(e) => setEditData(prev => ({ ...prev, bio: e.target.value }))}
-                  disabled={!isEditing}
-                  placeholder="Parlez-nous de vous et de vos motivations..."
-                  rows={4}
-                />
+              {/* Section Adresse */}
+              <div className="space-y-4 pt-4 border-t">
+                <h4 className="font-medium text-gray-900">Adresse postale</h4>
+                
+                <div>
+                  <Label htmlFor="addressLine1">Adresse ligne 1</Label>
+                  <Input
+                    id="addressLine1"
+                    value={isEditing ? editData.addressLine1 : (user?.addressLine1 || '')}
+                    onChange={(e) => setEditData(prev => ({ ...prev, addressLine1: e.target.value }))}
+                    disabled={!isEditing}
+                    placeholder="Numéro et nom de rue"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="addressLine2">Adresse ligne 2 (optionnel)</Label>
+                  <Input
+                    id="addressLine2"
+                    value={isEditing ? editData.addressLine2 : (user?.addressLine2 || '')}
+                    onChange={(e) => setEditData(prev => ({ ...prev, addressLine2: e.target.value }))}
+                    disabled={!isEditing}
+                    placeholder="Complément d'adresse, bâtiment, etc."
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="postalCode">Code postal</Label>
+                    <Input
+                      id="postalCode"
+                      value={isEditing ? editData.postalCode : (user?.postalCode || '')}
+                      onChange={(e) => setEditData(prev => ({ ...prev, postalCode: e.target.value }))}
+                      disabled={!isEditing}
+                      placeholder="75001"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="city">Ville</Label>
+                    <Input
+                      id="city"
+                      value={isEditing ? editData.city : (user?.city || '')}
+                      onChange={(e) => setEditData(prev => ({ ...prev, city: e.target.value }))}
+                      disabled={!isEditing}
+                      placeholder="Paris"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="country">Pays</Label>
+                    <Input
+                      id="country"
+                      value={isEditing ? editData.country : (user?.country || '')}
+                      onChange={(e) => setEditData(prev => ({ ...prev, country: e.target.value }))}
+                      disabled={!isEditing}
+                      placeholder="France"
+                    />
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -260,7 +299,7 @@ export function DonorProfile() {
                   </div>
                   <input
                     type="checkbox"
-                    checked={isEditing ? editData.preferences.emailNotifications : (profile?.preferences?.emailNotifications ?? true)}
+                    checked={isEditing ? editData.preferences.emailNotifications : (user?.preferences?.emailNotifications ?? true)}
                     onChange={(e) => setEditData(prev => ({
                       ...prev,
                       preferences: { ...prev.preferences, emailNotifications: e.target.checked }
@@ -279,7 +318,7 @@ export function DonorProfile() {
                   </div>
                   <input
                     type="checkbox"
-                    checked={isEditing ? editData.preferences.donationReceipts : (profile?.preferences?.donationReceipts ?? true)}
+                    checked={isEditing ? editData.preferences.donationReceipts : (user?.preferences?.donationReceipts ?? true)}
                     onChange={(e) => setEditData(prev => ({
                       ...prev,
                       preferences: { ...prev.preferences, donationReceipts: e.target.checked }
@@ -298,7 +337,7 @@ export function DonorProfile() {
                   </div>
                   <input
                     type="checkbox"
-                    checked={isEditing ? editData.preferences.newsletterUpdates : (profile?.preferences?.newsletterUpdates ?? false)}
+                    checked={isEditing ? editData.preferences.newsletterUpdates : (user?.preferences?.newsletterUpdates ?? false)}
                     onChange={(e) => setEditData(prev => ({
                       ...prev,
                       preferences: { ...prev.preferences, newsletterUpdates: e.target.checked }
@@ -317,7 +356,7 @@ export function DonorProfile() {
                   </div>
                   <input
                     type="checkbox"
-                    checked={isEditing ? editData.preferences.campaignUpdates : (profile?.preferences?.campaignUpdates ?? true)}
+                    checked={isEditing ? editData.preferences.campaignUpdates : (user?.preferences?.campaignUpdates ?? true)}
                     onChange={(e) => setEditData(prev => ({
                       ...prev,
                       preferences: { ...prev.preferences, campaignUpdates: e.target.checked }
@@ -336,28 +375,28 @@ export function DonorProfile() {
             <Card>
               <CardContent className="p-4">
                 <div className="text-sm font-medium text-gray-500">Total des dons</div>
-                <div className="text-2xl font-bold">{profile?.stats?.totalDonations || 0}</div>
+                <div className="text-2xl font-bold">{donorStats?.totalDonations || 0}</div>
               </CardContent>
             </Card>
             
             <Card>
               <CardContent className="p-4">
                 <div className="text-sm font-medium text-gray-500">Montant total</div>
-                <div className="text-2xl font-bold">{(profile?.stats?.totalAmount || 0).toFixed(2)}€</div>
+                <div className="text-2xl font-bold">{(donorStats?.totalAmount || 0).toFixed(2)}€</div>
               </CardContent>
             </Card>
             
             <Card>
               <CardContent className="p-4">
                 <div className="text-sm font-medium text-gray-500">Don moyen</div>
-                <div className="text-2xl font-bold">{(profile?.stats?.averageDonation || 0).toFixed(2)}€</div>
+                <div className="text-2xl font-bold">{donorStats?.totalDonations > 0 ? ((donorStats?.totalAmount || 0) / donorStats.totalDonations).toFixed(2) : '0.00'}€</div>
               </CardContent>
             </Card>
             
             <Card>
               <CardContent className="p-4">
                 <div className="text-sm font-medium text-gray-500">Associations</div>
-                <div className="text-2xl font-bold">{profile?.stats?.associationsCount || 0}</div>
+                <div className="text-2xl font-bold">{donorStats?.favoriteAssociations?.length || 0}</div>
               </CardContent>
             </Card>
           </div>
@@ -371,23 +410,23 @@ export function DonorProfile() {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
-                {(profile?.stats?.totalDonations ?? 0) >= 1 && (
+                {(donorStats?.totalDonations ?? 0) >= 1 && (
                   <Badge variant="secondary">🎯 Premier don</Badge>
                 )}
-                {(profile?.stats?.totalDonations ?? 0) >= 5 && (
+                {(donorStats?.totalDonations ?? 0) >= 5 && (
                   <Badge variant="secondary">⭐ Donateur régulier</Badge>
                 )}
-                {(profile?.stats?.totalDonations ?? 0) >= 10 && (
+                {(donorStats?.totalDonations ?? 0) >= 10 && (
                   <Badge variant="secondary">💎 Soutien fidèle</Badge>
                 )}
-                {(profile?.stats?.totalAmount ?? 0) >= 100 && (
+                {(donorStats?.totalAmount ?? 0) >= 100 && (
                   <Badge variant="secondary">🏆 Généreux donateur</Badge>
                 )}
-                {(profile?.stats?.associationsCount ?? 0) >= 3 && (
+                {(donorStats?.favoriteAssociations?.length ?? 0) >= 3 && (
                   <Badge variant="secondary">🌟 Diversifié</Badge>
                 )}
                 
-                {(!profile?.stats?.totalDonations || profile.stats.totalDonations === 0) && (
+                {(!donorStats?.totalDonations || donorStats.totalDonations === 0) && (
                   <p className="text-gray-500">Aucun badge pour le moment. Faites votre premier don !</p>
                 )}
               </div>
@@ -401,16 +440,16 @@ export function DonorProfile() {
             <CardContent className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Membre depuis</span>
-                <span>{profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString('fr-FR') : 'N/A'}</span>
+                <span>{user?.createdAt ? new Date(user.createdAt).toLocaleDateString('fr-FR') : 'N/A'}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Dernière activité</span>
-                <span>{profile?.lastLoginAt ? new Date(profile.lastLoginAt).toLocaleDateString('fr-FR') : 'N/A'}</span>
+                <span>{user?.lastLoginAt ? new Date(user.lastLoginAt).toLocaleDateString('fr-FR') : 'N/A'}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Statut</span>
-                <Badge variant={profile?.isActive ? 'default' : 'secondary'}>
-                  {profile?.isActive ? 'Actif' : 'Inactif'}
+                <Badge variant={user?.isActive ? 'default' : 'secondary'}>
+                  {user?.isActive ? 'Actif' : 'Inactif'}
                 </Badge>
               </div>
             </CardContent>

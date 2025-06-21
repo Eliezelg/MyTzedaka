@@ -14,6 +14,7 @@ import { useAssociationBySlug, useUpdateAssociation } from '@/lib/services/assoc
 import { AssociationFromAPI } from '@/types/association-with-campaigns';
 import AssociationSettings from '@/components/associations/AssociationSettings';
 import StripeStatusCard from '@/components/associations/stripe-status-card';
+import { TaxReceiptsList } from '@/components/tax-receipts/tax-receipts-list';
 import { 
   Users, 
   Settings, 
@@ -36,7 +37,8 @@ import {
   Save,
   X,
   Target,
-  Star
+  Star,
+  Receipt
 } from 'lucide-react';
 
 export default function AssociationDashboard({ params }: { params: { slug: string } }) {
@@ -283,6 +285,10 @@ export default function AssociationDashboard({ params }: { params: { slug: strin
             <TabsTrigger value="admins">Gestion des admins</TabsTrigger>
             <TabsTrigger value="members">Membres</TabsTrigger>
             <TabsTrigger value="campaigns">Campagnes</TabsTrigger>
+            <TabsTrigger value="receipts" className="flex items-center gap-2">
+              <Receipt className="h-4 w-4" />
+              Reçus fiscaux
+            </TabsTrigger>
             <TabsTrigger value="advanced">Paramètres avancés</TabsTrigger>
           </TabsList>
 
@@ -592,6 +598,11 @@ export default function AssociationDashboard({ params }: { params: { slug: strin
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* Onglet Reçus fiscaux */}
+          <TabsContent value="receipts" className="space-y-6">
+            <TaxReceiptsList mode="tenant" tenantId={association.tenantId} />
           </TabsContent>
         </Tabs>
       </div>

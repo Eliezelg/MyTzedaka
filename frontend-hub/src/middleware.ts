@@ -10,9 +10,45 @@ const intlMiddleware = createIntlMiddleware({
   localeDetection: true
 });
 
+// Routes qui nécessitent une authentification
+const protectedRoutes = [
+  '/associations/create',
+  '/dashboard',
+  '/associations/*/dashboard',
+  '/associations/*/stripe-onboarding'
+];
+
 export default function middleware(request: NextRequest) {
-  // Appliquer le middleware next-intl pour toutes les routes
-  return intlMiddleware(request);
+  const response = intlMiddleware(request);
+  
+  // Extraire la locale et le path
+  const pathname = request.nextUrl.pathname;
+  const locale = pathname.split('/')[1];
+  const pathWithoutLocale = pathname.replace(`/${locale}`, '') || '/';
+  
+  // Vérifier si la route est protégée
+  const isProtectedRoute = protectedRoutes.some(route => {
+    if (route.includes('*')) {
+      const pattern = route.replace('*', '[^/]+');
+      const regex = new RegExp(`^${pattern}$`);
+      return regex.test(pathWithoutLocale);
+    }
+    return pathWithoutLocale === route;
+  });
+  
+  if (isProtectedRoute) {
+    // Vérifier la présence du token d'authentification
+    const authToken = request.cookies.get('auth_token')?.value;
+    
+    if (!authToken) {
+      // Rediriger vers la page de login avec returnUrl
+      const loginUrl = new URL(`/${locale}/login`, request.url);
+      loginUrl.searchParams.set('returnUrl', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+  }
+  
+  return response;
 }
 
 export const config = {

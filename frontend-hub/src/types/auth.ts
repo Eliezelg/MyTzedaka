@@ -3,8 +3,23 @@ export interface User {
   email: string
   firstName: string
   lastName: string
+  phone?: string
+  addressLine1?: string
+  addressLine2?: string
+  city?: string
+  postalCode?: string
+  country?: string
+  preferences?: {
+    emailNotifications: boolean
+    donationReceipts: boolean
+    newsletterUpdates: boolean
+    campaignUpdates: boolean
+  }
   role: UserRole
   permissions: Record<string, any>
+  lastLoginAt?: string
+  createdAt?: string
+  isActive?: boolean
 }
 
 export interface Tenant {

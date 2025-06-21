@@ -122,7 +122,33 @@ export class DonorPortalService {
       });
 
       const userIds = users.map(u => u.id);
+      
+      // Debug logs
+      this.logger.log(`🔍 Debug getDonorHistory pour ${donorProfile.email}:`);
+      this.logger.log(`📧 Email du profil: ${donorProfile.email}`);
+      this.logger.log(`👥 Utilisateurs trouvés: ${users.length}`);
+      this.logger.log(`🆔 UserIds: ${JSON.stringify(userIds)}`);
+      
       where.userId = { in: userIds };
+      
+      // Debug: Chercher aussi directement toutes les donations avec cet email
+      const allDonationsForEmail = await this.prisma.donation.findMany({
+        where: {
+          user: {
+            email: donorProfile.email
+          }
+        },
+        include: {
+          user: {
+            select: { id: true, email: true, tenantId: true }
+          }
+        }
+      });
+      
+      this.logger.log(`💰 Donations directes par email: ${allDonationsForEmail.length}`);
+      if (allDonationsForEmail.length > 0) {
+        this.logger.log(`💰 Première donation: userId=${allDonationsForEmail[0].userId}, userEmail=${allDonationsForEmail[0].user?.email}`);
+      }
 
       if (startDate) {
         where.createdAt = { gte: new Date(startDate) };
@@ -318,6 +344,58 @@ export class DonorPortalService {
       };
     } catch (error) {
       this.logger.error(`Erreur getDonorStats pour ${donorProfileId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Synchronise les statistiques d'un profil donateur avec ses donations existantes
+   */
+  async syncDonorProfileStats(email: string): Promise<DonorProfileDto> {
+    try {
+      // Trouver ou créer le profil donateur
+      let donorProfile = await this.findOrCreateDonorProfile(email);
+      
+      // Récupérer tous les utilisateurs avec cet email
+      const users = await this.prisma.user.findMany({
+        where: { email }
+      });
+
+      const userIds = users.map(u => u.id);
+
+      // Calculer les statistiques globales
+      const stats = await this.prisma.donation.aggregate({
+        where: {
+          userId: { in: userIds },
+          status: 'COMPLETED' // Seulement les dons confirmés
+        },
+        _count: { id: true },
+        _sum: { amount: true }
+      });
+
+      // Trouver la dernière donation
+      const lastDonation = await this.prisma.donation.findFirst({
+        where: {
+          userId: { in: userIds },
+          status: 'COMPLETED'
+        },
+        orderBy: { createdAt: 'desc' }
+      });
+
+      // Mettre à jour le profil donateur
+      const updatedProfile = await this.prisma.donorProfile.update({
+        where: { email },
+        data: {
+          totalDonations: stats._count.id || 0,
+          totalAmount: stats._sum.amount || 0,
+          lastDonationAt: lastDonation?.createdAt || null
+        }
+      });
+
+      this.logger.log(`Statistiques synchronisées pour ${email}: ${stats._count.id} dons, ${stats._sum.amount}€`);
+      return this.mapToDto(updatedProfile);
+    } catch (error) {
+      this.logger.error(`Erreur syncDonorProfileStats pour ${email}:`, error);
       throw error;
     }
   }

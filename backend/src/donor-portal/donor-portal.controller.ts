@@ -12,7 +12,7 @@ import {
   HttpStatus
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { HubJwtAuthGuard } from '@/auth/guards/hub-jwt-auth.guard';
 import { DonorPortalService } from './donor-portal.service';
 import { 
   CreateDonorProfileDto, 
@@ -24,7 +24,7 @@ import {
 
 @ApiTags('donor-portal')
 @Controller('donor-portal')
-@UseGuards(JwtAuthGuard)
+@UseGuards(HubJwtAuthGuard)
 @ApiBearerAuth()
 export class DonorPortalController {
   constructor(private readonly donorPortalService: DonorPortalService) {}
@@ -121,6 +121,20 @@ export class DonorPortalController {
     } catch (error) {
       throw new HttpException(
         'Erreur lors de la mise à jour des favoris',
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @Post('profile/:email/sync')
+  @ApiOperation({ summary: 'Synchroniser les statistiques du profil donateur' })
+  @ApiResponse({ status: 200, type: DonorProfileDto })
+  async syncDonorProfile(@Param('email') email: string): Promise<DonorProfileDto> {
+    try {
+      return await this.donorPortalService.syncDonorProfileStats(email);
+    } catch (error) {
+      throw new HttpException(
+        'Erreur lors de la synchronisation du profil donateur',
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }

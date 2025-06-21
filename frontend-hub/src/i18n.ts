@@ -14,7 +14,7 @@ export default getRequestConfig(async ({ locale }) => {
     const defaultCommon = (await import(`../messages/${defaultLocale}/common.json`)).default;
     return {
       locale: defaultLocale,
-      messages: { common: defaultCommon, ...defaultIndex }
+      messages: { common: defaultCommon, index: defaultIndex }
     };
   }
 
@@ -42,6 +42,7 @@ export default getRequestConfig(async ({ locale }) => {
       'filters',
       'forms',
       'goals',
+      'hero',
       'metrics',
       'navigation',
       'page',
@@ -70,7 +71,7 @@ export default getRequestConfig(async ({ locale }) => {
       messages: {
         ...messages,
         common: commonMessages,
-        ...indexMessages
+        index: indexMessages
       }
     };
   } catch (error) {
@@ -79,7 +80,7 @@ export default getRequestConfig(async ({ locale }) => {
     const fallbackCommon = (await import(`../messages/${defaultLocale}/common.json`)).default;
     return {
       locale: defaultLocale,
-      messages: { common: fallbackCommon, ...fallbackIndex }
+      messages: { common: fallbackCommon, index: fallbackIndex }
     };
   }
 });

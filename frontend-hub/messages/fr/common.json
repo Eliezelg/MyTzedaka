@@ -72,14 +72,7 @@
     "required": "obligatoire"
   },
   "profile": {
-    "phone": "Téléphone",
-    "accountType": "Type de compte",
-    "chooseAccountType": "Choisissez votre type de compte",
-    "donor": "Donateur",
-    "associationAdmin": "Responsable d'association",
-    "associationName": "Nom de l'association",
-    "description": "Description",
-    "descriptionPlaceholder": "Décrivez brièvement votre association..."
+    "phone": "Téléphone"
   },
   "legal": {
     "bySigningUp": "En continuant, vous acceptez nos",

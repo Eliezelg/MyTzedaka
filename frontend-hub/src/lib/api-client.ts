@@ -63,15 +63,21 @@ export class ApiClient {
     })
     
     const config: RequestInit = {
+      ...options,
       headers: {
         ...this.defaultHeaders,
         // ✅ Ajouter automatiquement Authorization header si token présent
         ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
         ...options.headers,
       },
-      ...options,
     }
 
+    console.log('📤 Debug headers construction:', {
+      defaultHeaders: this.defaultHeaders,
+      tokenHeader: token ? { 'Authorization': `Bearer ${token.substring(0, 20)}...` } : {},
+      optionsHeaders: options.headers,
+      finalHeaders: config.headers
+    })
     console.log('📤 Headers envoyés:', config.headers)
 
     try {

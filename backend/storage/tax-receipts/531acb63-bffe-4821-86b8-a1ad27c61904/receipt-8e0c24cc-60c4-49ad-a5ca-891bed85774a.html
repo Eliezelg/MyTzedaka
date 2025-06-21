@@ -1,0 +1,114 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reçu Fiscal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .receipt-number {
+            font-size: 14px;
+            color: #666;
+        }
+        .section {
+            margin-bottom: 25px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        .donation-info {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .legal-clause {
+            font-size: 12px;
+            color: #555;
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-left: 4px solid #007cba;
+        }
+        .signature {
+            text-align: right;
+            margin-top: 40px;
+            font-style: italic;
+        }
+        @media print {
+            body { margin: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">REÇU AU TITRE DES DONS</div>
+        <div class="receipt-number">N° 2025-SIA-000002</div>
+        <div class="receipt-number">Date: 19/06/2025</div>
+    </div>
+
+    <div class="info-grid">
+        <div class="section">
+            <div class="section-title">DONATEUR / DONOR</div>
+            <div><strong>Elie Elg</strong></div>
+            <div>45 rue du fbg de pierre, 67000 STRASBOURG, France</div>
+            <div>eliezelg2@gmail.com</div>
+            <div>+33781124803</div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">BÉNÉFICIAIRE / BENEFICIARY</div>
+            <div><strong>Siah Is</strong></div>
+            <div>, FR</div>
+            <div>siahis@gmail.com</div>
+            
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">DÉTAILS DU DON / DONATION DETAILS</div>
+        <div class="donation-info">
+            <div><strong>Montant:</strong> 50 EUR</div>
+            <div><strong>Date du don:</strong> 19/06/2025</div>
+            <div><strong>Mode de paiement:</strong> card</div>
+            <div><strong>Taux de déduction:</strong> 66%</div>
+        </div>
+    </div>
+
+    <div class="legal-clause">
+        Reçu au titre des dons à certains organismes d'intérêt général.<br>Article 200 et 238 bis du Code général des impôts.<br>L'association certifie sur l'honneur que les dons et versements qu'elle reçoit ouvrent droit à la réduction d'impôt prévue à l'article 200 du CGI.
+    </div>
+
+    <div class="signature">
+        Siah Is<br>
+        19/06/2025
+    </div>
+</body>
+</html>
