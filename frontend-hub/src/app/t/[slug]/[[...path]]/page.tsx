@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation'
 import { DynamicPageRenderer } from '@/components/tenant/dynamic-page-renderer'
 import { TenantHeader } from '@/components/tenant/tenant-header'
 import { TenantFooter } from '@/components/tenant/tenant-footer'
+import { TenantDonationPage } from '@/components/tenant/donation-page'
+import { TenantCampaignsPage } from '@/components/tenant/campaigns-page'
 
 interface PageProps {
   params: { 
@@ -47,18 +49,39 @@ export default async function DynamicTenantPage({ params }: PageProps) {
   
   // Vérifier si c'est une route spéciale
   if (params.path && SPECIAL_ROUTES.includes(params.path[0])) {
-    // Pour l'instant, on affiche une page temporaire
+    const route = params.path[0]
+    
     return (
       <div className="min-h-screen bg-gray-50">
         <TenantHeader />
         
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <h1 className="text-4xl font-bold mb-8 capitalize">
-            {params.path[0].replace('-', ' ')}
-          </h1>
-          <p className="text-gray-600">
-            Cette page sera bientôt disponible.
-          </p>
+        <main>
+          {route === 'donate' && <TenantDonationPage />}
+          {route === 'campaigns' && <TenantCampaignsPage />}
+          {route === 'events' && (
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+              <h1 className="text-4xl font-bold mb-8">Événements</h1>
+              <p className="text-gray-600">Cette page sera bientôt disponible.</p>
+            </div>
+          )}
+          {route === 'zmanim' && (
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+              <h1 className="text-4xl font-bold mb-8">Horaires de prière</h1>
+              <p className="text-gray-600">Cette page sera bientôt disponible.</p>
+            </div>
+          )}
+          {route === 'prayers' && (
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+              <h1 className="text-4xl font-bold mb-8">Offices</h1>
+              <p className="text-gray-600">Cette page sera bientôt disponible.</p>
+            </div>
+          )}
+          {route === 'admin' && (
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+              <h1 className="text-4xl font-bold mb-8">Administration</h1>
+              <p className="text-gray-600">Cette page sera bientôt disponible.</p>
+            </div>
+          )}
         </main>
         
         <TenantFooter />
