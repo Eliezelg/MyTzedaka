@@ -1,8 +1,6 @@
 'use client'
 
 import { ReactNode } from 'react'
-import { usePathname } from 'next/navigation'
-import { AuthProvider } from '@/contexts/AuthContext'
 import { UnifiedAuthProvider } from '@/contexts/UnifiedAuthContext'
 
 interface AuthWrapperProps {
