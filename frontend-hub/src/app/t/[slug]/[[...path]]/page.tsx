@@ -4,6 +4,7 @@ import { TenantHeader } from '@/components/tenant/tenant-header'
 import { TenantFooter } from '@/components/tenant/tenant-footer'
 import { TenantDonationPage } from '@/components/tenant/donation-page'
 import { TenantCampaignsPage } from '@/components/tenant/campaigns-page'
+import { TenantAdminDashboard } from '@/components/tenant/admin-dashboard'
 
 interface PageProps {
   params: { 
@@ -76,12 +77,7 @@ export default async function DynamicTenantPage({ params }: PageProps) {
               <p className="text-gray-600">Cette page sera bientôt disponible.</p>
             </div>
           )}
-          {route === 'admin' && (
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-              <h1 className="text-4xl font-bold mb-8">Administration</h1>
-              <p className="text-gray-600">Cette page sera bientôt disponible.</p>
-            </div>
-          )}
+          {route === 'admin' && <TenantAdminDashboard />}
         </main>
         
         <TenantFooter />
