@@ -8,10 +8,10 @@ import {
 } from '@/types/auth'
 import Cookies from 'js-cookie'
 
-const API_URL = typeof window !== 'undefined' ? '' : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002')
+const API_URL = typeof window !== 'undefined' ? '' : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002/api')
 
 class AuthService {
-  private baseUrl = `${API_URL}/api/auth`
+  private baseUrl = `${API_URL}/auth`
 
   async login(data: LoginRequest): Promise<AuthResponse> {
     // D'abord, trouver les tenants de l'utilisateur
