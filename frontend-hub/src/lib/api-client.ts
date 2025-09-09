@@ -48,15 +48,14 @@ export class ApiClient {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
-    // Ajouter automatiquement le préfixe /api si pas déjà présent
-    const apiEndpoint = endpoint.startsWith('/api') ? endpoint : `/api${endpoint}`
-    const url = `${this.baseURL}${apiEndpoint}`
+    // Ne pas ajouter /api car NEXT_PUBLIC_API_URL contient déjà /api
+    const url = `${this.baseURL}${endpoint}`
     
     // ✅ Récupérer automatiquement le token JWT depuis localStorage
     const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null
     
     console.log('🔑 ApiClient - État du token:', {
-      endpoint: apiEndpoint,
+      endpoint: endpoint,
       tokenPresent: !!token,
       tokenLength: token?.length,
       tokenPreview: token ? `${token.substring(0, 20)}...` : 'null'
