@@ -61,35 +61,3 @@ export function Breadcrumbs({
     </nav>
   )
 }
-
-// Hook pour générer automatiquement les breadcrumbs depuis l'URL
-export function useBreadcrumbs(customMapping?: Record<string, string>) {
-  const pathname = typeof window !== 'undefined' ? window.location.pathname : ''
-  
-  const segments = pathname.split('/').filter(Boolean)
-  
-  const items: BreadcrumbItem[] = segments.map((segment, index) => {
-    const href = '/' + segments.slice(0, index + 1).join('/')
-    const isLast = index === segments.length - 1
-    
-    // Mapping personnalisé ou transformation par défaut
-    let label = customMapping?.[segment] || segment
-    
-    // Transformations par défaut
-    if (label === 'associations') label = 'Associations'
-    if (label === 'campaigns') label = 'Campagnes'
-    if (label === 'search') label = 'Recherche'
-    if (label === 'dashboard') label = 'Tableau de bord'
-    if (label === 'profile') label = 'Profil'
-    
-    // Capitaliser la première lettre
-    label = label.charAt(0).toUpperCase() + label.slice(1)
-    
-    return {
-      label,
-      href: isLast ? undefined : href
-    }
-  })
-  
-  return items
-}

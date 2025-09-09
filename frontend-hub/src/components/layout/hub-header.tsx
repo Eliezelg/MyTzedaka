@@ -27,7 +27,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { SearchBar } from '@/components/hub/search-bar'
 import { LanguageSelector } from '@/components/ui/language-selector'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuthContext } from '@/hooks/useAuthContext'
 import { useNavigationTranslations, useCommonTranslations } from '@/lib/translations'
 
 interface NavigationItem {
@@ -41,7 +41,7 @@ interface NavigationItem {
 export function HubHeader() {
   const pathname = usePathname()
   const locale = useLocale()
-  const { user, logout, isLoading } = useAuth()
+  const { user, logout, isLoading } = useAuthContext()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
@@ -232,7 +232,7 @@ export function HubHeader() {
               </>
             ) : (
               <div className="flex items-center space-x-2">
-                <Link href={`/${locale}/login`}>
+                <Link href={`/${locale}/auth/login`}>
                   <Button variant="ghost" size="sm" className="flex items-center space-x-2">
                     <LogIn className="h-4 w-4" />
                     <span className="hidden sm:block">{t('login')}</span>

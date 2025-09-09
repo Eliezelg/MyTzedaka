@@ -62,6 +62,179 @@ async function main() {
 
   console.log('✅ Tenants créés:', tenant1.slug, tenant2.slug);
 
+  // Créer les modules par défaut pour chaque tenant
+  const modules1 = await prisma.tenantModules.upsert({
+    where: { tenantId: tenant1.id },
+    update: {},
+    create: {
+      tenantId: tenant1.id,
+      donations: true,
+      campaigns: true,
+      events: true,
+      blog: true,
+      gallery: true,
+      // Modules synagogue activés pour Kehilat Paris
+      zmanim: true,
+      prayers: true,
+      courses: true,
+      hebrewCalendar: true,
+      members: true,
+      // Modules avancés
+      library: true,
+      yahrzeits: true,
+      // Modules communautaires
+      newsletter: true,
+      directory: true,
+      chesed: true,
+      modulesConfig: {
+        zmanim: {
+          location: { lat: 48.8566, lng: 2.3522 },
+          calculationMethod: 'MGA'
+        }
+      }
+    }
+  });
+
+  const modules2 = await prisma.tenantModules.upsert({
+    where: { tenantId: tenant2.id },
+    update: {},
+    create: {
+      tenantId: tenant2.id,
+      donations: true,
+      campaigns: true,
+      events: true,
+      blog: true,
+      gallery: false,
+      // Modules synagogue désactivés pour Shalom Marseille
+      zmanim: false,
+      prayers: false,
+      courses: false,
+      hebrewCalendar: false,
+      members: false,
+      // Modules communautaires
+      newsletter: true,
+      directory: false,
+      chesed: false,
+      modulesConfig: {}
+    }
+  });
+
+  console.log('✅ Modules créés pour les tenants');
+
+  // Créer des pages de test pour chaque tenant
+  const homePage1 = await prisma.page.upsert({
+    where: { 
+      tenantId_slug: {
+        tenantId: tenant1.id,
+        slug: 'home'
+      }
+    },
+    update: {},
+    create: {
+      tenantId: tenant1.id,
+      title: 'Bienvenue à Kehilat Paris',
+      slug: 'home',
+      type: 'STATIC',
+      content: `
+        <h1>Bienvenue à Kehilat Paris</h1>
+        <p>Nous sommes une communauté juive dynamique au cœur de Paris.</p>
+        <p>Rejoignez-nous pour nos offices, cours de Torah et événements communautaires.</p>
+      `,
+      isActive: true,
+      status: 'PUBLISHED',
+      seo: {
+        title: 'Kehilat Paris - Communauté Juive de Paris',
+        description: 'Communauté juive dynamique au cœur de Paris',
+        keywords: ['synagogue', 'paris', 'communauté juive']
+      },
+      settings: {
+        showInNavbar: false,
+        showInFooter: false,
+        layout: 'fullwidth',
+        showTitle: false
+      },
+      tags: ['accueil', 'communauté'],
+      views: 0,
+      publishedAt: new Date()
+    }
+  });
+
+  const aboutPage1 = await prisma.page.upsert({
+    where: { 
+      tenantId_slug: {
+        tenantId: tenant1.id,
+        slug: 'about'
+      }
+    },
+    update: {},
+    create: {
+      tenantId: tenant1.id,
+      title: 'À Propos',
+      slug: 'about',
+      type: 'STATIC',
+      content: `
+        <h2>Notre Histoire</h2>
+        <p>Fondée en 1985, Kehilat Paris est devenue l'une des communautés juives les plus actives de France.</p>
+        <h2>Notre Mission</h2>
+        <p>Nous œuvrons pour maintenir et transmettre les traditions juives aux générations futures.</p>
+      `,
+      isActive: true,
+      status: 'PUBLISHED',
+      seo: {
+        title: 'À Propos - Kehilat Paris',
+        description: 'Découvrez l\'histoire et la mission de Kehilat Paris'
+      },
+      settings: {
+        showInNavbar: true,
+        navOrder: 5,
+        showInFooter: true,
+        layout: 'default',
+        showTitle: true
+      },
+      tags: ['à propos', 'histoire'],
+      views: 0,
+      publishedAt: new Date()
+    }
+  });
+
+  const homePage2 = await prisma.page.upsert({
+    where: { 
+      tenantId_slug: {
+        tenantId: tenant2.id,
+        slug: 'home'
+      }
+    },
+    update: {},
+    create: {
+      tenantId: tenant2.id,
+      title: 'Bienvenue chez Shalom Marseille',
+      slug: 'home',
+      type: 'STATIC',
+      content: `
+        <h1>Shalom et Bienvenue!</h1>
+        <p>La Communauté Shalom Marseille vous accueille chaleureusement.</p>
+        <p>Ensemble, construisons une communauté solidaire et engagée.</p>
+      `,
+      isActive: true,
+      status: 'PUBLISHED',
+      seo: {
+        title: 'Shalom Marseille - Communauté Juive',
+        description: 'Communauté juive solidaire à Marseille'
+      },
+      settings: {
+        showInNavbar: false,
+        showInFooter: false,
+        layout: 'fullwidth',
+        showTitle: false
+      },
+      tags: ['accueil'],
+      views: 0,
+      publishedAt: new Date()
+    }
+  });
+
+  console.log('✅ Pages créées pour les tenants');
+
   // Créer des utilisateurs de test
   const user1 = await prisma.user.upsert({
     where: { 

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuthContext } from '@/hooks/useAuthContext'
 import { 
   Card, 
   CardContent, 
@@ -64,7 +64,7 @@ interface ProgressiveCreationFormProps {
 
 export default function ProgressiveCreationForm({ onComplete }: ProgressiveCreationFormProps) {
   const router = useRouter()
-  const { user } = useAuth()
+  const { user } = useAuthContext()
   const createAssociation = useCreateAssociation()
   
   // États principaux

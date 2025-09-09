@@ -1,35 +1,17 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx jest:*)",
-      "Bash(npm run type-check:*)",
-      "Bash(ls:*)",
-      "Bash(npm run build:*)",
-      "Bash(export NODE_OPTIONS=--max-old-space-size=4096)",
-      "Bash(npx nest build:*)",
-      "Bash(timeout 60 npm run build)",
-      "Bash(find:*)",
-      "Bash(mkdir:*)",
-      "Bash(mv:*)",
-      "Bash(true)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(git config:*)",
       "Bash(npm run dev:*)",
-      "Bash(npm install:*)",
-      "Bash(node:*)",
-      "Bash(rm:*)",
-      "Bash(grep:*)",
-      "Bash(rg:*)",
-      "Bash(npx ts-node:*)",
-      "Bash(npx prisma generate:*)",
-      "Bash(pkill:*)",
-      "Bash(npm run lint:*)",
       "Bash(npm run start:dev:*)",
-      "Bash(npx prisma migrate dev:*)",
-      "Bash(NODE_OPTIONS=--max-old-space-size=4096 npx prisma generate)",
-      "Bash(npm uninstall:*)"
+      "Bash(curl:*)",
+      "Bash(node:*)",
+      "Bash(git add:*)"
     ],
-    "deny": []
+    "deny": [],
+    "ask": [],
+    "defaultMode": "acceptEdits",
+    "additionalDirectories": [
+      "/home/eli/Documents"
+    ]
   }
 }

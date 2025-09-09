@@ -19,7 +19,7 @@ import {
 } from 'lucide-react'
 import { apiClient } from '@/lib/api-client'
 import { useTranslations } from 'next-intl'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuthContext } from '@/hooks/useAuthContext'
 
 export default function StripeOnboardingPage() {
   const t = useTranslations()
@@ -27,7 +27,7 @@ export default function StripeOnboardingPage() {
   const params = useParams()
   const slug = params?.slug as string
   const locale = params?.locale as string || 'fr'
-  const { user, isAuthenticated, isLoading: authLoading } = useAuth()
+  const { user, isAuthenticated, isLoading: authLoading } = useAuthContext()
   
   const { data: association, isLoading: associationLoading, error: associationError } = useAssociationBySlug(slug)
   const [loading, setLoading] = useState(true)

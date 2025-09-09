@@ -40,6 +40,7 @@ export interface AuthResponse {
 export interface LoginRequest {
   email: string
   password: string
+  tenantSlug?: string
 }
 
 export interface RegisterRequest {
@@ -48,6 +49,7 @@ export interface RegisterRequest {
   firstName: string
   lastName: string
   phone?: string
+  tenantSlug?: string
 }
 
 export interface AuthState {
@@ -59,7 +61,7 @@ export interface AuthState {
   error: string | null
 }
 
-export type UserRole = 'DONATOR' | 'ASSOCIATION_ADMIN' | 'PLATFORM_ADMIN'
+export type UserRole = 'DONATOR' | 'DONOR' | 'MEMBER' | 'ASSOCIATION_ADMIN' | 'PLATFORM_ADMIN' | 'ADMIN' | 'SUPER_ADMIN' | 'TREASURER' | 'MANAGER'
 
 export interface ResetPasswordRequest {
   email: string

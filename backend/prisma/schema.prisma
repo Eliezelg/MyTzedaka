@@ -22,6 +22,8 @@ model Tenant {
   theme       Json     @default("{}")  // Configuration thème personnalisé
   settings    Json     @default("{}")  // Paramètres spécifiques
   logoPath    String?  // Chemin local du logo de l'association
+  templateId  String?  // ID du template sélectionné
+  templateData Json    @default("{}")  // Données personnalisées du template
   
   // Configuration Stripe
   stripeMode  StripeMode @default(PLATFORM) // Mode de paiement Stripe
@@ -40,6 +42,21 @@ model Tenant {
   associationListing AssociationListing?
   stripeAccount StripeAccount? // Compte Stripe associé
   taxReceipts TaxReceipt[] // Reçus fiscaux émis
+  pages       Page[] // Pages dynamiques
+  tenantSettings TenantSettings? // Paramètres du tenant
+  modules     TenantModules? // Modules activés pour ce tenant
+  zmanimSettings ZmanimSettings? // Configuration Zmanim
+  prayerSettings PrayerSettings? // Configuration des horaires de prières
+  prayerSchedules PrayerSchedule[] // Horaires de prières planifiés
+  parnassSponsors ParnassSponsor[] // Sponsors Parnass
+  parnassSettings ParnassSettings? // Configuration Parnass
+  
+  // Relations système de membres
+  members     Member[]
+  families    Family[]
+  membershipFees MembershipFee[]
+  seatReservations SeatReservation[]
+  eventRegistrations EventRegistration[]
   
   @@map("tenants")
 }
@@ -65,7 +82,8 @@ model User {
   
   // Identifiants
   email       String
-  cognitoId   String   @unique // ID utilisateur AWS Cognito
+  password    String?  // Hash du mot de passe (bcrypt)
+  cognitoId   String?  @unique // ID utilisateur AWS Cognito (optionnel maintenant)
   
   // Informations personnelles
   firstName   String
@@ -100,6 +118,12 @@ model User {
   campaigns   Campaign[]
   gmahs       Gmah[]
   memberships UserTenantMembership[] // Relations multi-tenant
+  pages       Page[] // Pages créées par l'utilisateur
+  refreshTokens RefreshToken[] // Tokens de rafraîchissement
+  parnassSponsors ParnassSponsor[] // Sponsors Parnass de l'utilisateur
+  
+  // Relations système de membres
+  members     Member[]
   
   @@unique([tenantId, email]) // Unique email par tenant
   @@unique([email], name: "unique_email_when_global") // Email unique pour utilisateurs globaux
@@ -180,6 +204,8 @@ model Donation {
   user        User     @relation(fields: [userId], references: [id])
   campaign    Campaign? @relation(fields: [campaignId], references: [id])
   taxReceipt  TaxReceipt? // Reçu fiscal associé
+  parnassSponsor ParnassSponsor? // Sponsor Parnass associé
+  membershipFees MembershipFee[] // Cotisations payées via ce don
   
   @@index([userId]) // Index pour requêtes cross-tenant par user
   @@index([tenantId, source]) // Index pour filtrer par source
@@ -340,6 +366,221 @@ enum CampaignStatus {
   CANCELLED   // Annulée
 }
 
+// Table Zmanim Settings (Configuration des horaires de prière)
+model ZmanimSettings {
+  id          String   @id @default(cuid())
+  tenantId    String   @unique
+  
+  // Location
+  latitude    Float
+  longitude   Float
+  elevation   Float    @default(0)
+  timezone    String   @default("Europe/Paris")
+  cityName    String
+  
+  // Display preferences
+  showSeconds      Boolean @default(false)
+  use24HourFormat  Boolean @default(true)
+  showHebrewDate   Boolean @default(true)
+  showParasha      Boolean @default(true)
+  
+  // Selected zmanim to display (deprecated - use individual display fields)
+  selectedZmanim   String[] @default(["hanetzHaChama", "sofZmanShmaGRA", "sofZmanTefilaGRA", "chatzot", "minchaKetana", "shkiatHaChama", "tzeitHakochavim"])
+  
+  // Calculation methods
+  calculationMethod String @default("GRA") // GRA, MGA, etc.
+  candleLightingOffset Int @default(18) // Minutes before sunset
+  havdalahOffset       Int @default(72) // Minutes after sunset
+  
+  // Aube - Dawn display options
+  displayAlotHashachar72   Boolean @default(false)
+  displayAlotHashachar90   Boolean @default(false)
+  displayAlotHashachar120  Boolean @default(true)
+  displayAlotHashachar16_1 Boolean @default(false)
+  
+  // Misheyakir display options
+  displayMisheyakir10_2    Boolean @default(false)
+  displayMisheyakir11      Boolean @default(true)
+  displayMisheyakir11_5    Boolean @default(false)
+  
+  // Sunrise display options
+  displayHanetzHaChama     Boolean @default(true)
+  displayHanetzElevation   Boolean @default(false)
+  
+  // Shema display options
+  displaySofZmanShmaGRA    Boolean @default(true)
+  displaySofZmanShmaMGA    Boolean @default(true)
+  displaySofZmanShmaFixed  Boolean @default(false)
+  
+  // Tefila display options
+  displaySofZmanTfilaGRA   Boolean @default(true)
+  displaySofZmanTfilaMGA   Boolean @default(false)
+  displaySofZmanTfilaFixed Boolean @default(false)
+  
+  // Midday
+  displayChatzot           Boolean @default(true)
+  
+  // Mincha display options
+  displayMinchaGedola      Boolean @default(true)
+  displayMinchaGedolaAteret Boolean @default(false)
+  displayMinchaKetana      Boolean @default(true)
+  displayMinchaKetanaAteret Boolean @default(false)
+  displayPlagHamincha      Boolean @default(false)
+  displayPlagHaminchaAteret Boolean @default(false)
+  
+  // Candle lighting display options
+  displayCandleLighting    Boolean @default(true)
+  displayCandleLighting20  Boolean @default(false)
+  displayCandleLighting30  Boolean @default(false)
+  displayCandleLighting40  Boolean @default(false)
+  
+  // Sunset display options
+  displayShkiatHaChama     Boolean @default(true)
+  displayShkiatElevation   Boolean @default(false)
+  displayBainHashmashot    Boolean @default(false)
+  
+  // Tzeis display options
+  displayTzeitHakochavim   Boolean @default(true)
+  displayTzeit5_95         Boolean @default(false)
+  displayTzeit7_083        Boolean @default(false)
+  displayTzeit8_5          Boolean @default(false)
+  displayTzeit13           Boolean @default(false)
+  displayTzeit16_1         Boolean @default(false)
+  displayTzeit18           Boolean @default(false)
+  displayTzeit19_8         Boolean @default(false)
+  displayTzeit24           Boolean @default(false)
+  displayTzeit26           Boolean @default(false)
+  displayTzeit42           Boolean @default(false)
+  displayTzeit50           Boolean @default(false)
+  displayTzeit72           Boolean @default(true)
+  displayTzeit90           Boolean @default(false)
+  displayTzeit120          Boolean @default(false)
+  
+  // Shabbat/Yom Tov display options
+  displayTzeitShabbat      Boolean @default(true)
+  displayTzeitShabbatRT    Boolean @default(false)
+  displayHavdalah8_5       Boolean @default(false)
+  displayHavdalah42        Boolean @default(false)
+  displayHavdalah50        Boolean @default(false)
+  displayHavdalah60        Boolean @default(false)
+  displayHavdalah72        Boolean @default(true)
+  
+  // Additional display options
+  displayShaahZmanisGRA    Boolean @default(false)
+  displayShaahZmanisMGA    Boolean @default(false)
+  displayEarliestTallit    Boolean @default(false)
+  displayEarliestTefillin  Boolean @default(false)
+  
+  // Nouvelles fonctionnalités étendues
+  displayDafYomi          Boolean @default(false)
+  displayMolad            Boolean @default(false)
+  displayChametzTimes     Boolean @default(false)  // Pour Pessah
+  
+  // Metadata
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  @@map("zmanim_settings")
+}
+
+// Table Prayer Times (Horaires de prières)
+model PrayerSettings {
+  id          String   @id @default(cuid())
+  tenantId    String   @unique
+  
+  // Configuration générale
+  calculationMode String @default("ZMANIM") // ZMANIM, FIXED, HYBRID
+  roundingMode    String @default("NONE") // NONE, FIVE_MIN, TEN_MIN
+  
+  // Shaharit (Prière du matin)
+  shaharitMode    String @default("FIXED") // FIXED, BEFORE_NETZ, AFTER_NETZ, BEFORE_SHEMA_GRA, BEFORE_SHEMA_MGA
+  shaharitTime    String? // Heure fixe (ex: "07:00")
+  shaharitOffset  Int @default(30)    // Minutes avant/après hanetz ou avant Shema
+  shaharitWeekday String? // Heure en semaine
+  shaharitShabbat String? // Heure du Shabbat
+  shaharitYomTov  String? // Heure de Yom Tov
+  
+  // Minha (Prière de l'après-midi)
+  minhaMode       String @default("ZMANIM") // FIXED, ZMANIM_BASED, BEFORE_SHKIA
+  minhaTime       String? // Heure fixe
+  minhaOffset     Int @default(20) // Minutes avant shkia
+  minhaWeekday    String?
+  minhaShabbat    String?
+  minhaYomTov     String?
+  
+  // Arvit/Maariv (Prière du soir)
+  arvitMode       String @default("ZMANIM") // FIXED, AFTER_SHKIA, AFTER_TZET
+  arvitTime       String? // Heure fixe
+  arvitOffset     Int @default(0) // Minutes après shkia ou tzet
+  arvitWeekday    String?
+  arvitShabbat    String? // Motzei Shabbat
+  
+  // Selichot (période avant Rosh Hashana)
+  selichotEnabled Boolean @default(false)
+  selichotTime    String? // Ex: "05:30"
+  
+  // Kriat Shema al HaMita
+  shemaMode       String @default("BEFORE_CHATZOT") // FIXED, BEFORE_CHATZOT, CUSTOM
+  shemaOffset     Int @default(45) // Minutes avant chatzot layla
+  
+  // Horaires spéciaux
+  specialTimes    Json @default("{}") // Pour stocker des horaires exceptionnels
+  
+  // Notifications
+  enableNotifications Boolean @default(true)
+  notificationMinutes Int @default(10) // Minutes avant la prière
+  
+  // Métadonnées
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  schedules   PrayerSchedule[]
+  
+  @@map("prayer_settings")
+}
+
+// Table des horaires de prières calculés/planifiés
+model PrayerSchedule {
+  id          String   @id @default(cuid())
+  tenantId    String
+  settingsId  String
+  
+  date        DateTime @db.Date
+  dayType     String   // WEEKDAY, SHABBAT, YOM_TOV, FAST_DAY
+  
+  // Horaires calculés pour ce jour
+  shaharit    String?
+  minha       String?
+  arvit       String?
+  selichot    String?
+  
+  // Horaires additionnels
+  musaf       String? // Pour Shabbat et Yom Tov
+  neilah      String? // Pour Yom Kippour
+  
+  // Informations supplémentaires
+  notes       String?
+  isSpecial   Boolean @default(false)
+  specialName String? // Nom de l'événement spécial
+  
+  // Métadonnées
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  tenant      Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  settings    PrayerSettings @relation(fields: [settingsId], references: [id], onDelete: Cascade)
+  
+  @@unique([tenantId, date])
+  @@index([date])
+  @@map("prayer_schedules")
+}
+
 // Table Gmah (prêts sans intérêt)
 model Gmah {
   id          String   @id @default(uuid())
@@ -488,6 +729,52 @@ model TenantDonorAccess {
   @@map("tenant_donor_access")
 }
 
+// Table des modules activés par tenant
+model TenantModules {
+  id          String   @id @default(uuid())
+  tenantId    String   @unique
+  
+  // Modules de base
+  donations        Boolean @default(true)   // Système de dons
+  campaigns        Boolean @default(true)   // Campagnes de collecte
+  events           Boolean @default(true)   // Événements
+  blog             Boolean @default(true)   // Blog/Actualités
+  gallery          Boolean @default(false)  // Galerie photos
+  
+  // Modules synagogue
+  zmanim           Boolean @default(false)  // Horaires halakhiques
+  prayers          Boolean @default(false)  // Horaires de prières
+  courses          Boolean @default(false)  // Planning des cours
+  hebrewCalendar   Boolean @default(false)  // Calendrier hébraïque
+  members          Boolean @default(false)  // Gestion des membres
+  
+  // Modules avancés
+  library          Boolean @default(false)  // Bibliothèque de textes
+  yahrzeits        Boolean @default(false)  // Anniversaires de décès
+  seatingChart     Boolean @default(false)  // Plan de synagogue
+  mikvah           Boolean @default(false)  // Réservation Mikvé
+  kashrut          Boolean @default(false)  // Informations cacherout
+  eruv             Boolean @default(false)  // Status de l'Erouv
+  
+  // Modules communautaires
+  marketplace      Boolean @default(false)  // Petites annonces
+  directory        Boolean @default(false)  // Annuaire communautaire
+  chesed           Boolean @default(false)  // Entraide (covoiturage, etc.)
+  newsletter       Boolean @default(false)  // Newsletter
+  
+  // Configuration détaillée par module (JSON)
+  modulesConfig    Json    @default("{}")   // Configuration spécifique par module
+  
+  // Métadonnées
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  @@map("tenant_modules")
+}
+
 // Table des associations (vue publique sur la plateforme)
 model AssociationListing {
   id          String   @id @default(uuid())
@@ -564,4 +851,552 @@ model StripeAccount {
   tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   
   @@map("stripe_accounts")
+}
+
+// Pages dynamiques
+model Page {
+  id          String   @id @default(uuid())
+  tenantId    String
+  
+  // Informations de base
+  title       String
+  slug        String
+  type        PageType
+  content     Json     @default("{}")
+  
+  // Status et visibilité
+  isActive    Boolean  @default(false)
+  status      PageStatus @default(DRAFT)
+  
+  // SEO
+  seo         Json     @default("{}")
+  
+  // Paramètres d'affichage
+  settings    Json     @default("{}")
+  
+  // Métadonnées
+  tags        String[]
+  views       Int      @default(0)
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  publishedAt DateTime?
+  
+  // Relations
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  author      User?    @relation(fields: [authorId], references: [id])
+  authorId    String?
+  widgets     PageWidget[]  // Widgets de la page
+  
+  // Page Builder
+  layout      String   @default("single-column") // single-column, two-columns, three-columns, sidebar-left, sidebar-right
+  
+  @@unique([tenantId, slug])
+  @@index([tenantId, isActive, status])
+  @@map("pages")
+}
+
+// Widgets pour le Page Builder
+model PageWidget {
+  id           String   @id @default(uuid())
+  pageId       String
+  page         Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  
+  // Type et position
+  widgetType   String   // zmanim, prayers, shabbat, hebrew-date, parnass, donation-form, text, image, video, html
+  position     Int      // Ordre dans la page
+  column       Int      @default(1) // Pour layouts multi-colonnes
+  
+  // Configuration du widget
+  config       Json     @default("{}") // Configuration spécifique au type de widget
+  
+  // Paramètres d'affichage
+  title        String?
+  showTitle    Boolean  @default(true)
+  cssClass     String?
+  backgroundColor String?
+  padding      String?  // Format: "10px 20px 10px 20px"
+  margin       String?  // Format: "10px 20px 10px 20px"
+  
+  // Visibilité
+  isVisible    Boolean  @default(true)
+  
+  // Timestamps
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  @@index([pageId, position])
+  @@map("page_widgets")
+}
+
+// Paramètres du tenant
+model TenantSettings {
+  id          String   @id @default(uuid())
+  tenantId    String   @unique
+  
+  // Configuration de navigation
+  navigation  Json     @default("{}")
+  
+  // Autres paramètres
+  features    Json     @default("{}")
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  @@map("tenant_settings")
+}
+
+// Énumérations pour les pages
+enum PageType {
+  STATIC
+  BLOG
+  GALLERY
+  EVENTS
+  FAQ
+  CONTACT
+  CUSTOM
+}
+
+enum PageStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+// Table des refresh tokens pour l'authentification JWT
+model RefreshToken {
+  id          String   @id @default(uuid())
+  userId      String
+  token       String   @unique
+  deviceInfo  String?  // Information sur l'appareil/navigateur
+  ipAddress   String?  // Adresse IP de connexion
+  
+  // Expiration et révocation
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  
+  // Métadonnées
+  createdAt   DateTime @default(now())
+  lastUsedAt  DateTime @default(now())
+  
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
+}
+
+// ============= MODULE PARNASS =============
+
+// Table des parrainages Parnass
+model ParnassSponsor {
+  id          String   @id @default(uuid())
+  tenantId    String   // Clé d'isolation
+  userId      String?  // Sponsor (optionnel si anonyme)
+  
+  // Type de parrainage
+  type        ParnassType
+  
+  // Date spécifique pour le parrainage
+  sponsorDate DateTime // Date du jour/mois/année parrainé
+  
+  // Informations du sponsor
+  sponsorName String   // Nom affiché (peut être différent du user)
+  sponsorMessage String? @db.Text // Message optionnel
+  isAnonymous Boolean  @default(false)
+  
+  // Dédicace
+  dedicationType DedicationType? // À la mémoire de, pour la guérison de, etc.
+  dedicationName String?         // Nom de la personne pour la dédicace
+  dedicationNameHebrew String?   // Nom en hébreu
+  
+  // Paiement
+  amount      Decimal  @db.Decimal(10,2)
+  currency    String   @default("EUR")
+  isPaid      Boolean  @default(false)
+  paidAt      DateTime?
+  
+  // Lien avec donation si applicable
+  donationId  String?  @unique
+  
+  // Configuration d'affichage
+  displayPriority Int @default(0) // Pour gérer l'ordre d'affichage si plusieurs sponsors
+  isHighlighted Boolean @default(false) // Mise en avant spéciale
+  
+  // Statut
+  status      ParnassStatus @default(PENDING)
+  approvedAt  DateTime?
+  approvedBy  String?
+  
+  // Métadonnées
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user        User?    @relation(fields: [userId], references: [id])
+  donation    Donation? @relation(fields: [donationId], references: [id])
+  
+  @@index([tenantId, sponsorDate, type])
+  @@index([tenantId, status])
+  @@unique([tenantId, sponsorDate, type]) // Un seul sponsor principal par date/type
+  @@map("parnass_sponsors")
+}
+
+// Configuration du module Parnass par tenant
+model ParnassSettings {
+  id          String   @id @default(uuid())
+  tenantId    String   @unique
+  
+  // Activation par type
+  dailyEnabled   Boolean @default(true)
+  monthlyEnabled Boolean @default(true)
+  yearlyEnabled  Boolean @default(true)
+  
+  // Tarifs par défaut
+  dailyPrice    Decimal @db.Decimal(10,2) @default(100)
+  monthlyPrice  Decimal @db.Decimal(10,2) @default(500)
+  yearlyPrice   Decimal @db.Decimal(10,2) @default(1800)
+  currency      String  @default("EUR")
+  
+  // Configuration d'affichage
+  displayLocation String[] @default(["homepage", "sidebar"]) // Où afficher les sponsors
+  displayFormat   String   @default("card") // card, list, banner
+  
+  // Messages personnalisés
+  dailyTitle    String @default("Parnass HaYom - Sponsor du Jour")
+  monthlyTitle  String @default("Parnass HaChodesh - Sponsor du Mois")
+  yearlyTitle   String @default("Parnass HaShana - Sponsor de l'Année")
+  
+  // Textes hébreux
+  dailyTitleHebrew   String @default("פרנס היום")
+  monthlyTitleHebrew String @default("פרנס החודש")
+  yearlyTitleHebrew  String @default("פרנס השנה")
+  
+  // Options
+  allowMultipleSponsors Boolean @default(false) // Permettre plusieurs sponsors pour une même date
+  requireApproval      Boolean @default(true)  // Nécessite validation admin
+  autoRenew           Boolean @default(false) // Renouvellement automatique
+  
+  // Notifications
+  notifyAdmin         Boolean @default(true)
+  notifyEmail        String?
+  
+  // Métadonnées
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  @@map("parnass_settings")
+}
+
+enum ParnassType {
+  DAILY    // Parnass HaYom
+  MONTHLY  // Parnass HaChodesh
+  YEARLY   // Parnass HaShana
+}
+
+enum ParnassStatus {
+  PENDING   // En attente de paiement/validation
+  APPROVED  // Approuvé et actif
+  REJECTED  // Rejeté par l'admin
+  EXPIRED   // Expiré (date passée)
+  CANCELLED // Annulé
+}
+
+enum DedicationType {
+  IN_MEMORY     // À la mémoire de (לעילוי נשמת)
+  FOR_HEALING   // Pour la guérison de (לרפואה שלמה)
+  FOR_SUCCESS   // Pour la réussite de (להצלחת)
+  IN_HONOR      // En l'honneur de (לכבוד)
+  FOR_MERIT     // Pour le mérite de (לזכות)
+}
+
+// ============================================
+// MEMBER MANAGEMENT SYSTEM
+// ============================================
+
+// Table des membres de la communauté
+model Member {
+  id          String   @id @default(uuid())
+  tenantId    String   // Clé d'isolation
+  userId      String?  // Lien optionnel avec un compte utilisateur
+  
+  // Informations personnelles
+  firstName   String
+  lastName    String
+  hebrewFirstName String?
+  hebrewLastName  String?
+  email       String
+  phone       String?
+  mobile      String?
+  
+  // Adresse
+  address     String?
+  city        String?
+  postalCode  String?
+  country     String?
+  
+  // Informations familiales
+  familyId    String?  // Lien vers une famille
+  familyRole  FamilyRole? // Chef de famille, Conjoint, Enfant
+  birthDate   DateTime?
+  gender      Gender?
+  
+  // Statut de membre
+  memberNumber String   // Numéro de membre unique
+  status      MemberStatus @default(ACTIVE)
+  joinDate    DateTime @default(now())
+  leaveDate   DateTime?
+  
+  // Informations religieuses
+  cohen       Boolean @default(false)
+  levi        Boolean @default(false)
+  
+  // Préférences
+  emailOptIn  Boolean @default(true)  // Accepte les emails
+  smsOptIn    Boolean @default(true)  // Accepte les SMS
+  newsletterOptIn Boolean @default(true) // Accepte la newsletter
+  
+  // Métadonnées
+  notes       String? @db.Text
+  tags        String[] // Tags pour segmentation
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user        User?    @relation(fields: [userId], references: [id])
+  family      Family?  @relation(fields: [familyId], references: [id])
+  
+  // Relations avec autres entités
+  membershipFees MembershipFee[]
+  seatReservations SeatReservation[]
+  eventRegistrations EventRegistration[]
+  
+  @@unique([tenantId, memberNumber])
+  @@unique([tenantId, email])
+  @@index([tenantId, status])
+  @@index([familyId])
+  @@map("members")
+}
+
+// Table des familles
+model Family {
+  id          String   @id @default(uuid())
+  tenantId    String   // Clé d'isolation
+  
+  familyName  String
+  hebrewFamilyName String?
+  
+  // Adresse principale de la famille
+  address     String?
+  city        String?
+  postalCode  String?
+  country     String?
+  
+  // Métadonnées
+  notes       String? @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  members     Member[]
+  
+  @@index([tenantId])
+  @@map("families")
+}
+
+// Table des cotisations
+model MembershipFee {
+  id          String   @id @default(uuid())
+  tenantId    String   // Clé d'isolation
+  memberId    String
+  
+  // Période de cotisation
+  year        Int
+  period      MembershipPeriod @default(ANNUAL)
+  
+  // Montant
+  amount      Decimal  @db.Decimal(10,2)
+  currency    String   @default("EUR")
+  
+  // Statut de paiement
+  status      PaymentStatus @default(PENDING)
+  paidDate    DateTime?
+  paymentMethod String?
+  
+  // Référence de paiement
+  paymentReference String?
+  donationId  String?  // Lien avec un don si payé via donations
+  
+  // Dates
+  dueDate     DateTime
+  reminderSentAt DateTime?
+  
+  // Métadonnées
+  notes       String? @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  member      Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  donation    Donation? @relation(fields: [donationId], references: [id])
+  
+  @@unique([tenantId, memberId, year])
+  @@index([tenantId, status])
+  @@index([memberId])
+  @@map("membership_fees")
+}
+
+// Table des réservations de sièges
+model SeatReservation {
+  id          String   @id @default(uuid())
+  tenantId    String   // Clé d'isolation
+  memberId    String
+  
+  // Emplacement
+  section     String   // Section de la synagogue
+  row         String   // Rangée
+  seatNumber  String   // Numéro du siège
+  
+  // Type de réservation
+  type        SeatReservationType @default(ANNUAL)
+  
+  // Période de validité
+  startDate   DateTime
+  endDate     DateTime
+  
+  // Prix et paiement
+  price       Decimal  @db.Decimal(10,2)
+  currency    String   @default("EUR")
+  isPaid      Boolean  @default(false)
+  paidDate    DateTime?
+  
+  // Statut
+  status      ReservationStatus @default(ACTIVE)
+  
+  // Métadonnées
+  notes       String? @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  member      Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  
+  @@unique([tenantId, section, row, seatNumber, startDate, endDate])
+  @@index([tenantId, memberId])
+  @@index([tenantId, status])
+  @@map("seat_reservations")
+}
+
+// Table des inscriptions aux événements
+model EventRegistration {
+  id          String   @id @default(uuid())
+  tenantId    String   // Clé d'isolation
+  memberId    String
+  eventId     String
+  
+  // Détails de l'inscription
+  registrationDate DateTime @default(now())
+  attendeeCount Int @default(1)
+  
+  // Statut
+  status      EventRegistrationStatus @default(REGISTERED)
+  checkedIn   Boolean @default(false)
+  checkedInAt DateTime?
+  
+  // Paiement si événement payant
+  isPaid      Boolean @default(false)
+  paidAmount  Decimal? @db.Decimal(10,2)
+  
+  // Informations supplémentaires
+  dietaryRestrictions String?
+  specialNeeds String?
+  notes       String? @db.Text
+  
+  // Métadonnées
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  cancelledAt DateTime?
+  
+  // Relations
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  member      Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  
+  @@unique([tenantId, memberId, eventId])
+  @@index([tenantId, eventId])
+  @@index([memberId])
+  @@map("event_registrations")
+}
+
+// Enums pour le système de membres
+enum MemberStatus {
+  ACTIVE      // Membre actif
+  INACTIVE    // Membre inactif
+  SUSPENDED   // Suspendu
+  DECEASED    // Décédé
+  MOVED       // Déménagé
+}
+
+enum FamilyRole {
+  HEAD        // Chef de famille
+  SPOUSE      // Conjoint(e)
+  CHILD       // Enfant
+  OTHER       // Autre
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum MembershipPeriod {
+  MONTHLY
+  QUARTERLY
+  SEMI_ANNUAL
+  ANNUAL
+}
+
+enum PaymentStatus {
+  PENDING     // En attente
+  PAID        // Payé
+  PARTIAL     // Partiellement payé
+  OVERDUE     // En retard
+  CANCELLED   // Annulé
+  REFUNDED    // Remboursé
+}
+
+enum SeatReservationType {
+  ANNUAL      // Annuelle
+  HIGH_HOLIDAYS // Grandes fêtes
+  SHABBAT     // Shabbat
+  TEMPORARY   // Temporaire
+}
+
+enum ReservationStatus {
+  ACTIVE      // Active
+  EXPIRED     // Expirée
+  CANCELLED   // Annulée
+  TRANSFERRED // Transférée
+}
+
+enum EventRegistrationStatus {
+  REGISTERED  // Inscrit
+  WAITLIST    // Liste d'attente
+  CANCELLED   // Annulé
+  ATTENDED    // A participé
+  NO_SHOW     // Absent
 }

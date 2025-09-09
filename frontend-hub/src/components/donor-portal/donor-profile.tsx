@@ -9,11 +9,11 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useDonorProfile, useUpdateDonorProfile } from '@/hooks/use-donor-profile'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuthContext } from '@/hooks/useAuthContext'
 import { toast } from 'sonner'
 
 export function DonorProfile() {
-  const { user, updateProfile } = useAuth()
+  const { user, updateProfile } = useAuthContext()
   const [isEditing, setIsEditing] = useState(false)
   const [isUpdating, setIsUpdating] = useState(false)
   

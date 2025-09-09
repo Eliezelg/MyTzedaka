@@ -58,12 +58,12 @@ export function LanguageSelector() {
         <>
           {/* Overlay pour fermer le menu */}
           <div
-            className="fixed inset-0 z-10"
+            className="fixed inset-0 z-[9998]"
             onClick={() => setIsOpen(false)}
           />
           
           {/* Menu déroulant */}
-          <div className="absolute right-0 top-full z-20 mt-2 w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+          <div className="absolute right-0 top-full z-[9999] mt-2 w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
             {locales.map((lang) => (
               <button
                 key={lang}

@@ -1,0 +1,147 @@
+// Extension du schéma pour le module Parnass
+// À ajouter au schema.prisma principal
+
+// Table des parrainages Parnass
+model ParnassSponsor {
+  id          String   @id @default(uuid())
+  tenantId    String   // Clé d'isolation
+  userId      String?  // Sponsor (optionnel si anonyme)
+  
+  // Type de parrainage
+  type        ParnassType
+  
+  // Date spécifique pour le parrainage
+  sponsorDate DateTime // Date du jour/mois/année parrainé
+  
+  // Informations du sponsor
+  sponsorName String   // Nom affiché (peut être différent du user)
+  sponsorMessage String? @db.Text // Message optionnel
+  isAnonymous Boolean  @default(false)
+  
+  // Dédicace
+  dedicationType DedicationType? // À la mémoire de, pour la guérison de, etc.
+  dedicationName String?         // Nom de la personne pour la dédicace
+  dedicationNameHebrew String?   // Nom en hébreu
+  
+  // Paiement
+  amount      Decimal  @db.Decimal(10,2)
+  currency    String   @default("EUR")
+  isPaid      Boolean  @default(false)
+  paidAt      DateTime?
+  
+  // Lien avec donation si applicable
+  donationId  String?  @unique
+  
+  // Configuration d'affichage
+  displayPriority Int @default(0) // Pour gérer l'ordre d'affichage si plusieurs sponsors
+  isHighlighted Boolean @default(false) // Mise en avant spéciale
+  
+  // Statut
+  status      ParnassStatus @default(PENDING)
+  approvedAt  DateTime?
+  approvedBy  String?
+  
+  // Métadonnées
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user        User?    @relation(fields: [userId], references: [id])
+  donation    Donation? @relation(fields: [donationId], references: [id])
+  
+  @@index([tenantId, sponsorDate, type])
+  @@index([tenantId, status])
+  @@unique([tenantId, sponsorDate, type]) // Un seul sponsor principal par date/type
+  @@map("parnass_sponsors")
+}
+
+// Configuration du module Parnass par tenant
+model ParnassSettings {
+  id          String   @id @default(uuid())
+  tenantId    String   @unique
+  
+  // Activation par type
+  dailyEnabled   Boolean @default(true)
+  monthlyEnabled Boolean @default(true)
+  yearlyEnabled  Boolean @default(true)
+  
+  // Tarifs par défaut
+  dailyPrice    Decimal @db.Decimal(10,2) @default(100)
+  monthlyPrice  Decimal @db.Decimal(10,2) @default(500)
+  yearlyPrice   Decimal @db.Decimal(10,2) @default(1800)
+  currency      String  @default("EUR")
+  
+  // Configuration d'affichage
+  displayLocation String[] @default(["homepage", "sidebar"]) // Où afficher les sponsors
+  displayFormat   String   @default("card") // card, list, banner
+  
+  // Messages personnalisés
+  dailyTitle    String @default("Parnass HaYom - Sponsor du Jour")
+  monthlyTitle  String @default("Parnass HaChodesh - Sponsor du Mois")
+  yearlyTitle   String @default("Parnass HaShana - Sponsor de l'Année")
+  
+  // Textes hébreux
+  dailyTitleHebrew   String @default("פרנס היום")
+  monthlyTitleHebrew String @default("פרנס החודש")
+  yearlyTitleHebrew  String @default("פרנס השנה")
+  
+  // Options
+  allowMultipleSponsors Boolean @default(false) // Permettre plusieurs sponsors pour une même date
+  requireApproval      Boolean @default(true)  // Nécessite validation admin
+  autoRenew           Boolean @default(false) // Renouvellement automatique
+  
+  // Notifications
+  notifyAdmin         Boolean @default(true)
+  notifyEmail        String?
+  
+  // Métadonnées
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  @@map("parnass_settings")
+}
+
+enum ParnassType {
+  DAILY    // Parnass HaYom
+  MONTHLY  // Parnass HaChodesh
+  YEARLY   // Parnass HaShana
+}
+
+enum ParnassStatus {
+  PENDING   // En attente de paiement/validation
+  APPROVED  // Approuvé et actif
+  REJECTED  // Rejeté par l'admin
+  EXPIRED   // Expiré (date passée)
+  CANCELLED // Annulé
+}
+
+enum DedicationType {
+  IN_MEMORY     // À la mémoire de (לעילוי נשמת)
+  FOR_HEALING   // Pour la guérison de (לרפואה שלמה)
+  FOR_SUCCESS   // Pour la réussite de (להצלחת)
+  IN_HONOR      // En l'honneur de (לכבוד)
+  FOR_MERIT     // Pour le mérite de (לזכות)
+}
+
+// Ajout de la relation dans le modèle Tenant existant
+// Tenant {
+//   ...
+//   parnassSponsors ParnassSponsor[]
+//   parnassSettings ParnassSettings?
+// }
+
+// Ajout de la relation dans le modèle User existant
+// User {
+//   ...
+//   parnassSponsors ParnassSponsor[]
+// }
+
+// Ajout de la relation dans le modèle Donation existant
+// Donation {
+//   ...
+//   parnassSponsor ParnassSponsor?
+// }

@@ -1,14 +1,15 @@
 'use client'
 
 import Link from 'next/link'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuthContext } from '@/hooks/useAuthContext'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { LogOut } from 'lucide-react'
+import { LogOut, Settings, Shield } from 'lucide-react'
 import { DashboardTabs } from '@/components/dashboard/dashboard-tabs'
+import { Card } from '@/components/ui/card'
 
 export default function DashboardPage() {
-  const { user, logout, isLoading } = useAuth()
+  const { user, tenant, logout, isLoading } = useAuthContext()
 
   if (isLoading) {
     return (
@@ -25,7 +26,7 @@ export default function DashboardPage() {
           <h1 className="text-2xl font-bold text-gray-900">Connexion requise</h1>
           <p className="text-gray-600">Vous devez être connecté pour accéder au dashboard</p>
           <div className="space-x-4">
-            <Link href="/login">
+            <Link href="/auth/login">
               <Button>Se connecter</Button>
             </Link>
             <Link href="/">
@@ -45,6 +46,9 @@ export default function DashboardPage() {
     }
   }
 
+  // Déterminer si l'utilisateur est admin
+  const isAdmin = user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' || user.role === 'PLATFORM_ADMIN' || user.role === 'ASSOCIATION_ADMIN'
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header du Dashboard */}
@@ -59,7 +63,8 @@ export default function DashboardPage() {
         </div>
         <div className="flex items-center space-x-4 mt-4 sm:mt-0">
           <Badge variant="outline">
-            {user.role === 'PLATFORM_ADMIN' ? 'Administrateur' : user.role === 'ASSOCIATION_ADMIN' ? 'Responsable' : 'Donateur'}
+            {user.role === 'PLATFORM_ADMIN' || user.role === 'SUPER_ADMIN' ? 'Administrateur' : 
+             user.role === 'ASSOCIATION_ADMIN' || user.role === 'ADMIN' ? 'Responsable' : 'Donateur'}
           </Badge>
           <Button
             variant="outline"
@@ -72,6 +77,33 @@ export default function DashboardPage() {
           </Button>
         </div>
       </div>
+
+      {/* Section Admin - Affichée uniquement pour les admins */}
+      {isAdmin && tenant && (
+        <Card className="mb-6 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <Shield className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">Administration de l'association</h2>
+                <p className="text-sm text-gray-600">
+                  {tenant.name ? `Gérez votre association ${tenant.name}` : 'Gérez votre association'}
+                </p>
+              </div>
+            </div>
+            <Link 
+              href={`/associations/${tenant.slug || tenant.id}/dashboard`}
+            >
+              <Button className="flex items-center space-x-2">
+                <Settings className="h-4 w-4" />
+                <span>Gestion de l'association</span>
+              </Button>
+            </Link>
+          </div>
+        </Card>
+      )}
 
       {/* Composant Tabs principal */}
       <DashboardTabs />

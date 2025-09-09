@@ -116,7 +116,7 @@ AWS_S3_REGION="eu-west-1"
 ### Frontend (.env.local)
 ```bash
 # API Backend
-NEXT_PUBLIC_API_BASE_URL="http://localhost:3000/api"
+NEXT_PUBLIC_API_URL="http://localhost:3000/api"
 
 # Stripe Frontend
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_xxxxxxxxxx"

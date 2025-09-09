@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuthContext } from '@/hooks/useAuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -100,7 +100,7 @@ export default function AssociationDashboard({ params }: { params: { slug: strin
   const updateAssociation = useUpdateAssociation();
   
   // Authentification et permissions
-  const { user, isLoading: isAuthLoading, isAuthenticated } = useAuth();
+  const { user, isLoading: isAuthLoading, isAuthenticated } = useAuthContext();
 
   // Initialiser le formulaire d'édition avec les données de l'association
   useEffect(() => {
@@ -137,7 +137,7 @@ export default function AssociationDashboard({ params }: { params: { slug: strin
           <h1 className="text-2xl font-bold text-gray-900">Accès restreint</h1>
           <p className="text-gray-600">Vous devez être connecté en tant qu'administrateur de cette association</p>
           <div className="space-x-4">
-            <Link href="/login">
+            <Link href="/auth/login">
               <Button>Se connecter</Button>
             </Link>
             <Link href={`/associations/${slug}`}>
@@ -224,11 +224,20 @@ export default function AssociationDashboard({ params }: { params: { slug: strin
               <h1 className="text-3xl font-bold text-gray-900">{association.name}</h1>
               <p className="text-gray-600 mt-2">Dashboard de gestion</p>
             </div>
-            <Link href={`/associations/${slug}`}>
-              <Button variant="outline">
-                Voir la page publique
-              </Button>
-            </Link>
+            <div className="flex space-x-3">
+              <Link href={`${process.env.NEXT_PUBLIC_SITES_URL || 'http://localhost:3000'}/sites/${slug}/admin`} target="_blank">
+                <Button variant="default" className="flex items-center space-x-2">
+                  <Settings className="h-4 w-4" />
+                  <span>Personnaliser le site</span>
+                </Button>
+              </Link>
+              <Link href={`/associations/${slug}`}>
+                <Button variant="outline">
+                  <Eye className="h-4 w-4 mr-2" />
+                  Voir la page publique
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
 

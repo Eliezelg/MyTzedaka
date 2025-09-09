@@ -86,7 +86,7 @@ npm run start:dev  # Port 3000
 cd frontend-hub
 npm install
 cp .env.local.example .env.local
-# Configurer NEXT_PUBLIC_API_BASE_URL, NEXT_PUBLIC_STRIPE_*
+# Configurer NEXT_PUBLIC_API_URL, NEXT_PUBLIC_STRIPE_*
 
 # Démarrer
 npm run dev  # Port 3001

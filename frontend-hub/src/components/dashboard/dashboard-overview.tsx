@@ -7,10 +7,10 @@ import { Badge } from '@/components/ui/badge'
 import { Heart, TrendingUp, Users, Calendar, Building } from 'lucide-react'
 import { useDonorProfile, useDonorHistory } from '@/hooks/use-donor-profile'
 import { useMyAssociations } from '@/hooks/useMyAssociations'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuthContext } from '@/hooks/useAuthContext'
 
 export function DashboardOverview() {
-  const { user } = useAuth()
+  const { user } = useAuthContext()
   const { data: myAssociations, isLoading: isLoadingAssociations } = useMyAssociations()
   
   // Hooks pour le profil donateur et l'historique

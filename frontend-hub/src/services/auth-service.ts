@@ -6,13 +6,107 @@ import {
   ConfirmResetPasswordRequest,
   User 
 } from '@/types/auth'
+import Cookies from 'js-cookie'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002'
+const API_URL = typeof window !== 'undefined' ? '' : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002')
 
 class AuthService {
   private baseUrl = `${API_URL}/api/auth`
 
   async login(data: LoginRequest): Promise<AuthResponse> {
+    // D'abord, trouver les tenants de l'utilisateur
+    let userTenants = [];
+    try {
+      const findTenantsResponse = await fetch(`/api/auth/find-user-tenants`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: data.email }),
+      })
+      
+      if (findTenantsResponse.ok) {
+        const result = await findTenantsResponse.json()
+        userTenants = result.tenants || []
+      }
+    } catch (e) {
+      console.log('Could not find user tenants:', e)
+    }
+    
+    // Si on a trouvé des tenants, essayer avec eux
+    // Sinon, essayer quelques tenants par défaut pour la compatibilité
+    const tenantsToTry = userTenants.length > 0 
+      ? userTenants.map(t => t.slug)
+      : ['siah', 'kehilat-paris', 'shalom-marseille', 'test-asso'];
+    
+    // Essayer avec chaque tenant
+    for (const tenantSlug of tenantsToTry) {
+      try {
+        const response = await fetch(`${this.baseUrl}/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Tenant-ID': tenantSlug,
+          },
+          credentials: 'include',
+          body: JSON.stringify(data),
+        })
+        
+        if (response.ok) {
+          const result = await response.json()
+          // Récupérer les infos du tenant depuis les tenants trouvés
+          let tenant = null;
+          if (result.user?.tenantId) {
+            // Utiliser les infos du tenant qu'on a déjà trouvé
+            tenant = userTenants.find(t => t.id === result.user.tenantId) || null
+            // Si on n'a pas trouvé, essayer de récupérer via l'API
+            if (!tenant) {
+              try {
+                const tenantResponse = await fetch(`/api/tenant/${result.user.tenantId}`, {
+                  headers: {
+                    'Authorization': `Bearer ${result.tokens?.accessToken || result.access_token}`,
+                  },
+                })
+                if (tenantResponse.ok) {
+                  tenant = await tenantResponse.json()
+                }
+              } catch (e) {
+                console.log('Could not fetch tenant info:', e)
+              }
+            }
+          }
+          
+          // Stocker aussi dans les cookies pour compatibilité
+          const accessToken = result.tokens?.accessToken || result.access_token
+          const refreshToken = result.tokens?.refreshToken || result.refresh_token
+          
+          if (accessToken) {
+            // Utiliser les mêmes noms que cookie-auth.ts
+            Cookies.set('mytzedaka_access_token', accessToken, { expires: 7, sameSite: 'lax' })
+            Cookies.set('auth-token', accessToken, { expires: 7, sameSite: 'lax' })
+            Cookies.set('auth_token', accessToken, { expires: 7, sameSite: 'lax' })
+          }
+          if (refreshToken) {
+            // Utiliser les mêmes noms que cookie-auth.ts
+            Cookies.set('mytzedaka_refresh_token', refreshToken, { expires: 7, sameSite: 'lax' })
+            Cookies.set('refresh-token', refreshToken, { expires: 7, sameSite: 'lax' })
+            Cookies.set('refresh_token', refreshToken, { expires: 7, sameSite: 'lax' })
+          }
+          
+          return {
+            user: result.user,
+            access_token: accessToken,
+            refresh_token: refreshToken,
+            tenant: tenant,
+          }
+        }
+      } catch (e) {
+        // Continuer avec le prochain tenant
+        continue;
+      }
+    }
+
+    // Si aucun tenant ne fonctionne, essayer login-hub pour les utilisateurs globaux
     const response = await fetch(`${this.baseUrl}/login-hub`, {
       method: 'POST',
       headers: {
@@ -29,12 +123,11 @@ class AuthService {
 
     const result = await response.json()
     
-    // Adapter le format pour correspondre à AuthContext
     return {
       user: result.user,
-      access_token: result.tokens.accessToken, // Convertir tokens.accessToken en access_token
-      refresh_token: result.tokens.refreshToken,
-      tenant: null, // Pas de tenant pour les utilisateurs du hub
+      access_token: result.tokens?.accessToken || result.access_token,
+      refresh_token: result.tokens?.refreshToken || result.refresh_token,
+      tenant: null,
     }
   }
 
@@ -93,7 +186,7 @@ class AuthService {
   }
 
   async refreshToken(refreshToken: string): Promise<AuthResponse> {
-    const response = await fetch(`${this.baseUrl}/refresh-token`, {
+    const response = await fetch(`${this.baseUrl}/refresh`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -110,7 +203,7 @@ class AuthService {
   }
 
   async getProfile(token: string): Promise<User> {
-    const response = await fetch(`${this.baseUrl}/profile`, {
+    const response = await fetch(`/api/auth/me`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -170,8 +263,11 @@ class AuthService {
     localStorage.setItem('tenant', JSON.stringify(authResponse.tenant))
     
     // Sauvegarder aussi dans les cookies pour le middleware Next.js
-    document.cookie = `auth_token=${authResponse.access_token}; path=/; max-age=${7 * 24 * 60 * 60}` // 7 jours
-    document.cookie = `refresh_token=${authResponse.refresh_token}; path=/; max-age=${7 * 24 * 60 * 60}`
+    // Utiliser js-cookie pour une meilleure gestion
+    Cookies.set('auth-token', authResponse.access_token, { expires: 7 }) // 7 jours
+    Cookies.set('refresh-token', authResponse.refresh_token, { expires: 7 })
+    Cookies.set('auth_token', authResponse.access_token, { expires: 7 }) // Aussi avec underscore pour compatibilité
+    Cookies.set('refresh_token', authResponse.refresh_token, { expires: 7 })
   }
 
   getAuthData() {
@@ -208,9 +304,11 @@ class AuthService {
     localStorage.removeItem('user')
     localStorage.removeItem('tenant')
     
-    // Supprimer aussi les cookies
-    document.cookie = 'auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
-    document.cookie = 'refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
+    // Supprimer aussi les cookies avec js-cookie
+    Cookies.remove('auth-token')
+    Cookies.remove('refresh-token')
+    Cookies.remove('auth_token')
+    Cookies.remove('refresh_token')
   }
 }
 

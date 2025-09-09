@@ -1,14 +1,23 @@
 import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { getCurrentTenant } from '../../tenant/tenant.context';
+import { Reflector } from '@nestjs/core';
+import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
+  constructor(private reflector: Reflector) {
+    super();
+  }
+
   canActivate(context: ExecutionContext) {
-    // Vérifier que le tenant est défini
-    const tenant = getCurrentTenant();
-    if (!tenant) {
-      throw new UnauthorizedException('Tenant non identifié');
+    // Vérifier si la route est publique
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    if (isPublic) {
+      return true;
     }
 
     return super.canActivate(context);
@@ -16,15 +25,8 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
   handleRequest(err: any, user: any, info: any) {
     if (err || !user) {
-      throw err || new UnauthorizedException('Token invalide ou manquant');
+      throw err || new UnauthorizedException('Token invalide ou expiré');
     }
-
-    // Vérifier que l'utilisateur appartient au bon tenant
-    const tenant = getCurrentTenant();
-    if (tenant && user.tenantId !== tenant.id) {
-      throw new UnauthorizedException('Accès refusé : mauvais tenant');
-    }
-
     return user;
   }
 }

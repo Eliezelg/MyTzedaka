@@ -10,7 +10,8 @@ export default function TestApiPage() {
     setLoading(true)
     try {
       // Test direct avec fetch
-      const response = await fetch('http://localhost:3002/api/hub/campaigns/campaign-test-1')
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002'
+      const response = await fetch(`${apiUrl}/api/hub/campaigns/campaign-test-1`)
       const data = await response.json()
       setResult(`Direct fetch: ${JSON.stringify(data, null, 2)}`)
     } catch (error) {

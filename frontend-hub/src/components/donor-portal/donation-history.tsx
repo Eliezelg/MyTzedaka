@@ -16,7 +16,7 @@ import {
 import { useDonorHistory } from '@/hooks/use-donor-profile'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuthContext } from '@/hooks/useAuthContext'
 import { useDonorProfile } from '@/hooks/use-donor-profile'
 
 interface HistoryFilters {
@@ -29,7 +29,7 @@ interface HistoryFilters {
 }
 
 export function DonationHistory() {
-  const { user } = useAuth()
+  const { user } = useAuthContext()
   const [filters, setFilters] = useState<HistoryFilters>({
     page: 1,
     limit: 20

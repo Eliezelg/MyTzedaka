@@ -1,102 +1,378 @@
-import { apiClient } from '../api-client';
-import type { 
-  DonationData, 
-  CreateDonationResponse, 
-  ConfirmDonationResponse 
-} from './stripe-client';
+import { loadStripe, Stripe } from '@stripe/stripe-js';
+import { getAuthHeaders } from '@/lib/security/cookie-auth';
 
 /**
- * Service pour gérer les donations avec Stripe
+ * Service client Stripe sécurisé pour les paiements
  */
-export class StripeService {
-  
+
+interface PaymentIntentResponse {
+  clientSecret: string;
+  paymentIntentId: string;
+  amount: number;
+  currency: string;
+}
+
+interface DonationRequest {
+  amount: number;
+  currency?: string;
+  campaignId?: string;
+  tenantId: string;
+  donorInfo?: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    phone?: string;
+  };
+  recurring?: {
+    interval: 'day' | 'week' | 'month' | 'year';
+    intervalCount?: number;
+  };
+  parnass?: {
+    type: 'day' | 'month' | 'year';
+    date: string;
+    dedication?: string;
+  };
+}
+
+class StripeService {
+  private static instance: StripeService;
+  private stripePromise: Promise<Stripe | null> | null = null;
+  private publishableKey: string;
+
+  private constructor() {
+    this.publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '';
+    
+    if (!this.publishableKey) {
+      console.error('Stripe publishable key not found');
+    }
+  }
+
+  public static getInstance(): StripeService {
+    if (!StripeService.instance) {
+      StripeService.instance = new StripeService();
+    }
+    return StripeService.instance;
+  }
+
   /**
-   * Crée une donation et récupère le client secret
+   * Obtient l'instance Stripe
    */
-  static async createDonation(donationData: DonationData): Promise<CreateDonationResponse> {
+  public async getStripe(): Promise<Stripe | null> {
+    if (!this.stripePromise) {
+      this.stripePromise = loadStripe(this.publishableKey);
+    }
+    return this.stripePromise;
+  }
+
+  /**
+   * Crée un PaymentIntent pour une donation
+   */
+  public async createPaymentIntent(donation: DonationRequest): Promise<PaymentIntentResponse> {
     try {
-      const response = await apiClient.post<CreateDonationResponse>('/donations/create', donationData as unknown as Record<string, unknown>);
-      return response.data;
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/stripe/create-payment-intent`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...getAuthHeaders()
+          },
+          body: JSON.stringify(donation)
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Erreur lors de la création du paiement');
+      }
+
+      return await response.json();
     } catch (error) {
-      console.error('Error creating donation:', error);
-      throw new Error('Erreur lors de la création de la donation');
+      console.error('Error creating payment intent:', error);
+      throw error;
     }
   }
 
   /**
-   * Confirme une donation après paiement réussi
+   * Crée une session de checkout pour un abonnement
    */
-  static async confirmDonation(paymentIntentId: string): Promise<ConfirmDonationResponse> {
-    try {
-      const response = await apiClient.post<ConfirmDonationResponse>(`/donations/confirm/${paymentIntentId}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error confirming donation:', error);
-      throw new Error('Erreur lors de la confirmation de la donation');
-    }
-  }
-
-  /**
-   * Récupère l'historique des donations de l'utilisateur
-   */
-  static async getDonationHistory(params?: {
-    limit?: number;
-    offset?: number;
-    tenant?: string;
+  public async createSubscriptionCheckout(params: {
+    priceId: string;
+    tenantId: string;
+    successUrl: string;
+    cancelUrl: string;
+    customerEmail?: string;
+    metadata?: Record<string, string>;
   }) {
     try {
-      const queryParams = new URLSearchParams();
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/stripe/create-checkout-session`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...getAuthHeaders()
+          },
+          body: JSON.stringify(params)
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Erreur lors de la création de la session');
+      }
+
+      const { sessionId } = await response.json();
       
-      if (params?.limit) queryParams.append('limit', params.limit.toString());
-      if (params?.offset) queryParams.append('offset', params.offset.toString());
-      if (params?.tenant) queryParams.append('tenant', params.tenant);
+      // Rediriger vers Stripe Checkout
+      const stripe = await this.getStripe();
+      if (!stripe) throw new Error('Stripe non disponible');
 
-      const response = await apiClient.get(`/donations/history?${queryParams.toString()}`);
-      return response.data;
+      const { error } = await stripe.redirectToCheckout({ sessionId });
+      
+      if (error) {
+        throw error;
+      }
     } catch (error) {
-      console.error('Error fetching donation history:', error);
-      throw new Error('Erreur lors de la récupération de l\'historique');
+      console.error('Error creating subscription checkout:', error);
+      throw error;
     }
   }
 
   /**
-   * Récupère les donations d'une campagne
+   * Confirme un paiement avec 3D Secure si nécessaire
    */
-  static async getCampaignDonations(campaignId: string, limit?: number) {
+  public async confirmPayment(
+    clientSecret: string,
+    paymentElement: any,
+    returnUrl?: string
+  ) {
     try {
-      const queryParams = limit ? `?limit=${limit}` : '';
-      const response = await apiClient.get(`/donations/campaign/${campaignId}${queryParams}`);
-      return response.data;
+      const stripe = await this.getStripe();
+      if (!stripe) throw new Error('Stripe non disponible');
+
+      const result = await stripe.confirmPayment({
+        clientSecret,
+        confirmParams: {
+          return_url: returnUrl || `${window.location.origin}/donation/success`
+        },
+        redirect: returnUrl ? 'if_required' : 'always'
+      });
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      return result;
     } catch (error) {
-      console.error('Error fetching campaign donations:', error);
-      throw new Error('Erreur lors de la récupération des donations de la campagne');
+      console.error('Error confirming payment:', error);
+      throw error;
     }
   }
 
   /**
-   * Récupère les statistiques des donations d'une campagne
+   * Récupère le statut d'un PaymentIntent
    */
-  static async getCampaignDonationStats(campaignId: string) {
+  public async getPaymentStatus(paymentIntentId: string): Promise<any> {
     try {
-      const response = await apiClient.get(`/donations/campaign/${campaignId}/stats`);
-      return response.data;
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/stripe/payment-intent/${paymentIntentId}`,
+        {
+          headers: getAuthHeaders()
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la récupération du statut');
+      }
+
+      return await response.json();
     } catch (error) {
-      console.error('Error fetching campaign donation stats:', error);
-      throw new Error('Erreur lors de la récupération des statistiques');
+      console.error('Error getting payment status:', error);
+      throw error;
     }
   }
 
   /**
-   * Utilitaires pour conversion monétaire
+   * Annule un PaymentIntent
    */
-  static formatAmount(amount: number, currency = 'EUR'): string {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency,
-    }).format(amount);
+  public async cancelPayment(paymentIntentId: string): Promise<void> {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/stripe/payment-intent/${paymentIntentId}/cancel`,
+        {
+          method: 'POST',
+          headers: getAuthHeaders()
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de l\'annulation du paiement');
+      }
+    } catch (error) {
+      console.error('Error canceling payment:', error);
+      throw error;
+    }
   }
 
-  static formatAmountSimple(amount: number): string {
-    return `${amount.toFixed(2)}€`;
+  /**
+   * Crée un compte Stripe Connect pour une association
+   */
+  public async createConnectAccount(params: {
+    tenantId: string;
+    email: string;
+    country?: string;
+    businessType?: 'individual' | 'company' | 'non_profit';
+  }) {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/stripe/connect/create-account`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...getAuthHeaders()
+          },
+          body: JSON.stringify(params)
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la création du compte');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error creating Connect account:', error);
+      throw error;
+    }
   }
+
+  /**
+   * Obtient le lien d'onboarding pour Stripe Connect
+   */
+  public async getConnectOnboardingLink(
+    accountId: string,
+    returnUrl: string,
+    refreshUrl: string
+  ) {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/stripe/connect/onboarding-link`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...getAuthHeaders()
+          },
+          body: JSON.stringify({
+            accountId,
+            returnUrl,
+            refreshUrl
+          })
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la génération du lien');
+      }
+
+      const { url } = await response.json();
+      window.location.href = url;
+    } catch (error) {
+      console.error('Error getting onboarding link:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Vérifie si une association a un compte Stripe valide
+   */
+  public async checkAccountStatus(tenantId: string): Promise<{
+    hasAccount: boolean;
+    isActive: boolean;
+    requiresAction: boolean;
+    mode: 'PLATFORM' | 'CUSTOM';
+  }> {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/stripe/account-status/${tenantId}`,
+        {
+          headers: getAuthHeaders()
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la vérification du compte');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error checking account status:', error);
+      return {
+        hasAccount: false,
+        isActive: false,
+        requiresAction: false,
+        mode: 'PLATFORM'
+      };
+    }
+  }
+
+  /**
+   * Génère un reçu de donation
+   */
+  public async generateReceipt(donationId: string): Promise<Blob> {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/donations/${donationId}/receipt`,
+        {
+          headers: getAuthHeaders()
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la génération du reçu');
+      }
+
+      return await response.blob();
+    } catch (error) {
+      console.error('Error generating receipt:', error);
+      throw error;
+    }
+  }
+}
+
+// Export du singleton
+export const stripeService = StripeService.getInstance();
+
+// Export des méthodes utilitaires
+export const {
+  getStripe,
+  createPaymentIntent,
+  createSubscriptionCheckout,
+  confirmPayment,
+  getPaymentStatus,
+  cancelPayment,
+  createConnectAccount,
+  getConnectOnboardingLink,
+  checkAccountStatus,
+  generateReceipt
+} = {
+  getStripe: () => stripeService.getStripe(),
+  createPaymentIntent: (donation: DonationRequest) => stripeService.createPaymentIntent(donation),
+  createSubscriptionCheckout: (params: any) => stripeService.createSubscriptionCheckout(params),
+  confirmPayment: (clientSecret: string, paymentElement: any, returnUrl?: string) => 
+    stripeService.confirmPayment(clientSecret, paymentElement, returnUrl),
+  getPaymentStatus: (paymentIntentId: string) => stripeService.getPaymentStatus(paymentIntentId),
+  cancelPayment: (paymentIntentId: string) => stripeService.cancelPayment(paymentIntentId),
+  createConnectAccount: (params: any) => stripeService.createConnectAccount(params),
+  getConnectOnboardingLink: (accountId: string, returnUrl: string, refreshUrl: string) =>
+    stripeService.getConnectOnboardingLink(accountId, returnUrl, refreshUrl),
+  checkAccountStatus: (tenantId: string) => stripeService.checkAccountStatus(tenantId),
+  generateReceipt: (donationId: string) => stripeService.generateReceipt(donationId)
+};
+
+// Hook React personnalisé
+export function useStripeService() {
+  return stripeService;
 }

@@ -17,7 +17,7 @@ import {
 import { apiClient } from '@/lib/api-client'
 import { useRouter, useParams } from 'next/navigation'
 import { useAssociationBySlug } from '@/lib/services/associations-service'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuthContext } from '@/hooks/useAuthContext'
 
 export default function StripeStatusCard() {
   const router = useRouter()
@@ -25,7 +25,7 @@ export default function StripeStatusCard() {
   const slug = params?.slug as string
   const locale = params?.locale as string || 'fr'
   const { data: association } = useAssociationBySlug(slug)
-  const { isAuthenticated, user } = useAuth()
+  const { isAuthenticated, user } = useAuthContext()
   const [loading, setLoading] = useState(true)
   const [accountStatus, setAccountStatus] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)

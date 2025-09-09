@@ -9,7 +9,8 @@ import {
   Query, 
   UseGuards,
   HttpCode,
-  HttpStatus
+  HttpStatus,
+  NotFoundException
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
@@ -25,6 +26,14 @@ import {
   AdminStatsDto,
   DeploymentDto,
 } from './dto/admin.dto';
+import { PageManagementService } from './page-management.service';
+import {
+  CreatePageDto,
+  UpdatePageDto,
+  PageListQueryDto,
+  PageResponseDto,
+  UpdateNavigationDto
+} from './dto/page-management.dto';
 
 @ApiTags('Admin')
 @Controller('admin')
@@ -32,7 +41,10 @@ import {
 @Roles(UserRole.SUPER_ADMIN)
 @ApiBearerAuth()
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(
+    private readonly adminService: AdminService,
+    private readonly pageManagementService: PageManagementService
+  ) {}
 
   @Get('stats')
   @ApiOperation({ summary: 'Obtenir les statistiques admin globales' })
@@ -124,5 +136,100 @@ export class AdminController {
         campaigns: { total: 0, active: 0 }
       }
     };
+  }
+
+  // ============== PAGES MANAGEMENT ==============
+
+  @Get('tenants/:tenantId/pages')
+  @ApiOperation({ summary: 'Lister les pages d\'un tenant' })
+  @ApiResponse({ status: 200, description: 'Liste des pages', type: [PageResponseDto] })
+  async getTenantPages(
+    @Param('tenantId') tenantId: string,
+    @Query() query: PageListQueryDto
+  ) {
+    return this.pageManagementService.getPages(tenantId, query);
+  }
+
+  @Get('tenants/:tenantId/pages/:pageId')
+  @ApiOperation({ summary: 'Obtenir une page par ID' })
+  @ApiResponse({ status: 200, description: 'Page trouvée', type: PageResponseDto })
+  @ApiResponse({ status: 404, description: 'Page non trouvée' })
+  async getPageById(
+    @Param('tenantId') tenantId: string,
+    @Param('pageId') pageId: string
+  ): Promise<PageResponseDto> {
+    const pages = await this.pageManagementService.getPages(tenantId, {
+      limit: 1,
+      offset: 0
+    });
+    const page = pages.pages.find(p => p.id === pageId);
+    if (!page) {
+      throw new NotFoundException('Page not found');
+    }
+    return page;
+  }
+
+  @Post('tenants/:tenantId/pages')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Créer une nouvelle page' })
+  @ApiResponse({ status: 201, description: 'Page créée', type: PageResponseDto })
+  @ApiResponse({ status: 409, description: 'Conflit - slug déjà existant' })
+  async createPage(
+    @Param('tenantId') tenantId: string,
+    @Body() createPageDto: CreatePageDto
+  ): Promise<PageResponseDto> {
+    return this.pageManagementService.createPage(tenantId, createPageDto);
+  }
+
+  @Put('tenants/:tenantId/pages/:pageId')
+  @ApiOperation({ summary: 'Mettre à jour une page' })
+  @ApiResponse({ status: 200, description: 'Page mise à jour', type: PageResponseDto })
+  @ApiResponse({ status: 404, description: 'Page non trouvée' })
+  async updatePage(
+    @Param('tenantId') tenantId: string,
+    @Param('pageId') pageId: string,
+    @Body() updatePageDto: UpdatePageDto
+  ): Promise<PageResponseDto> {
+    return this.pageManagementService.updatePage(tenantId, pageId, updatePageDto);
+  }
+
+  @Delete('tenants/:tenantId/pages/:pageId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Supprimer une page' })
+  @ApiResponse({ status: 204, description: 'Page supprimée' })
+  @ApiResponse({ status: 404, description: 'Page non trouvée' })
+  async deletePage(
+    @Param('tenantId') tenantId: string,
+    @Param('pageId') pageId: string
+  ): Promise<void> {
+    return this.pageManagementService.deletePage(tenantId, pageId);
+  }
+
+  @Post('tenants/:tenantId/pages/:pageId/toggle')
+  @ApiOperation({ summary: 'Activer/Désactiver une page' })
+  @ApiResponse({ status: 200, description: 'Statut de la page modifié', type: PageResponseDto })
+  @ApiResponse({ status: 404, description: 'Page non trouvée' })
+  async togglePageStatus(
+    @Param('tenantId') tenantId: string,
+    @Param('pageId') pageId: string
+  ): Promise<PageResponseDto> {
+    return this.pageManagementService.togglePageStatus(tenantId, pageId);
+  }
+
+  @Get('tenants/:tenantId/navigation')
+  @ApiOperation({ summary: 'Obtenir la navigation d\'un tenant' })
+  @ApiResponse({ status: 200, description: 'Navigation du tenant' })
+  async getTenantNavigation(@Param('tenantId') tenantId: string) {
+    return this.pageManagementService.getActiveNavigation(tenantId);
+  }
+
+  @Put('tenants/:tenantId/navigation')
+  @ApiOperation({ summary: 'Mettre à jour la navigation d\'un tenant' })
+  @ApiResponse({ status: 200, description: 'Navigation mise à jour' })
+  async updateTenantNavigation(
+    @Param('tenantId') tenantId: string,
+    @Body() updateNavigationDto: UpdateNavigationDto
+  ): Promise<void> {
+    return this.pageManagementService.updateNavigation(tenantId, updateNavigationDto);
   }
 }

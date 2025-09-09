@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useDonorFavorites, useToggleFavoriteAssociation, useDonorProfile } from '@/hooks/use-donor-profile'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuthContext } from '@/hooks/useAuthContext'
 import { useAssociations } from '@/hooks/use-associations'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -28,7 +28,7 @@ interface DirectoryFilters {
 }
 
 export function AssociationDirectory() {
-  const { user } = useAuth()
+  const { user } = useAuthContext()
   const [filters, setFilters] = useState<DirectoryFilters>({
     page: 1,
     limit: 12

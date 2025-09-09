@@ -1,619 +1,512 @@
-import { Injectable, UnauthorizedException, BadRequestException, ConflictException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { 
-  CognitoIdentityProviderClient,
-  AdminInitiateAuthCommand,
-  AdminCreateUserCommand,
-  AdminSetUserPasswordCommand,
-  AdminGetUserCommand,
-  AdminUpdateUserAttributesCommand,
-  AdminDeleteUserCommand,
-  MessageActionType,
-  ForgotPasswordCommand,
-  ConfirmForgotPasswordCommand,
-} from '@aws-sdk/client-cognito-identity-provider';
 import { PrismaService } from '../prisma/prisma.service';
-import { getCurrentTenant } from '../tenant/tenant.context';
-import { LoginDto, RegisterDto, ResetPasswordDto, ChangePasswordDto, UpdateProfileDto } from './dto/auth.dto';
+import * as bcrypt from 'bcrypt';
+import { randomBytes } from 'crypto';
+import { 
+  LoginDto, 
+  RegisterDto, 
+  RefreshTokenDto, 
+  ChangePasswordDto,
+  AuthResponseDto,
+  TokenPayload
+} from './dto/auth.dto';
+import { User, RefreshToken } from '@prisma/client';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
-  private cognitoClient: CognitoIdentityProviderClient;
-
   constructor(
-    private jwtService: JwtService,
     private prisma: PrismaService,
-  ) {
-    this.cognitoClient = new CognitoIdentityProviderClient({
-      region: process.env.AWS_REGION || 'eu-central-1',
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-      },
-    });
-  }
+    private jwtService: JwtService,
+    private configService: ConfigService
+  ) {}
 
-  async login(loginDto: LoginDto) {
-    const { email, password } = loginDto;
-    const tenant = getCurrentTenant();
-    
-    if (!tenant) {
-      throw new UnauthorizedException('Tenant non identifié');
-    }
-
-    try {
-      // Authentification avec Cognito
-      const authCommand = new AdminInitiateAuthCommand({
-        UserPoolId: process.env.AWS_COGNITO_USER_POOL_ID,
-        ClientId: process.env.AWS_COGNITO_CLIENT_ID,
-        AuthFlow: 'ADMIN_NO_SRP_AUTH',
-        AuthParameters: {
-          USERNAME: email,
-          PASSWORD: password,
-        },
-      });
-
-      const authResult = await this.cognitoClient.send(authCommand);
-      
-      if (!authResult.AuthenticationResult?.AccessToken) {
-        throw new UnauthorizedException('Échec de l\'authentification');
-      }
-
-      // Récupérer l'utilisateur de la base de données
-      const user = await this.prisma.user.findFirst({
-        where: {
-          email,
-          tenantId: tenant.id,
-        },
-        select: {
-          id: true,
-          email: true,
-          firstName: true,
-          lastName: true,
-          role: true,
-          cognitoId: true,
-          tenantId: true,
-          permissions: true,
-        },
-      });
-
-      if (!user) {
-        throw new UnauthorizedException('Utilisateur non trouvé dans ce tenant');
-      }
-
-      // Générer JWT avec informations tenant
-      const payload = {
-        sub: user.id,
-        email: user.email,
-        role: user.role,
-        tenantId: tenant.id,
-        cognitoId: user.cognitoId,
-      };
-
-      const accessToken = this.jwtService.sign(payload);
-
-      // Mettre à jour la dernière connexion
-      await this.prisma.user.update({
-        where: { id: user.id },
-        data: { lastLoginAt: new Date() },
-      });
-
-      return {
-        access_token: accessToken,
-        cognito_token: authResult.AuthenticationResult.AccessToken,
-        refresh_token: authResult.AuthenticationResult.RefreshToken,
-        expires_in: authResult.AuthenticationResult.ExpiresIn,
-        user: {
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          role: user.role,
-          permissions: user.permissions,
-        },
+  async findUserTenants(email: string): Promise<any> {
+    const users = await this.prisma.user.findMany({
+      where: { email },
+      include: {
         tenant: {
-          id: tenant.id,
-          slug: tenant.slug,
-          name: tenant.name,
-        },
-      };
-    } catch (error) {
-      throw new UnauthorizedException('Échec de l\'authentification: ' + error.message);
-    }
+          select: {
+            id: true,
+            slug: true,
+            name: true,
+            domain: true
+          }
+        }
+      }
+    });
+
+    return {
+      email,
+      tenants: users.map(user => user.tenant).filter(tenant => tenant !== null)
+    };
   }
 
-  async register(registerDto: RegisterDto) {
-    const { email, password, firstName, lastName, phone } = registerDto;
-    const tenant = getCurrentTenant();
-    
-    if (!tenant) {
-      throw new BadRequestException('Tenant non identifié');
+  async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
+    // Vérifier si l'utilisateur existe déjà
+    const existingUser = await this.prisma.user.findFirst({
+      where: {
+        email: registerDto.email,
+        tenantId: registerDto.tenantId || null
+      }
+    });
+
+    if (existingUser) {
+      throw new ConflictException('Un utilisateur avec cet email existe déjà');
     }
 
-    try {
-      // Vérifier si l'utilisateur existe déjà dans ce tenant
-      const existingUser = await this.prisma.user.findFirst({
-        where: {
-          email,
-          tenantId: tenant.id,
-        },
+    // Hasher le mot de passe
+    const hashedPassword = await bcrypt.hash(registerDto.password, 10);
+
+    // Créer l'utilisateur
+    const user = await this.prisma.user.create({
+      data: {
+        email: registerDto.email,
+        password: hashedPassword,
+        firstName: registerDto.firstName,
+        lastName: registerDto.lastName,
+        phone: registerDto.phone,
+        tenantId: registerDto.tenantId,
+        role: 'MEMBER', // Rôle par défaut
+        isActive: true,
+      }
+    });
+
+    // Générer les tokens
+    return this.generateAuthResponse(user);
+  }
+
+  async registerHub(registerDto: RegisterDto): Promise<AuthResponseDto> {
+    // Pour les utilisateurs du hub, on force tenantId à null
+    return this.register({ ...registerDto, tenantId: null });
+  }
+
+  // Méthode supprimée - remplacée par la version complète ci-dessous
+
+  async login(loginDto: LoginDto): Promise<AuthResponseDto> {
+    // Trouver l'utilisateur avec son tenant
+    const user = await this.prisma.user.findFirst({
+      where: {
+        email: loginDto.email
+      },
+      include: {
+        tenant: true
+      }
+    });
+
+    if (!user || !user.password) {
+      throw new UnauthorizedException('Email ou mot de passe incorrect');
+    }
+
+    // Vérifier le mot de passe
+    const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Email ou mot de passe incorrect');
+    }
+
+    // Vérifier si l'utilisateur est actif
+    if (!user.isActive) {
+      throw new ForbiddenException('Votre compte a été désactivé');
+    }
+
+    // Générer les tokens avec le tenant inclus
+    const response = await this.generateAuthResponse(user, loginDto.rememberMe);
+
+    // Mettre à jour lastLoginAt
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { lastLoginAt: new Date() }
+    });
+
+    return response;
+  }
+
+  async registerWithAssociation(userDto: RegisterDto, associationData: any): Promise<any> {
+    console.log('🚀 registerWithAssociation appelée avec:', { userDto, associationData });
+    
+    // Vérifier que l'email n'existe pas déjà
+    const existingUser = await this.prisma.user.findFirst({
+      where: { email: userDto.email }
+    });
+
+    if (existingUser) {
+      throw new ConflictException('Un compte existe déjà avec cet email');
+    }
+
+    // Vérifier que le slug de l'association n'existe pas
+    const existingTenant = await this.prisma.tenant.findFirst({
+      where: { slug: associationData.slug }
+    });
+
+    if (existingTenant) {
+      throw new ConflictException('Une association existe déjà avec ce slug');
+    }
+
+    console.log('✅ Vérifications passées, début de la transaction');
+    
+    // Transaction pour créer le tenant, l'utilisateur et l'AssociationListing
+    const result = await this.prisma.$transaction(async (prisma) => {
+      // 1. Créer le tenant
+      const tenant = await prisma.tenant.create({
+        data: {
+          slug: associationData.slug,
+          name: associationData.name,
+          domain: associationData.domain || `${associationData.slug}.mytzedaka.com`,
+          status: 'ACTIVE',
+          stripeMode: 'PLATFORM',
+          theme: associationData.theme || {
+            style: 'modern',
+            primaryColor: '#1e40af',
+            secondaryColor: '#3b82f6'
+          },
+          settings: {
+            ...associationData.settings,
+            plan: associationData.settings?.plan || 'PREMIUM',
+            currency: associationData.settings?.currency || 'EUR',
+            language: associationData.settings?.language || 'fr',
+            timezone: associationData.settings?.timezone || 'Europe/Paris',
+            features: {
+              gmah: true,
+              events: true,
+              campaigns: true,
+              donations: true,
+              customSite: true
+            }
+          }
+        }
       });
 
-      if (existingUser) {
-        throw new ConflictException('Un utilisateur avec cet email existe déjà');
+      console.log('✅ Tenant créé:', tenant.id);
+      
+      // 2. Créer l'utilisateur admin lié au tenant
+      const hashedPassword = await bcrypt.hash(userDto.password, 10);
+      const user = await prisma.user.create({
+        data: {
+          email: userDto.email,
+          password: hashedPassword,
+          firstName: userDto.firstName,
+          lastName: userDto.lastName,
+          phone: userDto.phone,
+          role: 'ADMIN', // L'utilisateur créateur est admin de son association
+          tenantId: tenant.id,
+          isActive: true
+        }
+      });
+      
+      console.log('✅ User créé avec tenantId:', user.tenantId);
+
+      // 3. Créer l'AssociationListing pour le hub
+      const associationListing = await prisma.associationListing.create({
+        data: {
+          tenantId: tenant.id,
+          name: associationData.name,
+          description: associationData.description || `Association ${associationData.name}`,
+          category: associationData.type || 'CHARITY',
+          location: `${associationData.city || 'Paris'}, ${associationData.country || 'France'}`,
+          city: associationData.city || 'Paris',
+          country: associationData.country || 'France',
+          isPublic: true,
+          isVerified: false, // Par défaut non vérifié, peut être vérifié par un admin plateforme
+          totalCampaigns: 0,
+          activeCampaigns: 0
+        }
+      });
+      
+      console.log('✅ AssociationListing créé:', associationListing.id);
+
+      // 4. Créer les modules par défaut pour le tenant
+      await prisma.tenantModules.create({
+        data: {
+          tenantId: tenant.id,
+          donations: true,
+          campaigns: true,
+          events: true,
+          zmanim: true,
+          prayers: true,
+          members: true,
+          blog: true,
+          gallery: false
+        }
+      });
+
+      // 5. Mettre à jour le tenant avec l'ID du créateur
+      await prisma.tenant.update({
+        where: { id: tenant.id },
+        data: {
+          settings: {
+            ...tenant.settings as any,
+            createdByUserId: user.id
+          }
+        }
+      });
+
+      return { user, tenant };
+    });
+
+    // Générer les tokens et retourner la réponse avec le tenant
+    const response = await this.generateAuthResponse(result.user);
+    
+    // Ajouter les informations du tenant à la réponse
+    return {
+      ...response,
+      tenant: {
+        id: result.tenant.id,
+        slug: result.tenant.slug,
+        name: result.tenant.name,
+        domain: result.tenant.domain
+      }
+    };
+  }
+
+  async loginHub(loginDto: LoginDto): Promise<AuthResponseDto> {
+    // Pour les utilisateurs du hub, on utilise la méthode login standard
+    // mais on vérifie que l'utilisateur n'a pas de tenantId (utilisateur global)
+    const user = await this.prisma.user.findFirst({
+      where: {
+        email: loginDto.email,
+        tenantId: null // S'assurer que c'est un utilisateur global du hub
+      }
+    });
+
+    if (!user || !user.password) {
+      throw new UnauthorizedException('Email ou mot de passe incorrect');
+    }
+
+    // Vérifier le mot de passe
+    const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Email ou mot de passe incorrect');
+    }
+
+    // Vérifier si l'utilisateur est actif
+    if (!user.isActive) {
+      throw new ForbiddenException('Votre compte a été désactivé');
+    }
+
+    // Générer les tokens
+    const response = await this.generateAuthResponse(user, loginDto.rememberMe);
+
+    // Mettre à jour lastLoginAt
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { lastLoginAt: new Date() }
+    });
+
+    return response;
+  }
+
+  async refreshTokens(refreshTokenDto: RefreshTokenDto): Promise<AuthResponseDto> {
+    try {
+      // Vérifier le refresh token dans la base de données
+      const storedToken = await this.prisma.refreshToken.findUnique({
+        where: { token: refreshTokenDto.refreshToken },
+        include: { user: true }
+      });
+
+      if (!storedToken) {
+        throw new UnauthorizedException('Refresh token invalide');
       }
 
-      // Enregistrement dans AWS Cognito
-      const createUserCommand = new AdminCreateUserCommand({
-        UserPoolId: process.env.AWS_COGNITO_USER_POOL_ID,
-        Username: email,
-        UserAttributes: [
-          { Name: 'email', Value: email },
-          { Name: 'given_name', Value: firstName },
-          { Name: 'family_name', Value: lastName },
-          { Name: 'phone_number', Value: phone || '' },
-          { Name: 'custom:tenant_id', Value: tenant.id },
-        ],
-        TemporaryPassword: password,
-        MessageAction: MessageActionType.SUPPRESS, // Pas d'email de bienvenue
-      });
-
-      const cognitoUser = await this.cognitoClient.send(createUserCommand);
-
-      // Définir le mot de passe permanent
-      const setPasswordCommand = new AdminSetUserPasswordCommand({
-        UserPoolId: process.env.AWS_COGNITO_USER_POOL_ID,
-        Username: email,
-        Password: password,
-        Permanent: true,
-      });
-
-      await this.cognitoClient.send(setPasswordCommand);
-
-      // Créer l'utilisateur dans la base de données
-      const user = await this.prisma.user.create({
-        data: {
-          email,
-          cognitoId: cognitoUser.User!.Username!,
-          firstName,
-          lastName,
-          phone: phone || null,
-          role: 'MEMBER',
-          tenantId: tenant.id,
-          permissions: {},
-          isActive: true,
-        },
-      });
-
-      return {
-        message: 'Utilisateur créé avec succès',
-        user: {
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          role: user.role,
-        },
-      };
-    } catch (error) {
-      throw new BadRequestException('Erreur lors de la création: ' + error.message);
-    }
-  }
-
-  async registerHub(registerDto: RegisterDto) {
-    const { email, password, firstName, lastName, phone } = registerDto;
-
-    try {
-      // Vérifier si l'utilisateur existe déjà globalement
-      const existingUser = await this.prisma.user.findFirst({
-        where: {
-          email,
-          tenantId: null, // Utilisateurs globaux
-        },
-      });
-
-      if (existingUser) {
-        throw new ConflictException('Un utilisateur avec cet email existe déjà');
+      // Vérifier si le token a été révoqué
+      if (storedToken.revokedAt) {
+        throw new UnauthorizedException('Refresh token a été révoqué');
       }
 
-      // VERSION TEMPORAIRE SANS COGNITO - pour tester l'architecture
-      // Une fois les clés AWS configurées, décommentez la partie Cognito
+      // Vérifier l'expiration
+      if (storedToken.expiresAt < new Date()) {
+        throw new UnauthorizedException('Refresh token expiré');
+      }
 
-      // Créer l'utilisateur en base sans tenant (utilisateur global)
-      const user = await this.prisma.user.create({
-        data: {
-          email,
-          cognitoId: `temp_${Date.now()}`, // ID temporaire
-          firstName,
-          lastName,
-          phone: phone || null,
-          role: 'MEMBER',
-          tenantId: null, // Pas de tenant pour les utilisateurs du hub
-          permissions: [],
-          isActive: true,
-        },
+      // Vérifier le JWT
+      const payload = this.jwtService.verify(refreshTokenDto.refreshToken, {
+        secret: this.configService.get('JWT_REFRESH_SECRET')
       });
 
-      // Créer le profil de donateur séparément
-      const donorProfile = await this.prisma.donorProfile.create({
-        data: {
-          email,
-          cognitoId: user.cognitoId,
-          firstName,
-          lastName,
-          phone: phone || null,
-          totalDonations: 0,
-          totalAmount: 0,
-          favoriteAssociations: [],
-          preferredCurrency: 'EUR',
-          communicationPrefs: {},
-        },
+      // Révoquer l'ancien refresh token
+      await this.prisma.refreshToken.update({
+        where: { id: storedToken.id },
+        data: { 
+          revokedAt: new Date(),
+          lastUsedAt: new Date()
+        }
       });
 
-      return {
-        message: 'Utilisateur créé avec succès sur la plateforme (version test)',
-        user: {
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          role: user.role,
-        },
-      };
+      // Générer de nouveaux tokens
+      return this.generateAuthResponse(storedToken.user);
     } catch (error) {
-      throw new BadRequestException('Erreur lors de la création: ' + error.message);
+      throw new UnauthorizedException('Refresh token invalide');
     }
   }
 
-  async resetPassword(resetPasswordDto: ResetPasswordDto) {
-    const { email } = resetPasswordDto;
-    
-    try {
-      const command = new ForgotPasswordCommand({
-        ClientId: process.env.AWS_COGNITO_CLIENT_ID,
-        Username: email,
-      });
-
-      await this.cognitoClient.send(command);
-
-      return {
-        message: 'Code de réinitialisation envoyé par email',
-      };
-    } catch (error) {
-      throw new BadRequestException('Erreur lors de la réinitialisation: ' + error.message);
-    }
-  }
-
-  async confirmResetPassword(email: string, code: string, newPassword: string) {
-    try {
-      const command = new ConfirmForgotPasswordCommand({
-        ClientId: process.env.AWS_COGNITO_CLIENT_ID,
-        Username: email,
-        ConfirmationCode: code,
-        Password: newPassword,
-      });
-
-      await this.cognitoClient.send(command);
-
-      return {
-        message: 'Mot de passe réinitialisé avec succès',
-      };
-    } catch (error) {
-      throw new BadRequestException('Erreur lors de la confirmation: ' + error.message);
-    }
-  }
-
-  async refreshToken(refreshToken: string) {
-    try {
-      const command = new AdminInitiateAuthCommand({
-        UserPoolId: process.env.AWS_COGNITO_USER_POOL_ID,
-        ClientId: process.env.AWS_COGNITO_CLIENT_ID,
-        AuthFlow: 'REFRESH_TOKEN_AUTH',
-        AuthParameters: {
-          REFRESH_TOKEN: refreshToken,
-        },
-      });
-
-      const result = await this.cognitoClient.send(command);
-
-      return {
-        access_token: result.AuthenticationResult?.AccessToken,
-        expires_in: result.AuthenticationResult?.ExpiresIn,
-      };
-    } catch (error) {
-      throw new UnauthorizedException('Token de rafraîchissement invalide');
-    }
-  }
-
-  async validateUser(payload: any) {
-    const tenant = getCurrentTenant();
-    
-    if (!tenant) {
-      throw new UnauthorizedException('Tenant non identifié');
-    }
-
-    const user = await this.prisma.user.findFirst({
-      where: {
-        id: payload.sub,
-        tenantId: tenant.id,
-        isActive: true,
-      },
+  async changePassword(userId: string, changePasswordDto: ChangePasswordDto): Promise<void> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId }
     });
 
-    if (!user) {
-      throw new UnauthorizedException('Utilisateur non trouvé ou inactif');
-    }
-
-    return user;
-  }
-
-  async validateHubUser(payload: any) {
-    // Chercher l'utilisateur par ID, qu'il soit global (tenantId: null) ou avec tenant
-    const user = await this.prisma.user.findFirst({
-      where: {
-        id: payload.sub,
-        isActive: true,
-      },
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        role: true,
-        cognitoId: true,
-        tenantId: true,
-        permissions: true,
-      },
-    });
-
-    if (!user) {
-      throw new UnauthorizedException('Utilisateur non trouvé ou inactif');
-    }
-
-    return user;
-  }
-
-  async getUserProfile(userId: string) {
-    const tenant = getCurrentTenant();
-    
-    if (!tenant) {
-      throw new UnauthorizedException('Tenant non identifié');
-    }
-
-    const user = await this.prisma.user.findFirst({
-      where: {
-        id: userId,
-        tenantId: tenant.id,
-      },
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        phone: true,
-        addressLine1: true,
-        addressLine2: true,
-        city: true,
-        postalCode: true,
-        country: true,
-        preferences: true,
-        role: true,
-        permissions: true,
-        lastLoginAt: true,
-        createdAt: true,
-        isActive: true,
-      },
-    });
-
-    if (!user) {
+    if (!user || !user.password) {
       throw new UnauthorizedException('Utilisateur non trouvé');
     }
 
-    return user;
-  }
+    // Vérifier l'ancien mot de passe
+    const isOldPasswordValid = await bcrypt.compare(changePasswordDto.oldPassword, user.password);
+    if (!isOldPasswordValid) {
+      throw new UnauthorizedException('Ancien mot de passe incorrect');
+    }
 
-  async getHubUserProfile(userId: string) {
-    const user = await this.prisma.user.findFirst({
-      where: {
-        id: userId,
-        tenantId: null, // Utilisateurs du hub uniquement
-      },
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        phone: true,
-        addressLine1: true,
-        addressLine2: true,
-        city: true,
-        postalCode: true,
-        country: true,
-        preferences: true,
-        role: true,
-        permissions: true,
-        lastLoginAt: true,
-        createdAt: true,
-        isActive: true,
-      },
+    // Hasher le nouveau mot de passe
+    const hashedPassword = await bcrypt.hash(changePasswordDto.newPassword, 10);
+
+    // Mettre à jour le mot de passe
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { password: hashedPassword }
     });
 
-    if (!user) {
-      throw new UnauthorizedException('Utilisateur du hub non trouvé');
-    }
-
-    return user;
+    // Révoquer tous les refresh tokens de l'utilisateur
+    await this.prisma.refreshToken.updateMany({
+      where: { 
+        userId,
+        revokedAt: null
+      },
+      data: { revokedAt: new Date() }
+    });
   }
 
-  // Connexion pour utilisateurs du hub (sans tenant)
-  async loginHub(loginDto: LoginDto) {
-    const { email, password } = loginDto;
+  async logout(refreshToken: string): Promise<void> {
+    // Révoquer le refresh token
+    await this.prisma.refreshToken.updateMany({
+      where: { 
+        token: refreshToken,
+        revokedAt: null
+      },
+      data: { revokedAt: new Date() }
+    });
+  }
 
-    try {
-      // Vérifier l'utilisateur global (sans tenant)
-      const user = await this.prisma.user.findFirst({
-        where: {
-          email,
-          tenantId: null, // Utilisateurs globaux uniquement
-          isActive: true,
-        },
-        select: {
-          id: true,
-          email: true,
-          firstName: true,
-          lastName: true,
-          phone: true,
-          addressLine1: true,
-          addressLine2: true,
-          city: true,
-          postalCode: true,
-          country: true,
-          preferences: true,
-          role: true,
-          cognitoId: true,
-          tenantId: true,
-          permissions: true,
-          lastLoginAt: true,
-          createdAt: true,
-          isActive: true,
-        },
-      });
+  async logoutAll(userId: string): Promise<void> {
+    // Révoquer tous les refresh tokens de l'utilisateur
+    await this.prisma.refreshToken.updateMany({
+      where: { 
+        userId,
+        revokedAt: null
+      },
+      data: { revokedAt: new Date() }
+    });
+  }
 
-      if (!user) {
-        throw new UnauthorizedException('Utilisateur non trouvé ou inactif');
+  async validateUser(userId: string): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: { 
+        id: userId,
+        isActive: true
       }
+    });
+  }
 
-      // VERSION TEMPORAIRE : pas de vérification Cognito
-      // TODO: Ajouter la vérification Cognito une fois les clés configurées
+  private async generateAuthResponse(user: User & { tenant?: any }, rememberMe = false): Promise<AuthResponseDto> {
+    const payload: TokenPayload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      tenantId: user.tenantId
+    };
 
-      // Générer JWT sans tenant (utilisateur global)
-      const payload = {
-        sub: user.id,
+    // Durée d'expiration selon rememberMe
+    const accessTokenExpiry = '15m';
+    const refreshTokenExpiry = rememberMe ? '30d' : '7d';
+
+    // Générer les tokens
+    const accessToken = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_SECRET'),
+      expiresIn: accessTokenExpiry
+    });
+
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_REFRESH_SECRET'),
+      expiresIn: refreshTokenExpiry
+    });
+
+    // Calculer l'expiration du refresh token
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + (rememberMe ? 30 : 7));
+
+    // Sauvegarder le refresh token dans la base de données
+    await this.prisma.refreshToken.create({
+      data: {
+        userId: user.id,
+        token: refreshToken,
+        expiresAt,
+        deviceInfo: 'web', // À améliorer avec les vraies infos de l'appareil
+        ipAddress: '127.0.0.1' // À améliorer avec la vraie IP
+      }
+    });
+
+    // Nettoyer les anciens refresh tokens expirés
+    await this.cleanupExpiredTokens(user.id);
+
+    const response: AuthResponseDto = {
+      user: {
+        id: user.id,
         email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
         role: user.role,
-        tenantId: null, // Pas de tenant pour le hub
-        cognitoId: user.cognitoId,
-      };
-
-      const accessToken = this.jwtService.sign(payload);
-      const refreshToken = this.jwtService.sign(
-        { sub: user.id, type: 'refresh' },
-        { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN }
-      );
-
-      return {
-        user: {
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          role: user.role,
-        },
-        tokens: {
-          accessToken,
-          refreshToken,
-        },
-      };
-    } catch (error) {
-      if (error instanceof UnauthorizedException) {
-        throw error;
+        tenantId: user.tenantId
+      },
+      tokens: {
+        accessToken,
+        refreshToken,
+        expiresIn: 14400 // 4 heures en secondes
       }
-      throw new BadRequestException('Erreur lors de la connexion: ' + error.message);
+    };
+
+    // Ajouter le tenant si disponible
+    if (user.tenant) {
+      (response as any).tenant = {
+        id: user.tenant.id,
+        slug: user.tenant.slug,
+        name: user.tenant.name,
+        domain: user.tenant.domain
+      };
     }
+
+    return response;
   }
 
-  async updateUserProfile(userId: string, updateData: UpdateProfileDto) {
-    const tenant = getCurrentTenant();
-    
-    // Si pas de tenant, c'est un utilisateur du hub
-    if (!tenant) {
-      return this.updateHubUserProfile(userId, updateData);
-    }
+  private async cleanupExpiredTokens(userId: string): Promise<void> {
+    // Supprimer les tokens expirés ou révoqués depuis plus de 30 jours
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    try {
-      const updatedUser = await this.prisma.user.update({
+    await this.prisma.refreshToken.deleteMany({
+      where: {
+        userId,
+        OR: [
+          { expiresAt: { lt: new Date() } },
+          { revokedAt: { lt: thirtyDaysAgo } }
+        ]
+      }
+    });
+
+    // Limiter à 5 refresh tokens actifs par utilisateur
+    const activeTokens = await this.prisma.refreshToken.findMany({
+      where: {
+        userId,
+        revokedAt: null,
+        expiresAt: { gt: new Date() }
+      },
+      orderBy: { createdAt: 'desc' },
+      skip: 5
+    });
+
+    if (activeTokens.length > 0) {
+      await this.prisma.refreshToken.updateMany({
         where: {
-          id: userId,
-          tenantId: tenant.id,
+          id: { in: activeTokens.map(t => t.id) }
         },
-        data: {
-          firstName: updateData.firstName,
-          lastName: updateData.lastName,
-          phone: updateData.phone,
-          addressLine1: updateData.addressLine1,
-          addressLine2: updateData.addressLine2,
-          city: updateData.city,
-          postalCode: updateData.postalCode,
-          country: updateData.country,
-          preferences: updateData.preferences,
-        },
-        select: {
-          id: true,
-          email: true,
-          firstName: true,
-          lastName: true,
-          phone: true,
-          addressLine1: true,
-          addressLine2: true,
-          city: true,
-          postalCode: true,
-          country: true,
-          preferences: true,
-          role: true,
-          permissions: true,
-          lastLoginAt: true,
-          createdAt: true,
-          isActive: true,
-        },
+        data: { revokedAt: new Date() }
       });
-
-      return updatedUser;
-    } catch (error) {
-      throw new BadRequestException('Erreur lors de la mise à jour du profil: ' + error.message);
-    }
-  }
-
-  async updateHubUserProfile(userId: string, updateData: UpdateProfileDto) {
-    try {
-      const updatedUser = await this.prisma.user.update({
-        where: {
-          id: userId,
-          tenantId: null, // Utilisateurs du hub uniquement
-        },
-        data: {
-          firstName: updateData.firstName,
-          lastName: updateData.lastName,
-          phone: updateData.phone,
-          addressLine1: updateData.addressLine1,
-          addressLine2: updateData.addressLine2,
-          city: updateData.city,
-          postalCode: updateData.postalCode,
-          country: updateData.country,
-          preferences: updateData.preferences,
-        },
-        select: {
-          id: true,
-          email: true,
-          firstName: true,
-          lastName: true,
-          phone: true,
-          addressLine1: true,
-          addressLine2: true,
-          city: true,
-          postalCode: true,
-          country: true,
-          preferences: true,
-          role: true,
-          permissions: true,
-          lastLoginAt: true,
-          createdAt: true,
-          isActive: true,
-        },
-      });
-
-      return updatedUser;
-    } catch (error) {
-      throw new BadRequestException('Erreur lors de la mise à jour du profil hub: ' + error.message);
     }
   }
 }

@@ -5,7 +5,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, getTranslations } from 'next-intl/server'
 import { locales } from '@/i18n'
 import { QueryProvider } from '@/lib/query-provider'
-import { AuthProvider } from '@/contexts/AuthContext'
+import { UnifiedAuthWrapper } from '@/providers/unified-auth-wrapper'
 import { HubHeader } from '@/components/layout/hub-header'
 import { ClientLayout } from '@/components/layout/client-layout'
 import { LanguageSelector } from '@/components/ui/language-selector'
@@ -81,7 +81,7 @@ export default async function LocaleLayout({
       <body className={inter.className}>
         <NextIntlClientProvider key={locale} locale={locale} messages={messages}>
           <QueryProvider>
-            <AuthProvider>
+            <UnifiedAuthWrapper>
               <ClientLayout>
                 <div className="flex min-h-screen flex-col bg-gradient-to-br from-gray-50 to-blue-50">
                   {/* Header Navigation */}
@@ -159,7 +159,7 @@ export default async function LocaleLayout({
                   </footer>
                 </div>
               </ClientLayout>
-            </AuthProvider>
+            </UnifiedAuthWrapper>
           </QueryProvider>
         </NextIntlClientProvider>
       </body>
