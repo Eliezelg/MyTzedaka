@@ -53,6 +53,14 @@ function isCustomDomain(hostname: string): boolean {
 export default function middleware(request: NextRequest) {
   const { hostname, pathname } = request.nextUrl;
   
+  // Si on accède à /t/[slug] (sites tenants), ne pas rediriger avec i18n
+  // Le path doit gérer ses propres locales
+  if (pathname.startsWith('/t/')) {
+    const response = NextResponse.next();
+    response.headers.set('x-site-mode', 'tenant');
+    return response;
+  }
+  
   // Si on accède directement à /sites/[domain], ne pas appliquer le middleware i18n
   if (pathname.startsWith('/sites/')) {
     // Extraire le domain depuis l'URL

@@ -12,10 +12,10 @@ interface TenantLayoutProps {
 // Fonction pour récupérer les données du tenant
 async function getTenantData(slug: string): Promise<Tenant | null> {
   try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002/api'
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002/api'}/tenant/${slug}`,
+      `${apiUrl}/tenant/${slug}`,
       { 
-        cache: 'force-cache',
         next: { revalidate: 60 } // Revalider toutes les 60 secondes
       }
     )
@@ -34,10 +34,10 @@ async function getTenantData(slug: string): Promise<Tenant | null> {
 // Fonction pour récupérer les modules du tenant
 async function getTenantModules(tenantId: string): Promise<TenantModules | null> {
   try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002/api'
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002/api'}/tenant/${tenantId}/modules`,
+      `${apiUrl}/tenant/${tenantId}/modules`,
       { 
-        cache: 'force-cache',
         next: { revalidate: 60 }
       }
     )
@@ -146,32 +146,6 @@ export default async function TenantLayout({ children, params }: TenantLayoutPro
           '--secondary-color': secondaryColor,
         } as React.CSSProperties}
       >
-        <style jsx global>{`
-          :root {
-            --primary: ${primaryColor};
-            --secondary: ${secondaryColor};
-          }
-          
-          .bg-primary {
-            background-color: var(--primary);
-          }
-          
-          .text-primary {
-            color: var(--primary);
-          }
-          
-          .border-primary {
-            border-color: var(--primary);
-          }
-          
-          .bg-secondary {
-            background-color: var(--secondary);
-          }
-          
-          .text-secondary {
-            color: var(--secondary);
-          }
-        `}</style>
         
         {children}
       </div>

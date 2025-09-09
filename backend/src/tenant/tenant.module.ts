@@ -2,12 +2,10 @@ import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { TenantService } from './tenant.service';
 import { TenantModulesService } from './tenant-modules.service';
 import { TenantController } from './tenant.controller';
-import { TenantTemplatesController } from './tenant-templates.controller';
 import { ZmanimController } from './zmanim.controller';
 import { PrayersController } from './prayers.controller';
 import { TenantParnassController } from './parnass.controller';
 import { FileUploadService } from './file-upload.service';
-import { SiteTemplatesService } from './site-templates.service';
 import { ZmanimService } from './zmanim.service';
 import { PrayersService } from './prayers.service';
 import { TenantContextService } from './tenant-context.service';
@@ -22,17 +20,15 @@ import { ParnassModule } from '../parnass/parnass.module';
     TenantService, 
     TenantModulesService, 
     FileUploadService, 
-    SiteTemplatesService, 
     ZmanimService,
     PrayersService,
     TenantContextService
   ],
-  controllers: [TenantController, TenantTemplatesController, ZmanimController, PrayersController, TenantParnassController], 
+  controllers: [TenantController, ZmanimController, PrayersController, TenantParnassController], 
   exports: [
     TenantService, 
     TenantModulesService, 
     FileUploadService, 
-    SiteTemplatesService, 
     ZmanimService,
     PrayersService,
     TenantContextService
