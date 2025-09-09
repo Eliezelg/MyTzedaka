@@ -8,7 +8,7 @@ import {
 } from '@/types/auth'
 import Cookies from 'js-cookie'
 
-const API_URL = typeof window !== 'undefined' ? '' : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002/api')
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002/api'
 
 class AuthService {
   private baseUrl = `${API_URL}/auth`
@@ -17,7 +17,7 @@ class AuthService {
     // D'abord, trouver les tenants de l'utilisateur
     let userTenants = [];
     try {
-      const findTenantsResponse = await fetch(`/api/auth/find-user-tenants`, {
+      const findTenantsResponse = await fetch(`${this.baseUrl}/find-user-tenants`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ class AuthService {
             // Si on n'a pas trouvé, essayer de récupérer via l'API
             if (!tenant) {
               try {
-                const tenantResponse = await fetch(`/api/tenant/${result.user.tenantId}`, {
+                const tenantResponse = await fetch(`${API_URL}/tenant/${result.user.tenantId}`, {
                   headers: {
                     'Authorization': `Bearer ${result.tokens?.accessToken || result.access_token}`,
                   },
@@ -203,7 +203,7 @@ class AuthService {
   }
 
   async getProfile(token: string): Promise<User> {
-    const response = await fetch(`/api/auth/me`, {
+    const response = await fetch(`${this.baseUrl}/me`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
