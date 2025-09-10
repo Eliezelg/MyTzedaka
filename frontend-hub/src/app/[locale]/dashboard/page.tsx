@@ -93,14 +93,24 @@ export default function DashboardPage() {
                 </p>
               </div>
             </div>
-            <Link 
-              href={`/associations/${tenant.slug || tenant.id}/dashboard`}
-            >
-              <Button className="flex items-center space-x-2">
-                <Settings className="h-4 w-4" />
-                <span>Gestion de l'association</span>
-              </Button>
-            </Link>
+            <div className="flex gap-2">
+              <Link 
+                href={`/associations/${tenant.slug || tenant.id}/dashboard`}
+              >
+                <Button className="flex items-center space-x-2">
+                  <Settings className="h-4 w-4" />
+                  <span>Dashboard Hub</span>
+                </Button>
+              </Link>
+              <Link 
+                href={`/t/${tenant.slug || tenant.id}/dashboard`}
+              >
+                <Button variant="outline" className="flex items-center space-x-2">
+                  <Settings className="h-4 w-4" />
+                  <span>Dashboard Site</span>
+                </Button>
+              </Link>
+            </div>
           </div>
         </Card>
       )}

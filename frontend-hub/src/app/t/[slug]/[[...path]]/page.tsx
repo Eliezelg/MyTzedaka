@@ -4,7 +4,7 @@ import { TenantHeader } from '@/components/tenant/tenant-header'
 import { TenantFooter } from '@/components/tenant/tenant-footer'
 import { TenantDonationPage } from '@/components/tenant/donation-page'
 import { TenantCampaignsPage } from '@/components/tenant/campaigns-page'
-import { AdminWrapper } from '@/components/tenant/admin-wrapper'
+import { SimpleAdmin } from '@/components/tenant/simple-admin'
 
 interface PageProps {
   params: { 
@@ -77,7 +77,7 @@ export default async function DynamicTenantPage({ params }: PageProps) {
               <p className="text-gray-600">Cette page sera bientôt disponible.</p>
             </div>
           )}
-          {route === 'admin' && <AdminWrapper />}
+          {route === 'admin' && <SimpleAdmin tenantSlug={params.slug} />}
         </main>
         
         <TenantFooter />

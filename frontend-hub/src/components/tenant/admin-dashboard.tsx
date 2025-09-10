@@ -2,7 +2,10 @@
 
 import React, { useState } from 'react'
 import { useTenant } from '@/providers/tenant-provider'
-// import { ThemeCustomizer } from '@/components/tenant/theme-customizer'
+import { ThemeCustomizer } from '@/components/tenant/theme-customizer'
+import { CampaignManager } from '@/components/tenant/campaign-manager'
+import { ContentManager } from '@/components/tenant/content-manager'
+import { DonationTracker } from '@/components/tenant/donation-tracker'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -125,8 +128,10 @@ export function TenantAdminDashboard() {
 
       {/* Admin Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
+          <TabsTrigger value="donations">Dons</TabsTrigger>
+          <TabsTrigger value="campaigns">Campagnes</TabsTrigger>
           <TabsTrigger value="theme">Apparence</TabsTrigger>
           <TabsTrigger value="content">Contenu</TabsTrigger>
           <TabsTrigger value="settings">Paramètres</TabsTrigger>
@@ -194,66 +199,20 @@ export function TenantAdminDashboard() {
           </div>
         </TabsContent>
 
+        <TabsContent value="donations" className="mt-6">
+          <DonationTracker />
+        </TabsContent>
+
+        <TabsContent value="campaigns" className="mt-6">
+          <CampaignManager />
+        </TabsContent>
+
         <TabsContent value="theme" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Personnalisation du thème</CardTitle>
-              <CardDescription>
-                Cette fonctionnalité sera bientôt disponible
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600">
-                Vous pourrez bientôt personnaliser les couleurs et l'apparence de votre site.
-              </p>
-            </CardContent>
-          </Card>
+          <ThemeCustomizer />
         </TabsContent>
 
         <TabsContent value="content" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Gestion du contenu</CardTitle>
-              <CardDescription>
-                Créez et modifiez les pages de votre site
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="border rounded-lg p-4">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h3 className="font-semibold">Page d'accueil</h3>
-                      <p className="text-sm text-gray-600">Dernière modification: Il y a 3 jours</p>
-                    </div>
-                    <Button size="sm">Modifier</Button>
-                  </div>
-                </div>
-                <div className="border rounded-lg p-4">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h3 className="font-semibold">À propos</h3>
-                      <p className="text-sm text-gray-600">Dernière modification: Il y a 1 semaine</p>
-                    </div>
-                    <Button size="sm">Modifier</Button>
-                  </div>
-                </div>
-                <div className="border rounded-lg p-4">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h3 className="font-semibold">Contact</h3>
-                      <p className="text-sm text-gray-600">Dernière modification: Il y a 2 semaines</p>
-                    </div>
-                    <Button size="sm">Modifier</Button>
-                  </div>
-                </div>
-                <Button className="w-full" variant="outline">
-                  <FileText className="mr-2 h-4 w-4" />
-                  Créer une nouvelle page
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <ContentManager />
         </TabsContent>
 
         <TabsContent value="settings" className="mt-6">

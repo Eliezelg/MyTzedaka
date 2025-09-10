@@ -9,7 +9,17 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(git checkout:*)",
-      "Bash(npx prisma db seed:*)"
+      "Bash(npx prisma db seed:*)",
+      "Bash(pkill:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx nest g module:*)",
+      "Bash(npx nest g controller:*)",
+      "Bash(npx nest g service:*)",
+      "Bash(npx prisma studio:*)",
+      "*",
+      "Bash(npx prisma db execute:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": [],

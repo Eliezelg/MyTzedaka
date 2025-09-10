@@ -16,6 +16,7 @@ import { StripeModule } from './stripe/stripe.module';
 import { TaxReceiptModule } from './tax-receipt/tax-receipt.module';
 import { ParnassModule } from './parnass/parnass.module';
 import { PagesModule } from './pages/pages.module';
+import { TenantAdminModule } from './tenant-admin/tenant-admin.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { PagesModule } from './pages/pages.module';
     TaxReceiptModule,
     ParnassModule,
     PagesModule,
+    TenantAdminModule,
   ],
   controllers: [AppController],
   providers: [AppService, S3Service],

@@ -82,19 +82,50 @@ const PRESET_THEMES = [
 
 export function ThemeCustomizer() {
   const { tenant } = useTenant()
-  const [theme, setTheme] = useState<ThemeConfig>(
-    tenant.theme || DEFAULT_THEME
-  )
+  const [theme, setTheme] = useState<ThemeConfig>(DEFAULT_THEME)
   const [isPreview, setIsPreview] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Load current theme from backend
+  useEffect(() => {
+    const loadTheme = async () => {
+      if (!tenant?.id) return
+      
+      try {
+        const token = localStorage.getItem('accessToken')
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/tenants/${tenant.id}/theme`,
+          {
+            headers: {
+              'Authorization': token ? `Bearer ${token}` : ''
+            }
+          }
+        )
+        
+        if (response.ok) {
+          const data = await response.json()
+          if (data && Object.keys(data).length > 0) {
+            setTheme(data as ThemeConfig)
+          }
+        }
+      } catch (error) {
+        console.error('Error loading theme:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    
+    loadTheme()
+  }, [tenant])
 
   useEffect(() => {
     if (isPreview) {
       applyTheme(theme)
     } else {
-      applyTheme(tenant.theme || DEFAULT_THEME)
+      applyTheme(DEFAULT_THEME)
     }
-  }, [theme, isPreview, tenant.theme])
+  }, [theme, isPreview])
 
   const applyTheme = (config: ThemeConfig) => {
     const root = document.documentElement
@@ -119,11 +150,17 @@ export function ThemeCustomizer() {
   const handleSave = async () => {
     setIsSaving(true)
     try {
+      // Get auth token from localStorage
+      const token = localStorage.getItem('accessToken')
+      
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/tenants/${tenant.id}/theme`,
         {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': token ? `Bearer ${token}` : ''
+          },
           body: JSON.stringify({ theme })
         }
       )
@@ -150,6 +187,16 @@ export function ThemeCustomizer() {
 
   const togglePreview = () => {
     setIsPreview(!isPreview)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="text-center">
+          <p className="text-gray-500">Chargement du thème...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -318,7 +365,7 @@ export function ThemeCustomizer() {
                 className="flex-1"
               >
                 <Eye className="mr-2 h-4 w-4" />
-                {isPreview ? 'Arrêter l'aperçu' : 'Aperçu'}
+                {isPreview ? "Arrêter l'aperçu" : 'Aperçu'}
               </Button>
               <Button
                 variant="outline"

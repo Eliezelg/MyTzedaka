@@ -12,15 +12,22 @@ import { Shield, LogIn } from 'lucide-react'
 export function AdminWrapper() {
   const { tenant } = useTenant()
   const router = useRouter()
-  const { user, isAuthenticated, isLoading, isAdmin } = useAuthContext()
+  const authContext = useAuthContext()
+  
+  const { user, isAuthenticated, isLoading, isAdmin } = authContext || {
+    user: null,
+    isAuthenticated: false,
+    isLoading: true,
+    isAdmin: false
+  }
 
   useEffect(() => {
     // Si non authentifié et pas en chargement, rediriger vers login
-    if (!isLoading && !isAuthenticated) {
+    if (!isLoading && !isAuthenticated && tenant?.slug) {
       const currentPath = `/t/${tenant.slug}/admin`
       router.push(`/fr/auth/login?returnUrl=${encodeURIComponent(currentPath)}`)
     }
-  }, [isLoading, isAuthenticated, router, tenant.slug])
+  }, [isLoading, isAuthenticated, router, tenant?.slug])
 
   if (isLoading) {
     return (
