@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { TenantProvider } from '@/providers/tenant-provider'
 import { Tenant, TenantModules } from '@/lib/tenant/tenant-resolver'
+import { QueryProvider } from '@/lib/query-provider'
 
 // Types
 interface TenantLayoutProps {
@@ -138,17 +139,19 @@ export default async function TenantLayout({ children, params }: TenantLayoutPro
   const secondaryColor = theme.secondaryColor || '#3b82f6'
 
   return (
-    <TenantProvider tenant={tenant} modules={modules} theme={theme}>
-      <div 
-        className="min-h-screen"
-        style={{
-          '--primary-color': primaryColor,
-          '--secondary-color': secondaryColor,
-        } as React.CSSProperties}
-      >
-        
-        {children}
-      </div>
-    </TenantProvider>
+    <QueryProvider>
+      <TenantProvider tenant={tenant} modules={modules} theme={theme}>
+        <div 
+          className="min-h-screen"
+          style={{
+            '--primary-color': primaryColor,
+            '--secondary-color': secondaryColor,
+          } as React.CSSProperties}
+        >
+          
+          {children}
+        </div>
+      </TenantProvider>
+    </QueryProvider>
   )
 }
